@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "MDModality"
+    }
+  },
+  "defaultProject": "MDModality",
+  "cli": {
+    "analytics": "d819912d-43b3-41e9-9667-4d79e7075278"
+  }
 }
