@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import * as saveAs from 'file-saver';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -34,8 +36,33 @@ export class AppComponent {
    })
  }
  setPlanData(res){
-   this.planData = res;
-   console.log("this pllanData is %o", this.planData)
- }
+  let areas = new Array<Array<any>>();
+  this.planData = res;
+  console.log("planData is %o ", this.planData)
+
+  let tBlob= new Blob([JSON.stringify(this. planData)],{type:'application/json'})
+  let tst = "one, two, ,three";
+
+//    saveAs(blob, ' world.csv')
+  let tStr = "";
+  console.log("ddddd")
+  console.log(Object.keys(res));
+ // Object.keys(res).forEach(key => {
+  //  console.log(" key is " + key)
+    // console.log("res is %o",res[key])
+    Object.keys(res[0]).forEach(key2 => {
+      console.log(" key2 is " + res[key2])
+      tStr += res[key2]
+      tStr += "\r\n"
+      // console.log("res is %o",res[key])
+      })
+      
+  //  })
+   console.log("tStr is " + tStr) 
+
+  let blob = new Blob([tStr], { type: 'text/plain;charset=utf-8' })
+  saveAs(blob, 'PlanData.csv')
+  
+   }
 
 }
