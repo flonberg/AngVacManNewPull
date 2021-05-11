@@ -1,15 +1,16 @@
-<p> working </p>
 
+<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" media="all">
 
-
+<div class='date-picker'>
 <dp-date-picker theme="dp-material" [(ngModel)]="date"
 (ngModelChange)="setDate($event)"
+class="date-picker"
+
                             [config]="datePickerConfig"
                             required="true">
 </dp-date-picker>
-<br />
-<input type="button"   value="update date picker format" />
-<br />
+
+</div>
 
 
 <select name="" id="" style="position:relative; left: 100px"  (change)="getPlanData($event.target.value)">

@@ -20,7 +20,7 @@ export class AppComponent {
   data: any;
   planData: any;
   datePickerConfig = {
-    format: 'DD-MM-YYYY'
+    format: 'DD-MM-YYYY', 
   };
   date:any
 
