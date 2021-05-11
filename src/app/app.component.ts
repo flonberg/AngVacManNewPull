@@ -20,8 +20,9 @@ export class AppComponent {
   data: any;
   planData: any;
   datePickerConfig = {
-    format: 'DD'
+    format: 'DD-MM-YYYY'
   };
+  date:any
 
   
   constructor(private http: HttpClient ) {
@@ -29,6 +30,9 @@ export class AppComponent {
       this.setData(res);
     })
 
+   }
+   setDate(ev){
+     console.log("eve is %o", ev)
    }
    /**
     *  get the plans for a single MD 

@@ -2,7 +2,8 @@
 
 
 
-<dp-date-picker theme="dp-material"
+<dp-date-picker theme="dp-material" [(ngModel)]="date"
+(ngModelChange)="setDate($event)"
                             [config]="datePickerConfig"
                             required="true">
 </dp-date-picker>
