@@ -1,6 +1,14 @@
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppRoutingModule } from './app-routing.module';
+import {  OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder } from "@angular/forms";
+import { IDayCalendarConfig, DatePickerComponent } from "ng2-date-picker";
+
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as saveAs from 'file-saver';
+
 
 @Component({
   selector: 'app-root',
@@ -11,10 +19,16 @@ export class AppComponent {
   title = 'MDModality';
   data: any;
   planData: any;
+  datePickerConfig = {
+    format: 'DD'
+  };
+
+  
   constructor(private http: HttpClient ) {
     this.getPlans().subscribe(res =>{
       this.setData(res);
     })
+
    }
    /**
     *  get the plans for a single MD 
@@ -53,5 +67,11 @@ export class AppComponent {
   saveAs(blob, 'PlanData.csv')
   
    }
-
+   updateFormat() {
+    console.log('update')
+    this.datePickerConfig = {
+      ...this.datePickerConfig,
+      format: 'DD-MM'
+    }
+  }
 }

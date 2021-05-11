@@ -1,8 +1,16 @@
 <p> working </p>
 
 
+
+<dp-date-picker theme="dp-material"
+                            [config]="datePickerConfig"
+                            required="true">
+</dp-date-picker>
+<br />
+<input type="button"   value="update date picker format" />
+<br />
+
+
 <select name="" id="" style="position:relative; left: 100px"  (change)="getPlanData($event.target.value)">
   <option  *ngFor="let item of data | keyvalue"  >   {{item.key}}   </option>
 </select>
-
-
