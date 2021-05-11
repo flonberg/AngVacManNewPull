@@ -8,7 +8,8 @@ import { DatepickerModule } from 'ng2-datepicker';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { DpDatePickerModule } from "ng2-date-picker";
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSliderModule } from '@angular/material/slider';
 @NgModule({
   declarations: [
     AppComponent
@@ -17,7 +18,8 @@ import { DpDatePickerModule } from "ng2-date-picker";
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    DatepickerModule, BrowserModule, ReactiveFormsModule, DpDatePickerModule 
+    MatSliderModule,
+    DatepickerModule, BrowserModule, ReactiveFormsModule, DpDatePickerModule, BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

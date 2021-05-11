@@ -16,3 +16,6 @@ class="date-picker"
 <select name="" id="" style="position:relative; left: 100px"  (change)="getPlanData($event.target.value)">
   <option  *ngFor="let item of data | keyvalue"  >   {{item.key}}   </option>
 </select>
+
+<br>
+<mat-slider min="1" max="100" step="1" value="1"></mat-slider>
