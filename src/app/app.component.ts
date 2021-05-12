@@ -8,6 +8,7 @@ import { IDayCalendarConfig, DatePickerComponent } from "ng2-date-picker";
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as saveAs from 'file-saver';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -19,27 +20,27 @@ export class AppComponent {
   title = 'MDModality';
   data: any;
   planData: any;
-  datePickerConfig = {
-    format: 'DD-MM-YYYY', 
-  };
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl()
+  });
   date:any
 
   
-  constructor(private http: HttpClient ) {
-    this.getPlans().subscribe(res =>{
+  constructor(private http: HttpClient) {
+    this.getMDs().subscribe(res =>{
       this.setData(res);
     })
 
    }
-   setDate(ev){
-     console.log("eve is %o", ev)
+   setDate(){
+     console.log("eve is %o", this .range)
    }
    /**
-    *  get the plans for a single MD 
+    *  get the plans for a single MD, ION-endPt looks for 'test' to make it return MD list 
     */
- getPlans(){
-   var rnd = Math.random();
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/proxy.php?MDKey=test&rnd='+rnd;
+ getMDs(){
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/proxy.php?MDKey=test&rnd=';
   return this .http.get(url)
   }
  setData(res ) {
@@ -48,7 +49,7 @@ export class AppComponent {
  }
  getPlanData(n){
    console.log("n is %o  key is %o", n, this.data[n]);
-   var url = 'https://whiteboard.partners.org/esb/FLwbe/proxy.php?MDKey=' + n;
+   var url = 'https://whiteboard.partners.org/esb/FLwbe/proxy.php?MDKey=' + this.data[n];
    this .http.get(url).subscribe(res =>{
      this. setPlanData(res)
    })
@@ -71,11 +72,5 @@ export class AppComponent {
   saveAs(blob, 'PlanData.csv')
   
    }
-   updateFormat() {
-    console.log('update')
-    this.datePickerConfig = {
-      ...this.datePickerConfig,
-      format: 'DD-MM'
-    }
-  }
+
 }

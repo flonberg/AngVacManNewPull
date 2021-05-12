@@ -10,16 +10,27 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DpDatePickerModule } from "ng2-date-picker";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSliderModule } from '@angular/material/slider';
+import {MatDatepickerModule, MatDateRangeInput} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { DatePipe } from '@angular/common';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent  
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     MatSliderModule,
-    DatepickerModule, BrowserModule, ReactiveFormsModule, DpDatePickerModule, BrowserAnimationsModule
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+
+
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
