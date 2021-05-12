@@ -27,14 +27,14 @@ export class AppComponent {
   date:any
 
   
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, public datePipe: DatePipe) {
     this.getMDs().subscribe(res =>{
       this.setData(res);
     })
 
    }
-   setDate(){
-     console.log("eve is %o", this .range)
+   setDate(start, end){
+     console.log("eve is %o", start)
    }
    /**
     *  get the plans for a single MD, ION-endPt looks for 'test' to make it return MD list 
@@ -54,11 +54,17 @@ export class AppComponent {
      this. setPlanData(res)
    })
  }
+
+ dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+  console.log(dateRangeStart.value);
+  console.log(dateRangeEnd.value);
+}
  setPlanData(res){
   let areas = new Array<Array<any>>();
   this.planData = res;
   console.log("planData is %o ", this.planData)
 
+  
 
   let tStr = "";
     Object.keys(res[0]).forEach(key2 => {
