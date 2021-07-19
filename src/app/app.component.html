@@ -10,12 +10,7 @@
   <mat-date-range-picker #picker></mat-date-range-picker>
 </mat-form-field>
 
-<p>Selected range: {{range.value | json}}</p>
-
-
-<select name="" id="" style="position:relative; left: 100px"  (change)="getPlanData($event.target.value)">
-  <option  *ngFor="let item of data | keyvalue"  >   {{item.key}}   </option>
-</select>
+<app-plans></app-plans>
 
 <br>
 

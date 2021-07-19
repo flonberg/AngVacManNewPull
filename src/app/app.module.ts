@@ -15,9 +15,12 @@ import { MatLabel } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DatePipe } from '@angular/common';
+import { PlansComponent } from './plans/plans.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 @NgModule({
   declarations: [
-    AppComponent  
+    AppComponent,
+    PlansComponent  
   ],
   imports: [
     BrowserModule,
@@ -27,6 +30,7 @@ import { DatePipe } from '@angular/common';
     MatDatepickerModule,
     MatNativeDateModule,
     MatFormFieldModule,
+    MatExpansionModule,
 
 
     BrowserAnimationsModule
