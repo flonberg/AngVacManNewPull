@@ -41,7 +41,8 @@ export class AppComponent {
    /**
     *  get the plans for a single MD, ION-endPt looks for 'test' to make it return MD list 
     */
- getMDs(){
+ 
+   getMDs(){
   var url = 'https://whiteboard.partners.org/esb/FLwbe/proxy.php?MDKey=test';
   return this .http.get(url)
   }

@@ -1,0 +1,30 @@
+table.cal {
+	background-color:#FFE0C2;
+}
+td.green {
+	background-color:#5CE65C;
+	font-size:smaller;
+}
+td.unApproved {
+	background-color:white;
+	font-size:smaller;
+}
+td.red {
+	background-color:red;
+	font-size:smaller;
+}
+td.todayCell {
+	background-color:yellow;
+	font-size:smaller;
+}
+td.td1 {
+	padding:0;
+}
+
+td.hd3 {
+	font-size:larger;
+	font-weight:bold;
+}
+#enterVac {
+	width:80%;
+}
