@@ -11,6 +11,10 @@ cellpadding="2">
 <tr *ngFor = "let item of vacData | keyvalue">
   <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let i= index'> </td>
   <td [attr.colspan] = 'item.value[0].vacLength'>{{ item.value[0].vacLength }}</td>
+  <ng-container *ngIf = 'item.value[1]'> 
+   <td *ngFor= 'let loop4 of counter(item.value[1].daysTillStartDate) ;let j= index'    > </td>
+   <td [attr.colspan] = 'item.value[1].vacLength'>{{ item.value[1].vacLength }}</td>
+  </ng-container> 
 </tr>
 
 </table>
