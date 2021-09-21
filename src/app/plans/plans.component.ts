@@ -9,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class PlansComponent implements OnInit {
   panelOpenState: boolean;
   vacData: any;
+  calDates: Date[];
   constructor(private http: HttpClient) { 
     
   }
@@ -17,6 +18,7 @@ export class PlansComponent implements OnInit {
     this.getVacs().subscribe(res =>{
       this.setData(res);
     })
+    this. setCalDates();
   }
   getVacs(){
     var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVacs.php';
@@ -26,5 +28,29 @@ export class PlansComponent implements OnInit {
       console.log("111")
       this.vacData = res;
       console.log(this.vacData)
+    }
+    counter(n){
+      var ar = Array();
+      for (var i=0; i < n; i++ ){
+        ar[i] = i;
+      }
+      return ar;
+    }
+    setCalDates(){
+      var date = new Date();
+      var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+      var lastDay = new Date(date.getFullYear(), date.getMonth() + 2, 0);
+      this. calDates = Array();
+      console.log("lsstDay is %o", lastDay);
+      var i = 0;
+      do {
+        var cDay = new Date(firstDay.valueOf());
+        this. calDates[i++] = cDay;
+        firstDay.setDate(firstDay.getDate() + 1);
+      }
+      while (firstDay <= lastDay)
+      var test = this .calDates[2].getDate();
+        console.log("calDays is %o", test)
+
     }
 }

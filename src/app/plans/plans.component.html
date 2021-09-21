@@ -1,5 +1,16 @@
 <p>plans works!</p>
-<table id="myTable" border="1" class="cal" 
-style="border-collapse: collapse; 
+<table id="myTable" border="1" class="cal" *ngIf = "vacData" 
+  style="border-collapse: collapse; 
 background-color:yellow" 
-cellpadding="2"></table>
+cellpadding="2">
+<tr>
+  <td *ngFor = "let d of calDates">
+    {{ d.getDate()}}
+  </td>
+</tr>
+<tr *ngFor = "let item of vacData | keyvalue">
+  <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let i= index'> </td>
+  <td [attr.colspan] = 'item.value[0].vacLength'>{{ item.value[0].vacLength }}</td>
+</tr>
+
+</table>
