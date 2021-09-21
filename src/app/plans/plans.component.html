@@ -27,10 +27,10 @@ cellpadding="2">
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2]'>
    <td  *ngFor='let l4 of counter(61 -  item.value[1].daysTillStartDate - item.value[0].daysTillStartDate -
-   item.value[2].daysTillStartDate - item.value[0].vacLength - item.value[1].vacLength  - item.value[2].vacLength )'>  h  </td>
+   item.value[2].daysTillStartDate - item.value[0].vacLength - item.value[1].vacLength  - item.value[2].vacLength )'>  </td>
    </ng-container>
-   <ng-container *ngIf = '!item.value[2]'>
-     <td>kk  </td>
+   <ng-container *ngIf = '!item.value[2] && item.value[1]'>
+     <td *ngFor='let l3 of counter(61 -  item.value[1].daysTillStartDate - item.value[1].vacLength - item.value[0].daysTillStartDate - item.value[0].vacLength )'> </td>
 
    </ng-container>
 
