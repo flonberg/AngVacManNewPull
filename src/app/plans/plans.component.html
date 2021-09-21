@@ -9,20 +9,31 @@ cellpadding="2">
   </td>
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue">
-  <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let i= index'> </td>
+  <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let ip= index'> </td>
   <td [attr.colspan] = 'item.value[0].vacLength'>{{ item.value[0].userid }}</td>
+
   <ng-container *ngIf = 'item.value[1]'> 
-   <td *ngFor= 'let loop4 of counter(item.value[1].daysTillStartDate) ;let j= index'    > </td>
+   <td *ngFor= 'let loop4 of counter(item.value[1].daysTillStartDate) ;let jp= index'    > </td>
    <td [attr.colspan] = 'item.value[1].vacLength'>  {{ item.value[1].vacLength }}  </td>
   </ng-container> 
+
   <ng-container  *ngIf = '!item.value[1]'  > 
-    <td *ngFor = "let lp0 of counter(60 - item.value[0].daysTillStartDate -  item.value[0].vacLength )"> </td>
+    <td *ngFor = "let lp0 of counter(61 - item.value[0].daysTillStartDate -  item.value[0].vacLength )"> </td>
   </ng-container>
   
   <ng-container *ngIf = 'item.value[2]'> 
-    <td *ngFor= 'let loop5 of counter(item.value[2].daysTillStartDate) ;let k= index'    > </td>
+    <td *ngFor= 'let loop5 of counter(item.value[2].daysTillStartDate) ;let kp= index'    > </td>
     <td [attr.colspan] = 'item.value[2].vacLength'>{{ item.value[2].vacLength }}</td>
    </ng-container> 
+   <ng-container *ngIf = '!item.value[3] && item.value[2]'>
+   <td  *ngFor='let l4 of counter(61 -  item.value[1].daysTillStartDate - item.value[0].daysTillStartDate -
+   item.value[2].daysTillStartDate - item.value[0].vacLength - item.value[1].vacLength  - item.value[2].vacLength )'>  h  </td>
+   </ng-container>
+   <ng-container *ngIf = '!item.value[2]'>
+     <td>kk  </td>
+
+   </ng-container>
+
    <ng-container *ngIf = 'item.value[3]'> 
     <td *ngFor= 'let loop6 of counter(item.value[3].daysTillStartDate) ;let l= index'    > </td>
     <td [attr.colspan] = 'item.value[3].vacLength'>{{ item.value[3].vacLength }}</td>
