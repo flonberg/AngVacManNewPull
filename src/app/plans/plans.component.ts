@@ -22,18 +22,14 @@ export class PlansComponent implements OnInit {
       console.log("res is %o", res)
       this.getUsers().subscribe(rusers=>{
         for (const vr in res){
-     //     console.log("userid is %o", vr)
-     //     console.log("vr is %o", res[vr])
           if (rusers[vr]){
-        //  console.log("rusers is %o", rusers[vr]['LastName'])
             this. vacData[rusers[vr]['LastName']] = res[vr]
           }
           
         }
-        console.log("this 99999  is %o", this. vacData)
+
       })
-     
-    //  this.setData(res);
+
     })
     this. setCalDates();
   }
@@ -47,13 +43,13 @@ export class PlansComponent implements OnInit {
   }
   setUsers(res){
     this. users = res;
-   // console.log("users is %o", this. users)
+
   }
   setData(res ) {
     this.getUsers().subscribe(res =>{
       this.setUsers(res);
     })
-      console.log("111")
+
       for(const vr in res){
         var uKey = res[vr][0]['userid']
         if (this .users)
@@ -72,10 +68,11 @@ export class PlansComponent implements OnInit {
   }
   setCalDates(){
       var date = new Date();
+      var daysInMonth0 = date.getDate();
       var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
       var lastDay = new Date(date.getFullYear(), date.getMonth() + 2, 0);
       this. calDates = Array();
-      console.log("lsstDay is %o", lastDay);
+      console.log("daysInMonth0 is %o", daysInMonth0);
       var i = 0;
       do {
         var cDay = new Date(firstDay.valueOf());
@@ -99,11 +96,6 @@ export class PlansComponent implements OnInit {
     var endDate = new Date(val1['endDate'])
     var calEndDate = new Date( val2['startDate'])
     var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
-    if (val1['userid'] == '260'){
-      console.log("v1 enddata %o", val1['endDate'])
-      console.log("v2 startDat %o", val2['startDate'])
-       console.log("diff is %o", diff)
-      }
 
     return diff -1;
   }  

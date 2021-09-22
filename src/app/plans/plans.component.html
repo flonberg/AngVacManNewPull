@@ -3,6 +3,7 @@
   style="border-collapse: collapse; 
 background-color:yellow" 
 cellpadding="2">
+<tr></tr>
 <tr>
   <td *ngFor = "let d of calDates">
     {{ d.getDate()}}
@@ -13,8 +14,8 @@ cellpadding="2">
   <td [attr.colspan] = 'item.value[0].vacLength'>{{ item.key}}</td>
 
   <ng-container *ngIf = 'item.value[1]'> 
-   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ; 
-'    > B</td>
+   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;' ></td>
+'
    <td [attr.colspan] = 'item.value[1].vacLength'>  {{ item.key}}  </td>
   </ng-container> 
   <ng-container  *ngIf = '!item.value[1]'  > 
@@ -23,7 +24,7 @@ cellpadding="2">
   
 
   <ng-container *ngIf = 'item.value[2]'> 
-    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2]))' >  A  </td>
+    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2]))' >   </td>
     <td [attr.colspan] = 'item.value[2].vacLength'>{{ item.key}}</td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2]'>
@@ -36,7 +37,7 @@ cellpadding="2">
    <ng-container *ngIf = 'item.value[3]'> 
     <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3]));'    > 
       {{ daysBetween(item.value[2], item.value[3]) }}      </td>
-    <td [attr.colspan] = 'item.value[3].vacLength'>test </td>
+    <td [attr.colspan] = 'item.value[3].vacLength'>{{ item.key}}</td>
    </ng-container> 
 </tr>
 
