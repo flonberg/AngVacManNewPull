@@ -87,18 +87,33 @@ export class PlansComponent implements OnInit {
         console.log("calDays is %o", test)
 
     }
-    myFunction(val){
-      let d2 = 0;
-      let ed = "";
+  daysTillEnd(val){
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-      console.log(" val is %o", val['endDate'])
       var endDate = new Date(val['endDate'])
       var calEndDate = new Date( this. calDates[this. calDates.length-1])
-      console.log("calDates is %o", this. calDates[this. calDates.length-1])
       var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
-      console.log("diff is %o", diff)
-
-   
      return diff;
     }
+  daysBetween(val1, val2){
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    var endDate = new Date(val1['endDate'])
+    var calEndDate = new Date( val2['startDate'])
+    var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
+    if (val1['userid'] == '260'){
+      console.log("v1 enddata %o", val1['endDate'])
+      console.log("v2 startDat %o", val2['startDate'])
+       console.log("diff is %o", diff)
+      }
+
+    return diff -1;
+  }  
+  daysBetweenX(val1, val2){
+
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    var endDate = new Date(val1['endDate'])
+    var calEndDate = new Date( val2['startDate'])
+    var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
+
+    return diff;
+  }  
 }
