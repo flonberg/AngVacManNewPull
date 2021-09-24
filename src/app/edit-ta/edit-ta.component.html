@@ -1,17 +1,12 @@
-
-<h1> Physicians Time Away Schedule </h1>
-
-<div class='center'>
-  <app-plans></app-plans>
-
-  <table class='centerSmall'>
-    <caption> Enter a Time Away </caption>
+<p>edit-ta works!</p>
+<table class='centerSmall' *ngIf = showEdit>
+    <caption> Edit Time Away </caption>
   <td>
   <mat-form-field appearance="fill">
     <mat-label>Enter a date range</mat-label>
     <mat-date-range-input [rangePicker]="picker">
-      <input matStartDate placeholder="Start date" #dateRangeStart [value] = "setStart">  
-      <input matEndDate placeholder="End date" #dateRangeEnd  (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)">
+      <input matStartDate placeholder="Start date" #dateRangeStart >  
+      <input matEndDate placeholder="End date" #dateRangeEnd  >
     </mat-date-range-input>
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-date-range-picker #picker></mat-date-range-picker>
@@ -37,8 +32,3 @@
     <button mat-raised-button>Submit Time Away</button>
   </td>
   </table>
-
-</div>
-<br>
-
-

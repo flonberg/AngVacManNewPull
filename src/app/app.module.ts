@@ -19,10 +19,12 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { PlansComponent } from './plans/plans.component';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { EditTAComponent } from './edit-ta/edit-ta.component';
 @NgModule({
   declarations: [
     AppComponent,
-    PlansComponent  
+    PlansComponent,
+    EditTAComponent  
   ],
   imports: [
     BrowserModule,

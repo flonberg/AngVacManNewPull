@@ -14,7 +14,7 @@ cellpadding="2">
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
   <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let ip= index' [className] = "incDay(1)" > </td>
-  <td [attr.colspan] = 'item.value[0].vacLength' class = "green">{{ item.key}}  </td>
+  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "prop1=item.value[0]">{{ item.key}}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
    <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index' [className] = "incDay1(1,item.value[0].vacLength) " >  </td>
@@ -47,3 +47,4 @@ cellpadding="2">
 </tr>
 
 </table>
+<app-edit-ta [setProp] = 'prop1'></app-edit-ta>

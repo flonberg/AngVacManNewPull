@@ -1,3 +1,4 @@
+import { PlansComponent } from './plans/plans.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
@@ -15,7 +16,7 @@ import { MAT_DATE_RANGE_INPUT_PARENT } from '@angular/material/datepicker/date-r
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   title = 'MDModality';
@@ -25,7 +26,8 @@ export class AppComponent {
   dateRangeStart: string;
   dateRangeEnd: string;
   MDName: string;
-  date:any
+  date:any;
+  setStart: any;
 
   
   constructor(private http: HttpClient, public datePipe: DatePipe) {

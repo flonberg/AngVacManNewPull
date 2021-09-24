@@ -1,11 +1,13 @@
+import { AppComponent } from './../app.component';
 import { HttpClient } from '@angular/common/http';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-plans',
   templateUrl: './plans.component.html',
-  styleUrls: ['./plans.component.css']
+  styleUrls: ['./plans.component.css'],
+ 
 })
 export class PlansComponent implements OnInit {
   panelOpenState: boolean;
@@ -15,6 +17,10 @@ export class PlansComponent implements OnInit {
   dayNum: number;
   vacDays: number;
   dayOfMonth: number;
+  setStart: any;
+  currentItem:any;
+  prop1: any;
+  @Output() editTAee= new EventEmitter()
   
   constructor(private http: HttpClient) { 
     
@@ -24,6 +30,8 @@ export class PlansComponent implements OnInit {
     this .dayOfMonth = new Date().getDate();
     this. dayNum = 1;
     this. vacDays = 1;
+    this .currentItem = "test"
+
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
   //    console.log(" res is %o", res)
@@ -40,6 +48,11 @@ export class PlansComponent implements OnInit {
     })
     this. setCalDates();
   }
+  editTA(vac){
+    console.log("vac is %o", vac)
+    this. editTAee.emit(vac);
+  }
+
   getDateClass(d: Date){
     let today = new Date()
     let dDate = d.getDate();

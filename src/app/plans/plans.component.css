@@ -4,6 +4,7 @@ table.cal {
 td.green {
 	background-color:#75ad75;
 	font-size:smaller;
+	cursor:pointer;	
 }
 td.unApproved {
 	background-color:white;
