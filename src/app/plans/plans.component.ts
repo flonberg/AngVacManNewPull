@@ -14,12 +14,14 @@ export class PlansComponent implements OnInit {
   calDates: Date[];
   dayNum: number;
   vacDays: number;
+  dayOfMonth: number;
   
   constructor(private http: HttpClient) { 
     
   }
 
   ngOnInit(): void {
+    this .dayOfMonth = new Date().getDate();
     this. dayNum = 1;
     this. vacDays = 1;
     this .vacData = Array();
@@ -33,11 +35,25 @@ export class PlansComponent implements OnInit {
             if (  rusers[vr].rank  =='0')
               this. vacData[rusers[vr]['LastName']] = res[vr]
           }
-   
         }
       })
     })
     this. setCalDates();
+  }
+  getDateClass(d: Date){
+    let today = new Date()
+    let dDate = d.getDate();
+    let todayDate = today.getDate();
+    if (d.getDate() === today.getDate()  && 
+       d.getMonth() === today.getMonth()  &&
+       d.getFullYear() === today.getFullYear()) 
+      return 'todayCell'
+    if (d.getDay() == 6  || d.getDay() == 0)
+        return 'weekend'
+  }
+  getClass(){
+    if (this. dayNum == this .dayOfMonth)
+    return 'todayCell'
   }
 
   showIp(ip: number){
@@ -54,11 +70,15 @@ export class PlansComponent implements OnInit {
   }
   incDay(n: number){
     this. dayNum = this. dayNum + n;
+    if (this. dayNum == this .dayOfMonth -1)
+      return 'todayCell'
     return this. dayNum +1;
   }
   incDay1(n: number, m: number){
     this. dayNum = this. dayNum + n;
-    return this. dayNum + m + 1;
+    if ( this. dayNum + m + 1 == this. dayOfMonth)
+      return "todayCell"
+   // return this. dayNum + m + 1;
   }
   incDay2(n: number, m: number){
     this. dayNum = this. dayNum + n;

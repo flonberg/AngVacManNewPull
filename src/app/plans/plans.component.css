@@ -2,7 +2,7 @@ table.cal {
 	background-color:#FFE0C2;
 }
 td.green {
-	background-color:#5CE65C;
+	background-color:#75ad75;
 	font-size:smaller;
 }
 td.unApproved {
@@ -10,8 +10,11 @@ td.unApproved {
 	font-size:smaller;
 }
 td.red {
-	background-color:red;
+	background-color:rgb(224, 110, 110);
 	font-size:smaller;
+}
+td.weekend {
+	background-color: rgb(233, 114, 114);
 }
 td.todayCell {
 	background-color:yellow;
