@@ -1,21 +1,24 @@
-<p>plans works!</p>
+
 <table id="myTable" border="1" class="cal" *ngIf = "vacData" 
   style="border-collapse: collapse; 
-background-color:yellow" 
+background-color:rgb(239, 214, 208)" 
 cellpadding="2">
-<tr></tr>
+<tr>
+  <td colspan='30'> September </td>
+  <td colspan='30'> October </td>
+</tr>
 <tr>
   <td *ngFor = "let d of calDates">
     {{ d.getDate()}}
   </td>
 </tr>
-<tr *ngFor = "let item of vacData | keyvalue">
-  <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let ip= index'> </td>
-  <td [attr.colspan] = 'item.value[0].vacLength'>{{ item.key}}</td>
+<tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
+  <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let ip= index'>{{ incDay(1) }}  </td>
+  <td [attr.colspan] = 'item.value[0].vacLength'>{{ item.key}}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
-   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;' ></td>
-'
+   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index' > {{ incDay1(1,item.value[0].vacLength) }} </td>
+
    <td [attr.colspan] = 'item.value[1].vacLength'>  {{ item.key}}  </td>
   </ng-container> 
   <ng-container  *ngIf = '!item.value[1]'  > 
@@ -36,7 +39,7 @@ cellpadding="2">
    </ng-container>
    <ng-container *ngIf = 'item.value[3]'> 
     <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3]));'    > 
-      {{ daysBetween(item.value[2], item.value[3]) }}      </td>
+         </td>
     <td [attr.colspan] = 'item.value[3].vacLength'>{{ item.key}}</td>
    </ng-container> 
 </tr>

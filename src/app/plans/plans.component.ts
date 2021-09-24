@@ -12,27 +12,57 @@ export class PlansComponent implements OnInit {
   vacData: any;
   users: any;
   calDates: Date[];
+  dayNum: number;
+  vacDays: number;
+  
   constructor(private http: HttpClient) { 
     
   }
 
   ngOnInit(): void {
+    this. dayNum = 1;
+    this. vacDays = 0;
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
-      console.log("res is %o", res)
+  //    console.log(" res is %o", res)
       this.getUsers().subscribe(rusers=>{
+     //   console.log("users is %o", rusers )
+        this .users = rusers;
         for (const vr in res){
           if (rusers[vr]){
-            this. vacData[rusers[vr]['LastName']] = res[vr]
+            if (  rusers[vr].rank  =='0')
+              this. vacData[rusers[vr]['LastName']] = res[vr]
           }
-          
+   
         }
-
       })
-
     })
     this. setCalDates();
   }
+
+  showIp(ip: number){
+    return ip;
+  }
+  getDayNum(){
+    return this. dayNum;
+  }
+  zeroDayNum(){
+    this. dayNum = -1;
+  }
+  addVacDays(n: number){
+    this. vacDays = this. vacDays + n;
+  }
+  incDay(n: number){
+    console.log("n is %o  this  %o", n, this. dayNum)
+    this. dayNum = this. dayNum + n;
+    return this. dayNum ;
+  }
+  incDay1(n: number, m: number){
+    console.log("n is %o  this  %o", n, this. dayNum)
+    this. dayNum = this. dayNum + n;
+    return this. dayNum + m;
+  }
+
   getVacs(){
     var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVacs.php';
     return this .http.get(url)
@@ -49,7 +79,6 @@ export class PlansComponent implements OnInit {
     this.getUsers().subscribe(res =>{
       this.setUsers(res);
     })
-
       for(const vr in res){
         var uKey = res[vr][0]['userid']
         if (this .users)
@@ -57,7 +86,7 @@ export class PlansComponent implements OnInit {
      //   console.log("lastName is %o", this. users[res[vr][0]['userid'] ])
       }
       this.vacData = res;
-     // console.log(this.vacData)
+      console.log(this.vacData)
  }
  counter(n){
       var ar = Array();
