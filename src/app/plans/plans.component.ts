@@ -21,7 +21,7 @@ export class PlansComponent implements OnInit {
 
   ngOnInit(): void {
     this. dayNum = 1;
-    this. vacDays = 0;
+    this. vacDays = 1;
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
   //    console.log(" res is %o", res)
@@ -53,14 +53,16 @@ export class PlansComponent implements OnInit {
     this. vacDays = this. vacDays + n;
   }
   incDay(n: number){
-    console.log("n is %o  this  %o", n, this. dayNum)
     this. dayNum = this. dayNum + n;
-    return this. dayNum ;
+    return this. dayNum +1;
   }
   incDay1(n: number, m: number){
-    console.log("n is %o  this  %o", n, this. dayNum)
     this. dayNum = this. dayNum + n;
-    return this. dayNum + m;
+    return this. dayNum + m + 1;
+  }
+  incDay2(n: number, m: number){
+    this. dayNum = this. dayNum + n;
+    return this. dayNum + m + 1;
   }
 
   getVacs(){
