@@ -17,25 +17,25 @@ cellpadding="2">
   <td [attr.colspan] = 'item.value[0].vacLength'>{{ item.key}}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
-   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index' > {{ incDay1(1,item.value[0].vacLength) }} rr</td>
+   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index' > {{ incDay1(1,item.value[0].vacLength) }} </td>
    <td [attr.colspan] = 'item.value[1].vacLength'>  {{ item.key}}  </td>
   </ng-container> 
 
   <ng-container  *ngIf = '!item.value[1]'  > 
-    <td *ngFor = "let lp0 of counter( daysTillEnd(item.value[0]))">  {{ incDay1(1,item.value[0].vacLength) }} ss </td>
+    <td *ngFor = "let lp0 of counter( daysTillEnd(item.value[0]))">  {{ incDay1(1,item.value[0].vacLength) }} </td>
   </ng-container>
   
 
   <ng-container *ngIf = 'item.value[2]'> 
-    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2]))' > {{ incDay2(1,item.value[1].vacLength + item.value[0].vacLength) }} tt  </td>
+    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2]))' > {{ incDay2(1,item.value[1].vacLength + item.value[0].vacLength) }}  </td>
     <td [attr.colspan] = 'item.value[2].vacLength'>{{ item.key}}</td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2]'>
-   <td  *ngFor='let l4 of counter ( daysTillEnd(item.value[2]))'> </td>
+   <td  *ngFor='let l4 of counter ( daysTillEnd(item.value[2]))'> {{ incDay1(1,item.value[0].vacLength) }} qq </td>
    </ng-container>
    
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
-     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])); '>  </td>
+     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])); '> {{ incDay1(1,item.value[0].vacLength + item.value[1].vacLength  ) }}   </td>
    </ng-container>
    <ng-container *ngIf = 'item.value[3]'> 
     <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3]));'    > 
