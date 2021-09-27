@@ -9,7 +9,9 @@ export class EditTAComponent implements OnInit {
   showEdit: boolean;
   startDate: String;
 
-  constructor() { }
+  constructor() { 
+    this .startDate ='09-01-2021'
+  }
 
   ngOnInit(): void {
     this. showEdit =false;

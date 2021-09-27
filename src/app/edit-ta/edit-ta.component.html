@@ -1,9 +1,15 @@
 <p>edit-ta works!</p>
 <table class='centerSmall' *ngIf = showEdit>
     <caption> Edit Time Away </caption>
+  <tr>
+      <th> Start Date</th>
+      <th> Start Date</th>
+      <th> Start Date</th>
+      <th> Start Date</th>
+  </tr>  
   <td>
   <mat-form-field appearance="fill">
-    <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" placeholder="{{ startDate}}">
+    <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" placeholder=" {{ startDate }}">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
@@ -28,3 +34,4 @@
     <button mat-raised-button>Submit Time Away</button>
   </td>
   </table>
+  
