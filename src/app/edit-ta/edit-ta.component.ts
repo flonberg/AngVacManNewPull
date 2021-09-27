@@ -7,11 +7,13 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class EditTAComponent implements OnInit {
   showEdit: boolean;
+  startDate: String;
 
   constructor() { }
 
   ngOnInit(): void {
     this. showEdit =false;
+    this .startDate ='09-01-2021'
   }
  prop1: any
   @Input()
