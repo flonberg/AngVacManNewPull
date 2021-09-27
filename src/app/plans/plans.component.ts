@@ -38,6 +38,7 @@ export class PlansComponent implements OnInit {
       this.getUsers().subscribe(rusers=>{
      //   console.log("users is %o", rusers )
         this .users = rusers;
+
         for (const vr in res){
           if (rusers[vr]){
             if (  rusers[vr].rank  =='0')

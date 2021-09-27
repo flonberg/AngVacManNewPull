@@ -1,19 +1,33 @@
-<p>edit-ta works!</p>
+
 <table class='centerSmall' *ngIf = showEdit>
-    <caption> Edit Time Away </caption>
-  <tr>
+    <caption> {{ theCaption }}</caption>
+  <tr *ngIf = !readOnly>
       <th> Start Date</th>
-      <th> Start Date</th>
+      <th> End Date</th>
       <th> Start Date</th>
       <th> Start Date</th>
   </tr>  
   <td>
-  <mat-form-field appearance="fill">
-    <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" placeholder=" {{ startDate }}">
+  <mat-form-field appearance="fill" *ngIf = !readOnly >
+    <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" [readonly] = true placeholder=" {{ startDate }}">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
   </td>
+  <td>
+  <mat-form-field *ngIf = readOnly class="example-full-width" appearance="fill">
+    <mat-label>Start Date</mat-label>
+    <input matInput placeholder="Ex. Pizza" value="Sushi">
+  </mat-form-field>
+  </td>
+  
+  <td>
+    <mat-form-field appearance="fill">
+      <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" placeholder=" {{ endDate }}">
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    </td>
   <td>
     <mat-form-field appearance="fill">
       <mat-label>Choose a Reason</mat-label>

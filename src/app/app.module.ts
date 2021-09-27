@@ -20,6 +20,7 @@ import { DatePipe } from '@angular/common';
 import { PlansComponent } from './plans/plans.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { EditTAComponent } from './edit-ta/edit-ta.component';
+import { RouterModule } from '@angular/router';
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,8 +41,12 @@ import { EditTAComponent } from './edit-ta/edit-ta.component';
     MatInputModule,
 
 
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    RouterModule.forRoot([
+      { path: '**', component: PlansComponent}
+    ])
   ],
+
   providers: [DatePipe],
   bootstrap: [AppComponent]
 })
