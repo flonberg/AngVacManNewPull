@@ -35,8 +35,10 @@ export class EditTAComponent implements OnInit {
   set setProp(vac){
     this. showEdit = true;
     if (vac){
-    console.log("9999  vacUserid %o",  vac.userid)
-    console.log("3 33333 %o", this .eUsers[vac.userid].UserID)
+      if ( this .eUsers[vac.userid].UserID ===this.userid)            // the user is the goAwayer
+          this.showEdit = true;
+      else
+          this.showEdit = false;    
     }
   
     if (this.userid && this. userid == vac.userid){
@@ -46,19 +48,21 @@ export class EditTAComponent implements OnInit {
     }
     else {
       this. theCaption = ""; 
-      this. readOnly = true;
+      this. readOnly = false;
     }
     
     if (vac){
       this .startDate = this. dateReformat(vac.startDate);
       this .endDate = this.dateReformat(vac.endDate);
-      console.log("vvvv %o", vac)
+      console.log("vvvv %o", vac.userid)
     }
   }
   eUsers: any;
     @Input()
     set editUsers(us){
       this .eUsers = us;
+     // console.log("62 usere %o", this .eUsers)
+     console.log("this userid is %o", this .userid)
     }
 
   dateReformat(dt){
