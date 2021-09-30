@@ -15,22 +15,23 @@
   </td>
   <td>
     <mat-form-field appearance="fill">
-      <mat-label>Choose a Reason</mat-label>
-      <mat-select >
-        <mat-option value="option1">Personal Vacation</mat-option>
-        <mat-option value="option2" >Meeting </mat-option>
-        <mat-option value="option3">Other </mat-option>
+      <mat-label> Reason</mat-label>
+      <mat-select (selectionChange) = "reasonSelect($event)">
+        <mat-option value="1">Personal Vacation</mat-option>
+        <mat-option value="2" >Meeting </mat-option>
+        <mat-option value="3">Other </mat-option>
       </mat-select>
     </mat-form-field>
   </td>
   <td>
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Note</mat-label>
-        <input matInput placeholder="Ex. Pizza" >
+        <input matInput (change) = "noteChange($event)">
       </mat-form-field>
   </td>
   <td>
-    <button mat-raised-button>Submit Time Away</button>
+    <button mat-raised-button (click) = "submitTA()">Submit Time Away</button>
   </td>
   </table>
+  <div *ngIf = "showError"> Please enter all fields </div>
 </div>
