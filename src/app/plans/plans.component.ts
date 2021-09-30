@@ -34,9 +34,8 @@ export class PlansComponent implements OnInit {
 
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
-  //    console.log(" res is %o", res)
+      console.log(" res is %o", res)
       this.getUsers().subscribe(rusers=>{
-     //   console.log("users is %o", rusers )
         this .users = rusers;
 
         for (const vr in res){

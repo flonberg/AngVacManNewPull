@@ -6,7 +6,8 @@ interface tAparams {
   startDate : string,
   endDate: string,
   reason: number,
-  note: string
+  note: string,
+  userid: string;
 
 }
 @Component({
@@ -26,7 +27,6 @@ export class EntertaComponent implements OnInit {
   
 
   constructor( public datePipe: DatePipe, private activatedRoute: ActivatedRoute, private http: HttpClient ) { 
-
   }
   ngOnInit(): void {
     this. activatedRoute.queryParams.subscribe(params =>{
@@ -40,7 +40,7 @@ export class EntertaComponent implements OnInit {
     if (  dateRangeEnd.value  ){
      var eDate = new Date(dateRangeEnd.value)
         this .tAparams = {startDate: this.datePipe.transform(tDate, 'yyyy-MM-dd'), 
-           endDate : this.datePipe.transform(eDate, 'yyyy-MM-dd'), reason:0, note:""}
+           endDate : this.datePipe.transform(eDate, 'yyyy-MM-dd'), reason:0, note:"", userid: this .userid}
       }
     this .checkTAparams();  
   console.log("change %o", this .tAparams)
@@ -59,10 +59,10 @@ export class EntertaComponent implements OnInit {
  submitTA(){
   this .checkTAparams();
   var jData = JSON.stringify(this .tAparams)
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVacs.php';
-  return this .http.post(url, jData).subscribe(ret=>
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
+  this .http.post(url, jData).subscribe(ret=>
     this .postRes =  ret)
-  console.log(jData)
+    console.log(this .postRes)
  }
  checkTAparams(){
   if (!this .tAparams){
