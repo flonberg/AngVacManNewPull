@@ -21,11 +21,13 @@ import { PlansComponent } from './plans/plans.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { EditTAComponent } from './edit-ta/edit-ta.component';
 import { RouterModule } from '@angular/router';
+import { EntertaComponent } from './enterta/enterta.component';
 @NgModule({
   declarations: [
     AppComponent,
     PlansComponent,
-    EditTAComponent  
+    EditTAComponent,
+    EntertaComponent  
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,7 @@ import { RouterModule } from '@angular/router';
 
     BrowserAnimationsModule,
     RouterModule.forRoot([
-      { path: '**', component: PlansComponent}
+      { path: '**', component: AppComponent}
     ])
   ],
 

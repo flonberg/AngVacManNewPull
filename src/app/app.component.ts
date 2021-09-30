@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { PlansComponent } from './plans/plans.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -28,14 +29,17 @@ export class AppComponent {
   MDName: string;
   date:any;
   setStart: any;
+  userid: string;
 
   
-  constructor(private http: HttpClient, public datePipe: DatePipe) {
+  constructor(private http: HttpClient, public datePipe: DatePipe, private activatedRoute: ActivatedRoute) {
     console.log(" const ");
     this.getMDs().subscribe(res =>{
       this.setData(res);
     })
-
+    this. activatedRoute.queryParams.subscribe(params =>{
+      this .userid = params['userid']
+    })
    }
 
    setDate(start, end){
@@ -54,18 +58,7 @@ export class AppComponent {
    this.data = res;
    console.log(this.data)
  }
- getPlanData(n){
-   this .MDName = n;
-   this .MDKeySelected = this .data[n];
-   console.log("n is %o  key is %o", n, this.data[n]);
-   if (this .dateRangeStart)
-    var url = 'https://whiteboard.partners.org/esb/FLwbe/proxy.php?MDKey=' + this.data[n] + '&startDate=' + this .dateRangeStart +
-                                                                                          '&endDate=' + this .dateRangeEnd;
-        console.log('url 57 is %o', url)
-   this .http.get(url).subscribe(res =>{
-     this. setPlanData(res)
-   })
- }
+
 
  dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
    var tDate = new Date(dateRangeStart.value)
@@ -74,7 +67,6 @@ export class AppComponent {
     var eDate = new Date(dateRangeEnd.value)
    this .dateRangeEnd = this.datePipe.transform(eDate, 'yyyy-MM-dd')
  }
-
 }
  setPlanData(res){
   let areas = new Array<Array<any>>();

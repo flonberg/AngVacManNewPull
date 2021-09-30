@@ -1,0 +1,36 @@
+
+<div class='raised'>
+<table class='centerSmall'>
+    <caption> Enter a Time Away </caption>
+  <td>
+  <mat-form-field appearance="fill">
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [rangePicker]="picker">
+      <input matStartDate plaPeceholder="Start date" #dateRangeStart [value] = "setStart">  
+      <input matEndDate placeholder="End date" #dateRangeEnd  (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)">
+    </mat-date-range-input>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
+  </td>
+  <td>
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a Reason</mat-label>
+      <mat-select >
+        <mat-option value="option1">Personal Vacation</mat-option>
+        <mat-option value="option2" >Meeting </mat-option>
+        <mat-option value="option3">Other </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </td>
+  <td>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Note</mat-label>
+        <input matInput placeholder="Ex. Pizza" >
+      </mat-form-field>
+  </td>
+  <td>
+    <button mat-raised-button>Submit Time Away</button>
+  </td>
+  </table>
+</div>

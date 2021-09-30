@@ -1,6 +1,6 @@
-
-<table class='centerSmall' *ngIf = showEdit>
-    <caption> {{ theCaption }}</caption>
+<div id='spacer'>
+<table class='centerSmall' *ngIf = showEdit >
+    <caption> {{ theCaption }} Edit Time Away </caption>
   <tr *ngIf = !readOnly>
       <th> Start Date</th>
       <th> End Date</th>
@@ -8,14 +8,14 @@
       <th> Start Date</th>
   </tr>  
   <td>
-  <mat-form-field appearance="fill" *ngIf = !readOnly >
-    <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" [readonly] = true placeholder=" {{ startDate }}">
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-form-field appearance="fill" *ngIf = showEdit>
+    <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (ngModelChange) = "changeDate" placeholder=" {{ startDate }}">
+    <mat-datepicker-toggle matSuffix [for]="picker"    ></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
   </td>
-  <td>
-  <mat-form-field *ngIf = readOnly class="example-full-width" appearance="fill">
+  <td *ngIf = readOnly   >
+  <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Start Date</mat-label>
     <input matInput placeholder="Ex. Pizza" value="Sushi">
   </mat-form-field>
@@ -48,4 +48,5 @@
     <button mat-raised-button>Submit Time Away</button>
   </td>
   </table>
+</div>
   
