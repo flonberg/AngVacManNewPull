@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 interface tAparams {
   startDate : string,
@@ -24,7 +24,10 @@ export class EntertaComponent implements OnInit {
   tAparams: tAparams;
   showError: boolean;
   postRes: object;
+  valueEmittedFromChildComponent:any;
+  buttonClicked: any;
   
+
 
   constructor( public datePipe: DatePipe, private activatedRoute: ActivatedRoute, private http: HttpClient ) { 
   }
@@ -34,7 +37,15 @@ export class EntertaComponent implements OnInit {
       console.log("enterta userid %o", this .userid)
     })
     this .showError = false;
+    this .buttonClicked = "";
   }
+
+  @Output() onDatePicked = new EventEmitter<any>();
+
+  public pickDate(date: any): void {
+    this.onDatePicked.emit(date);
+}
+
   dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
     var tDate = new Date(dateRangeStart.value)
     if (  dateRangeEnd.value  ){
@@ -63,6 +74,7 @@ export class EntertaComponent implements OnInit {
   this .http.post(url, jData).subscribe(ret=>
     this .postRes =  ret)
     console.log(this .postRes)
+
  }
  checkTAparams(){
   if (!this .tAparams){
@@ -75,4 +87,5 @@ export class EntertaComponent implements OnInit {
   }
   this .showError = false;
  }
+
 }

@@ -4,7 +4,7 @@
 background-color:rgb(239, 214, 208)" 
 cellpadding="2">
 <tr>
-  <td colspan='30'> October </td>
+  <td colspan='31'> October </td>
   <td colspan='30'> November </td>
 </tr>
 <tr>
@@ -14,27 +14,27 @@ cellpadding="2">
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
   <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let ip= index' [className] = "incDay(1)" > </td>
-  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "prop1=item.value[0]">{{ item.key}}  </td>
+  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "prop1=item.value[0]">{{ item.value[0]['LastName'] }}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
-   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index'  [className] = "incDay1(1,item.value[0].vacLength) " >  </td>
-   <td [attr.colspan] = 'item.value[1].vacLength' (click) = "prop1=item.value[1]" class = "green">  {{ item.key}}  </td>
+   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])+1) ;let ip2= index'  [className] = "incDay1(1,item.value[0].vacLength) " >  </td>
+   <td [attr.colspan] = 'item.value[1].vacLength' (click) = "prop1=item.value[1]" class = "green">  {{ item.value[1]['LastName'] }} </td>
   </ng-container> 
 
   <ng-container  *ngIf = '!item.value[1]'  > 
-    <td *ngFor = "let lp0 of counter( daysTillEnd(item.value[0]))" [className] =  "incDay1(1,item.value[0].vacLength)">   </td>
+    <td *ngFor = "let lp0 of counter( daysTillEnd(item.value[0])+1)" [className] =  "incDay1(1,item.value[0].vacLength)">   </td>
   </ng-container>
   
 
   <ng-container *ngIf = 'item.value[2]'> 
-    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2]))' [className] = "incDay1(1,item.value[1].vacLength + item.value[0].vacLength)   "     >  </td>
-    <td [attr.colspan] = 'item.value[2].vacLength'  (click) = "prop1=item.value[2]"   class = "green" >{{ item.key}}</td>
+    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2])+1)' [className] = "incDay1(1,item.value[1].vacLength + item.value[0].vacLength)   "     >  </td>
+    <td [attr.colspan] = 'item.value[2].vacLength'  (click) = "prop1=item.value[2]"   class = "green" >{{ item.value[1]['LastName'] }} </td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2]'>
    <td  *ngFor='let l4 of counter ( daysTillEnd(item.value[2]))'> {{   incDay1(1,  item.value[2].vacLength +  item.value[1].vacLength +   item.value[0].vacLength) }}  </td>
    </ng-container>
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
-     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])); ' [className] = "incDay1(1,item.value[0].vacLength + item.value[1].vacLength)" >  </td>
+     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])+1); ' [className] = "incDay1(1,item.value[0].vacLength + item.value[1].vacLength)" >  </td>
    </ng-container>
 
    <ng-container *ngIf = 'item.value[3]'> 
@@ -42,9 +42,12 @@ cellpadding="2">
     <td [attr.colspan] = 'item.value[3].vacLength'>{{ item.key}}</td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[4] && item.value[3]'>
-    <td *ngFor='let l3 of counter( daysTillEnd(item.value[3])); '> {{ incDay1(1,item.value[0].vacLength + item.value[1].vacLength + item.value[2].vacLength  + item.value[3].vacLength  ) }}  </td>
+    <td *ngFor='let l3 of counter( daysTillEnd(item.value[3])+1); '> {{ incDay1(1,item.value[0].vacLength + item.value[1].vacLength + item.value[2].vacLength  + item.value[3].vacLength  ) }}  </td>
   </ng-container>
 </tr>
 
 </table>
-<app-edit-ta [setProp] = 'prop1' [editUsers]= 'users'></app-edit-ta>
+<p> {{ dataFromChild }} </p>
+<app-edit-ta [setProp] = 'prop1' [editUsers]= 'users'   
+(sendDataToParent)="eventFromChild($event)"> ></app-edit-ta>
+<app-enterta (onDatePicked) = "doSomething($event)"  ></app-enterta>

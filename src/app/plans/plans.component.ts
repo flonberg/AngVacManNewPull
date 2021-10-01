@@ -35,24 +35,24 @@ export class PlansComponent implements OnInit {
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
       console.log(" res is %o", res)
-    /*
       this.getUsers().subscribe(rusers=>{
         this .users = rusers;
-
-        for (const vr in res){
-          if (rusers[vr]){
-            if (  rusers[vr].rank  =='0')
-              this. vacData[rusers[vr]['LastName']] = res[vr]
-          }
-        }
-        
+    //    console.log("41 this.userw %o", this .users)
       })
-*/
+
      this .vacData = res;
       console.log("vacData is %o", this. vacData)
     })
     this. setCalDates();
   }
+ public doSomething(ev){
+    console.log("49 in PlansComponent.ts ev %o", ev)
+ }
+ dataFromChild:any
+ eventFromChild(data) {
+   this.dataFromChild = data;
+   console.log("53")
+ }
   editTA(vac){
     console.log("vac is %o", vac)
     this. editTAee.emit(vac);
@@ -114,11 +114,11 @@ export class PlansComponent implements OnInit {
   }
   setUsers(res){
     this. users = res;
-
   }
   setData(res ) {
     this.getUsers().subscribe(res =>{
       this.setUsers(res);
+      console.log("121 usere is %o", this .setUsers)
     })
       for(const vr in res){
         var uKey = res[vr][0]['userid']

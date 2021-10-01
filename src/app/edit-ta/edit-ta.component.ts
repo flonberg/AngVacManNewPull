@@ -31,9 +31,10 @@ export class EditTAComponent implements OnInit {
  prop1: any
   @Input()
   set setProp(vac){
+    console.log("34")
     this. showEdit = true;
     if (vac){
-      if ( this .eUsers[vac.userid].UserID ===this.userid)            // the user is the goAwayer
+      if ( vac.userid ===this.userid)            // the user is the goAwayer
           this.showEdit = true;
       else
           this.showEdit = false;    
@@ -73,5 +74,6 @@ export class EditTAComponent implements OnInit {
 
     return todayStr;
   }
+
 
 }
