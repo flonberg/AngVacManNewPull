@@ -47,6 +47,9 @@ export class PlansComponent implements OnInit {
   }
  public doSomething(ev){
     console.log("49 in PlansComponent.ts ev %o", ev)
+    this .getVacs().subscribe(res =>{
+      this. vacData = res;
+    })
  }
  dataFromChild:any
  eventFromChild(data) {

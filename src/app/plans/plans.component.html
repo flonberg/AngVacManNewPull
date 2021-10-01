@@ -47,7 +47,7 @@ cellpadding="2">
 </tr>
 
 </table>
-<p> {{ dataFromChild }} </p>
+
 <app-edit-ta [setProp] = 'prop1' [editUsers]= 'users'   
 (sendDataToParent)="eventFromChild($event)"> ></app-edit-ta>
 <app-enterta (onDatePicked) = "doSomething($event)"  ></app-enterta>

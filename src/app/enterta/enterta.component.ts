@@ -43,6 +43,7 @@ export class EntertaComponent implements OnInit {
   @Output() onDatePicked = new EventEmitter<any>();
 
   public pickDate(date: any): void {
+    this. submitTA();
     this.onDatePicked.emit(date);
 }
 
