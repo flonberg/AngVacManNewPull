@@ -35,6 +35,7 @@ export class PlansComponent implements OnInit {
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
       console.log(" res is %o", res)
+    /*
       this.getUsers().subscribe(rusers=>{
         this .users = rusers;
 
@@ -44,7 +45,11 @@ export class PlansComponent implements OnInit {
               this. vacData[rusers[vr]['LastName']] = res[vr]
           }
         }
+        
       })
+*/
+     this .vacData = res;
+      console.log("vacData is %o", this. vacData)
     })
     this. setCalDates();
   }
@@ -100,6 +105,7 @@ export class PlansComponent implements OnInit {
 
   getVacs(){
     var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVacs.php';
+    var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php';
     return this .http.get(url)
   }
   getUsers(){
