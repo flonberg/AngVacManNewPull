@@ -1,5 +1,5 @@
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ActivatedRoute } from '@angular/router';
 
@@ -26,8 +26,13 @@ export class EditTAComponent implements OnInit {
     this. showEdit =false;
     this .startDate =''
     this. theCaption = '';
-  
   }
+
+
+ @Output() newItemEvent = new EventEmitter<any>();
+  public addNewItem(value: string): void {
+   this.newItemEvent.emit(value);
+ }
  prop1: any
   @Input()
   set setProp(vac){

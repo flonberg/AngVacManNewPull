@@ -22,9 +22,7 @@ export class PlansComponent implements OnInit {
   prop1: any;
   @Output() editTAee= new EventEmitter()
   
-  constructor(private http: HttpClient) { 
-    
-  }
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this .dayOfMonth = new Date().getDate();
@@ -51,9 +49,11 @@ export class PlansComponent implements OnInit {
       this. vacData = res;
     })
  }
+ public newItemEvent(ev){
+   console.log("53")
+ }
  dataFromChild:any
- eventFromChild(data) {
-   this.dataFromChild = data;
+ public eventFromChild(data) {
    console.log("53")
  }
   editTA(vac){

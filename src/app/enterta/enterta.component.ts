@@ -40,8 +40,7 @@ export class EntertaComponent implements OnInit {
     this .buttonClicked = "";
   }
 
-  @Output() onDatePicked = new EventEmitter<any>();
-
+  @Output() onDatePicked = new EventEmitter<any>();   //
   public pickDate(date: any): void {
     this. submitTA();
     this.onDatePicked.emit(date);
@@ -75,7 +74,6 @@ export class EntertaComponent implements OnInit {
   this .http.post(url, jData).subscribe(ret=>
     this .postRes =  ret)
     console.log(this .postRes)
-
  }
  checkTAparams(){
   if (!this .tAparams){

@@ -39,7 +39,7 @@ cellpadding="2">
 
    <ng-container *ngIf = 'item.value[3]'> 
     <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3]));'    >  {{   incDay1(1, item.value[2].vacLength +  item.value[1].vacLength +   item.value[0].vacLength) }}      </td>
-    <td [attr.colspan] = 'item.value[3].vacLength'>{{ item.key}}</td>
+    <td [attr.colspan] = 'item.value[3].vacLength'  class = "green"  >{{ item.value[2]['LastName'] }}</td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[4] && item.value[3]'>
     <td *ngFor='let l3 of counter( daysTillEnd(item.value[3])+1); '> {{ incDay1(1,item.value[0].vacLength + item.value[1].vacLength + item.value[2].vacLength  + item.value[3].vacLength  ) }}  </td>
@@ -49,5 +49,5 @@ cellpadding="2">
 </table>
 
 <app-edit-ta [setProp] = 'prop1' [editUsers]= 'users'   
-(sendDataToParent)="eventFromChild($event)"> ></app-edit-ta>
+(addNewItem)="doSomething($event)"></app-edit-ta>
 <app-enterta (onDatePicked) = "doSomething($event)"  ></app-enterta>
