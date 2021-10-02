@@ -12,6 +12,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 export class PlansComponent implements OnInit {
   panelOpenState: boolean;
   vacData: any;
+  vacEdit: any;
   users: any;
   calDates: Date[];
   dayNum: number;
@@ -20,6 +21,7 @@ export class PlansComponent implements OnInit {
   setStart: any;
   currentItem:any;
   prop1: any;
+  showEdit: boolean;
   @Output() editTAee= new EventEmitter()
   
   constructor(private http: HttpClient) { }
@@ -29,6 +31,7 @@ export class PlansComponent implements OnInit {
     this. dayNum = 1;
     this. vacDays = 1;
     this .currentItem = "test"
+    this .showEdit = false;
 
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
@@ -43,8 +46,14 @@ export class PlansComponent implements OnInit {
     })
     this. setCalDates();
   }
+ private showEditFunc(vacEdit){
+   console.log("49 %o", vacEdit)
+   this .vacEdit = vacEdit;
+   this. showEdit = true;
+ } 
  public doSomething(ev){
     console.log("49 in PlansComponent.ts ev %o", ev)
+    this .showEdit = false;
     this .getVacs().subscribe(res =>{
       this. vacData = res;
     })

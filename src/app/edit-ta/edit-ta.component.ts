@@ -31,6 +31,7 @@ export class EditTAComponent implements OnInit {
 
  @Output() newItemEvent = new EventEmitter<any>();
   public addNewItem(value: string): void {
+    console.log("34")
    this.newItemEvent.emit(value);
  }
  prop1: any

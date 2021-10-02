@@ -14,7 +14,7 @@ cellpadding="2">
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
   <td *ngFor='let loop3 of counter(item.value[0].daysTillStartDate) ;let ip= index' [className] = "incDay(1)" > </td>
-  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "prop1=item.value[0]">{{ item.value[0]['LastName'] }}  </td>
+  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "showEditFunc(item.value[0])">{{ item.value[0]['LastName'] }}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
    <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])+1) ;let ip2= index'  [className] = "incDay1(1,item.value[0].vacLength) " >  </td>
@@ -47,7 +47,59 @@ cellpadding="2">
 </tr>
 
 </table>
+<div id='spacer'>
+  <table class='centerSmall' *ngIf = showEdit >
+      <caption> {{ theCaption }} Edit Time Away </caption>
+    <tr *ngIf = !readOnly>
+        <th> Start Date</th>
+        <th> End Date</th>
+        <th> Start Date</th>
+        <th> Start Date</th>
+    </tr>  
+    <td>
 
-<app-edit-ta [setProp] = 'prop1' [editUsers]= 'users'   
-(addNewItem)="doSomething($event)"></app-edit-ta>
+    <mat-form-field appearance="fill" *ngIf = showEdit>
+      <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (ngModelChange) = "changeDate" placeholder=" {{ vacEdit.startDate }}">
+      <mat-datepicker-toggle matSuffix [for]="picker"    ></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    </td>
+    <td *ngIf = readOnly   >
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Start Date</mat-label>
+      <input matInput placeholder="Ex. Pizza" value="Sushi">
+    </mat-form-field>
+    </td>
+    
+    <td>
+      <mat-form-field appearance="fill">
+        <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" placeholder=" {{ endDate }}">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+      </td>
+    <td>
+      <mat-form-field appearance="fill">
+        <mat-label>Choose a Reason</mat-label>
+        <mat-select >
+          <mat-option value="option1">Personal Vacation</mat-option>
+          <mat-option value="option2" >Meeting </mat-option>
+          <mat-option value="option3">Other </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </td>
+    <td>
+        <mat-form-field class="example-full-width" appearance="fill">
+          <mat-label>Note</mat-label>
+          <input matInput placeholder="Ex. Pizza" >
+        </mat-form-field>
+    </td>
+    <td>
+      <button mat-raised-button (click) = "doSomething($event)">Save Changes</button>
+    </td>
+    </table>
+  </div>
+    
+
+
 <app-enterta (onDatePicked) = "doSomething($event)"  ></app-enterta>
