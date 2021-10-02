@@ -59,21 +59,16 @@ cellpadding="2">
     <td>
 
     <mat-form-field appearance="fill" *ngIf = showEdit>
-      <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (ngModelChange) = "changeDate" placeholder=" {{ vacEdit.startDate }}">
+      <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (dateChange)="editDate('change', $event)" placeholder=" {{ vacEdit.startDate }}">
       <mat-datepicker-toggle matSuffix [for]="picker"    ></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
     </td>
-    <td *ngIf = readOnly   >
-    <mat-form-field class="example-full-width" appearance="fill">
-      <mat-label>Start Date</mat-label>
-      <input matInput placeholder="Ex. Pizza" value="Sushi">
-    </mat-form-field>
-    </td>
+
     
     <td>
       <mat-form-field appearance="fill">
-        <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" placeholder=" {{ endDate }}">
+        <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="editDate('change', $event)"   placeholder=" {{ vacEdit.endDate }}">
         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
         <mat-datepicker #picker2></mat-datepicker>
       </mat-form-field>

@@ -2,6 +2,7 @@ import { AppComponent } from './../app.component';
 import { HttpClient } from '@angular/common/http';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-plans',
@@ -46,6 +47,9 @@ export class PlansComponent implements OnInit {
     })
     this. setCalDates();
   }
+  editDate(type: string, event: MatDatepickerInputEvent<Date>) {
+    console.log(event.value)
+}
  private showEditFunc(vacEdit){
    console.log("49 %o", vacEdit)
    this .vacEdit = vacEdit;
