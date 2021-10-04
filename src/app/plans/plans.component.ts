@@ -4,7 +4,13 @@ import { DatePipe } from '@angular/common';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-
+interface tAparams {
+  startDate : string,
+  endDate: string,
+  reason: number,
+  note: string,
+  userid: string;
+}
 
 @Component({
   selector: 'app-plans',
@@ -26,6 +32,8 @@ export class PlansComponent implements OnInit {
   prop1: any;
   showEdit: boolean;
   editArray: [{}];
+  tst: any;
+    tAparams: tAparams;
   @Output() editTAee= new EventEmitter()
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
@@ -53,20 +61,36 @@ export class PlansComponent implements OnInit {
   editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     console.log("53 %o --%o", type, ev.value)
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
-    let label = type;
-    if (!this .editArray)
-      this .editArray = [{label: type, date: dateString}]
-    else {
-      let cData = {label: type, date: dateString}
-      this. editArray.push(cData);
+    if (type.indexOf("start") >= 0){
+      let el = {'startDate': dateString}
+      this .editArray.push(el)
     }
-    console.log(this .editArray)
-    
-    
+    if (type.indexOf("end") >= 0){
+      let el = {'endDate': dateString}
+      this .editArray.push(el)
+    }
+ 
+    console.log("64 %o ", this .editArray)
+}
+private saveEdits() {
+  console.log("66 %o", this .editArray)
+  var jData = JSON.stringify(this .editArray)
+  console.log("jData 5o", jData)
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';
+  this .http.post(url, jData).subscribe(res =>
+    this .tst = res)
+    console.log("72 %o", this .tst)
+}
+ 
+
+private editReasonIdx(ev){
+  console.log("66 %o", ev)
+  
 }
  private showEditFunc(vacEdit){
    console.log("49 %o", vacEdit)
    this .vacEdit = vacEdit;
+  
    this. showEdit = true;
  } 
  public doSomething(ev){
@@ -76,9 +100,7 @@ export class PlansComponent implements OnInit {
       this. vacData = res;
     })
  }
-private saveEdits(ev){
-  console.log("66 %o", ev)
-}
+
 
  public newItemEvent(ev){
    console.log("53")
