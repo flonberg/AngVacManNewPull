@@ -124,19 +124,19 @@ private editReasonIdx(ev){
     return 'todayCell'
   }
 
-  showIp(ip: number){
-    return ip;
-  }
+  //showIp(ip: number){
+  //  return ip;
+ // }
   //getDayNum(){
   //  return this. dayNum;
  // }
-  zeroDayNum(){
+  zeroDayNum(){                                         // reset the dayNum for each row of Cal
     this. dayNum = -1;
   }
-  addVacDays(n: number){
-    this. vacDays = this. vacDays + n;
-  }
-  incDay(n: number){
+  //addVacDays(n: number){
+  //  this. vacDays = this. vacDays + n;
+  //}
+  incDay(n: number){                                  // increment the dayNum of a Cal call. 
     this. dayNum = this. dayNum + n;
     if (this. dayNum == this .dayOfMonth -1)
       return 'todayCell'
@@ -148,10 +148,10 @@ private editReasonIdx(ev){
       return "todayCell"
    // return this. dayNum + m + 1;
   }
-  incDay2(n: number, m: number){
-    this. dayNum = this. dayNum + n;
-    return this. dayNum + m + 1;
-  }
+ // incDay2(n: number, m: number){
+  //  this. dayNum = this. dayNum + n;
+  //  return this. dayNum + m + 1;
+ // }
 
   getVacs(){
     var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVacs.php';
@@ -162,24 +162,17 @@ private editReasonIdx(ev){
     var url = 'https://ion.mgh.harvard.edu/cgi-bin/imrtqa/getUsers.php';
     return this .http.get(url)
   }
-  setUsers(res){
-    this. users = res;
-  }
+//  setUsers(res){
+//    this. users = res;
+//  }
   setData(res ) {
     this.getUsers().subscribe(res =>{
-      this.setUsers(res);
-      console.log("121 usere is %o", this .setUsers)
+      this .users = res;
     })
-      for(const vr in res){
-        var uKey = res[vr][0]['userid']
-        if (this .users)
-           console.log( "vr is %o", this. users[uKey]) 
-     //   console.log("lastName is %o", this. users[res[vr][0]['userid'] ])
-      }
-      this.vacData = res;
-      console.log(this.vacData)
+    this.vacData = res;
+    console.log(this.vacData)
  }
- counter(n){
+ counter(n){                                            // used for looper in Calendar
       var ar = Array();
       for (var i=0; i < n; i++ ){
         ar[i] = i;
@@ -193,7 +186,6 @@ private editReasonIdx(ev){
       var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
       var lastDay = new Date(date.getFullYear(), date.getMonth() + 2, 0);
       this. calDates = Array();
-      console.log("daysInMonth0 is %o", daysInMonth0);
       var i = 0;
       do {
         var cDay = new Date(firstDay.valueOf());
@@ -201,9 +193,6 @@ private editReasonIdx(ev){
         firstDay.setDate(firstDay.getDate() + 1);
       }
       while (firstDay <= lastDay)
-      var test = this .calDates[2].getDate();
-        console.log("calDays is %o", test)
-
     }
   daysTillEnd(val){
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
