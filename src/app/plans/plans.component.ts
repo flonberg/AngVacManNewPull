@@ -152,6 +152,14 @@ export class PlansComponent implements OnInit {
       }
       return ar;
   }
+  counter1(n){
+    var ar = Array();
+    console.log('157')
+    for (var i=0; i < n; i++ ){
+      ar[i] = i;
+    }
+    return ar;
+}
   setCalDates(){
       var date = new Date();
       var daysInMonth0 = date.getDate();
