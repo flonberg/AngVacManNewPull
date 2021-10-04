@@ -9,7 +9,7 @@ interface tAparams {
   endDate: string,
   reason: number,
   note: string,
-  userid: string;
+  vidx: string;
 }
 
 @Component({
@@ -63,18 +63,20 @@ export class PlansComponent implements OnInit {
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
     if (type.indexOf("start") >= 0){
       let el = {'startDate': dateString}
-      this .editArray.push(el)
+ //     this .editArray.push(el)
+      this .tAparams.startDate = dateString;
     }
     if (type.indexOf("end") >= 0){
       let el = {'endDate': dateString}
-      this .editArray.push(el)
+   //   this .editArray.push(el)
+      this .tAparams.endDate = dateString;
     }
  
     console.log("64 %o ", this .editArray)
 }
 private saveEdits() {
-  console.log("66 %o", this .editArray)
-  var jData = JSON.stringify(this .editArray)
+  console.log("66 %o", this .tAparams)
+  var jData = JSON.stringify(this .tAparams)
   console.log("jData 5o", jData)
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';
   this .http.post(url, jData).subscribe(res =>
@@ -89,6 +91,9 @@ private editReasonIdx(ev){
 }
  private showEditFunc(vacEdit){
    console.log("49 %o", vacEdit)
+   this .tAparams ={} as tAparams;
+   this .tAparams.vidx  = vacEdit.vidx;
+  
    this .vacEdit = vacEdit;
   
    this. showEdit = true;
