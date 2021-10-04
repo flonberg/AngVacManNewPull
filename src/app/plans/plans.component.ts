@@ -1,8 +1,10 @@
 import { AppComponent } from './../app.component';
 import { HttpClient } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+
 
 @Component({
   selector: 'app-plans',
@@ -23,9 +25,10 @@ export class PlansComponent implements OnInit {
   currentItem:any;
   prop1: any;
   showEdit: boolean;
+  editArray: [{}];
   @Output() editTAee= new EventEmitter()
   
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
   ngOnInit(): void {
     this .dayOfMonth = new Date().getDate();
@@ -47,8 +50,19 @@ export class PlansComponent implements OnInit {
     })
     this. setCalDates();
   }
-  editDate(type: string, event: MatDatepickerInputEvent<Date>) {
-    console.log(event.value)
+  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
+    console.log("53 %o --%o", type, ev.value)
+    let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
+    let label = type;
+    if (!this .editArray)
+      this .editArray = [{label: type, date: dateString}]
+    else {
+      let cData = {label: type, date: dateString}
+      this. editArray.push(cData);
+    }
+    console.log(this .editArray)
+    
+    
 }
  private showEditFunc(vacEdit){
    console.log("49 %o", vacEdit)
@@ -62,6 +76,10 @@ export class PlansComponent implements OnInit {
       this. vacData = res;
     })
  }
+private saveEdits(ev){
+  console.log("66 %o", ev)
+}
+
  public newItemEvent(ev){
    console.log("53")
  }
@@ -152,14 +170,7 @@ export class PlansComponent implements OnInit {
       }
       return ar;
   }
-  counter1(n){
-    var ar = Array();
-    console.log('157')
-    for (var i=0; i < n; i++ ){
-      ar[i] = i;
-    }
-    return ar;
-}
+
   setCalDates(){
       var date = new Date();
       var daysInMonth0 = date.getDate();

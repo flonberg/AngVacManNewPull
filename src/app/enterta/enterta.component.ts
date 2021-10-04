@@ -8,7 +8,6 @@ interface tAparams {
   reason: number,
   note: string,
   userid: string;
-
 }
 @Component({
   selector: 'app-enterta',
