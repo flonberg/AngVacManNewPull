@@ -23,7 +23,7 @@ export class PlansComponent implements OnInit {
   vacData: any;
   vacEdit: any;
   users: any;
-  calDates: Date[];
+  calDates: Date[];                                                         // the dates used to draw the calendat
   dayNum: number;
   vacDays: number;
   dayOfMonth: number;
@@ -31,10 +31,9 @@ export class PlansComponent implements OnInit {
   currentItem:any;
   prop1: any;
   showEdit: boolean;
-  editArray: [{}];
-  tst: any;
-    tAparams: tAparams;
-  @Output() editTAee= new EventEmitter()
+  tAparams: tAparams;
+  reasonIdx: string;
+  reason: string;
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
@@ -44,6 +43,8 @@ export class PlansComponent implements OnInit {
     this. vacDays = 1;
     this .currentItem = "test"
     this .showEdit = false;
+    this .reasonIdx = "1";
+    this .reason = 'Personal Vacation'
 
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
@@ -58,33 +59,25 @@ export class PlansComponent implements OnInit {
     })
     this. setCalDates();
   }
-  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
+private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     console.log("53 %o --%o", type, ev.value)
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
     if (type.indexOf("start") >= 0){
-      let el = {'startDate': dateString}
- //     this .editArray.push(el)
       this .tAparams.startDate = dateString;
     }
     if (type.indexOf("end") >= 0){
-      let el = {'endDate': dateString}
-   //   this .editArray.push(el)
       this .tAparams.endDate = dateString;
     }
- 
-    console.log("64 %o ", this .editArray)
 }
 private saveEdits() {
-  console.log("66 %o", this .tAparams)
-  var jData = JSON.stringify(this .tAparams)
-  console.log("jData 5o", jData)
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';
-  this .http.post(url, jData).subscribe(res =>
-    this .tst = res)
-    console.log("72 %o", this .tst)
+  var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
+  this .http.post(url, jData).subscribe(res =>{                     // do the http.post
+    this .getVacs().subscribe(get => {                              // reload the vacData
+      this .vacData = get;                                          // store the new vacData
+    })
+  })
 }
- 
-
 private editReasonIdx(ev){
   console.log("66 %o", ev)
   
@@ -98,14 +91,13 @@ private editReasonIdx(ev){
   
    this. showEdit = true;
  } 
- public doSomething(ev){
+ public doSomething(ev){                                            // access point for enterData component
     console.log("49 in PlansComponent.ts ev %o", ev)
     this .showEdit = false;
     this .getVacs().subscribe(res =>{
       this. vacData = res;
     })
  }
-
 
  public newItemEvent(ev){
    console.log("53")
@@ -114,10 +106,7 @@ private editReasonIdx(ev){
  public eventFromChild(data) {
    console.log("53")
  }
-  editTA(vac){
-    console.log("vac is %o", vac)
-    this. editTAee.emit(vac);
-  }
+
 
   getDateClass(d: Date){
     let today = new Date()
@@ -138,9 +127,9 @@ private editReasonIdx(ev){
   showIp(ip: number){
     return ip;
   }
-  getDayNum(){
-    return this. dayNum;
-  }
+  //getDayNum(){
+  //  return this. dayNum;
+ // }
   zeroDayNum(){
     this. dayNum = -1;
   }

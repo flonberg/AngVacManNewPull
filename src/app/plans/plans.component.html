@@ -53,7 +53,7 @@ cellpadding="2">
     <tr *ngIf = !readOnly>
         <th> Start Date</th>
         <th> End Date</th>
-        <th> Start Date</th>
+        <th> Reason </th>
         <th> Start Date</th>
     </tr>  
 
@@ -76,11 +76,10 @@ cellpadding="2">
 
     <td>
       <mat-form-field appearance="fill">
-        <mat-label>Choose a Reason</mat-label>
-        <mat-select (selectionChange)="editReasonIdx('reasonIdx', $event)">
-          <mat-option value="option1">Personal Vacation</mat-option>
-          <mat-option value="option2" >Meeting </mat-option>
-          <mat-option value="option3">Other </mat-option>
+        <mat-select (selectionChange)="editReasonIdx( $event)"  [(value)]="reasonIdx">
+          <mat-option value="1">Personal Vacation</mat-option>
+          <mat-option value="2" >Meeting </mat-option>
+          <mat-option value="3">Other </mat-option>
         </mat-select>
       </mat-form-field>
     </td>
