@@ -4,6 +4,7 @@ import { DatePipe } from '@angular/common';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { throwError } from 'rxjs';
 interface tAparams {
   startDate : string,
   endDate: string,
@@ -34,6 +35,7 @@ export class PlansComponent implements OnInit {
   tAparams: tAparams;
   reasonIdx: string;
   reason: string;
+  dayArray: any;
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
@@ -53,12 +55,45 @@ export class PlansComponent implements OnInit {
         this .users = rusers;
     //    console.log("41 this.userw %o", this .users)
       })
-
      this .vacData = res;
       console.log("vacData is %o", this. vacData)
+    for (const tRow in this. vacData){
+      this.makeDaysOfRow(this .vacData[tRow])
+    }  
     })
     this. setCalDates();
   }
+private makeDaysOfRow(vacRow){
+  this .dayArray = [[]];
+  this .dayArray[0] = Array();
+  this .dayArray[1] = Array();
+  this .dayArray[2] = Array();
+  let index:number = 1;
+  console.log("676767 %o", vacRow)
+  for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
+    this. dayArray[0][i] = i;
+    index++;
+  }
+  index += vacRow[0]['vacLength']
+  let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength']+2
+
+  this .dayArray[1].push(v1)
+  let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
+  v1++
+  for (let k=0; k < d1; k++){
+    this .dayArray[1].push(v1);
+    v1++;
+  }
+  v1 += (vacRow[1]['vacLength'] + 1)
+  this .dayArray[2].push(v1);
+  let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
+  console.log("90 d2 is %o", d2)
+  for (let k=0; k < d2; k++){
+    v1++;
+    this .dayArray[2].push(v1);
+  }
+console.log( " 72 dayArray %o", this .dayArray)
+}  
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     console.log("53 %o --%o", type, ev.value)
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
@@ -68,6 +103,7 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     if (type.indexOf("end") >= 0){
       this .tAparams.endDate = dateString;
     }
+    console.log("103 %o", this .tAparams)
 }
 private saveEdits() {
   var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
@@ -131,11 +167,20 @@ private editReasonIdx(ev){
   //  return this. dayNum;
  // }
   zeroDayNum(){                                         // reset the dayNum for each row of Cal
-    this. dayNum = -1;
+    this. dayNum = 0;
   }
   //addVacDays(n: number){
   //  this. vacDays = this. vacDays + n;
   //}
+  testDay(n:number){
+  //  console.log("140 %o", this .dayNum)
+    this. dayNum = this. dayNum + n;
+  }
+  testDay1(n:number){
+
+    this. dayNum = this. dayNum + n;
+ 
+  }
   incDay(n: number){                                  // increment the dayNum of a Cal call. 
     this. dayNum = this. dayNum + n;
     if (this. dayNum == this .dayOfMonth -1)
@@ -210,12 +255,21 @@ private editReasonIdx(ev){
     return diff -1;
   }  
   daysBetweenX(val1, val2){
-
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
     var endDate = new Date(val1['endDate'])
     var calEndDate = new Date( val2['startDate'])
     var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
-
     return diff;
+  }  
+  daysBetweenA(val1, val2){
+    console.log("248 %o --- %o", val1, val2)
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    var d1 = new Date(val1)
+    var d2= new Date( val2)
+    var tst = d2.valueOf() - d1.valueOf();
+    console.log("252 %o", tst)
+    var diff =Math.round( (d2.valueOf() - d1.valueOf())/oneDay);
+    console.log("254 %o", diff)
+    return diff -1;
   }  
 }
