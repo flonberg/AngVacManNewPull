@@ -71,12 +71,12 @@ private makeDaysOfRow(vacRow){
   let index:number = 1;
   console.log("676767 %o", vacRow)
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
-    this. dayArray[0][i] = i;
+    this. dayArray[0][i] = i + 1;
     index++;
   }
-  index += vacRow[0]['vacLength']
-  let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength']+2
 
+  index += vacRow[0]['vacLength']
+  let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] +1
   this .dayArray[1].push(v1)
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
   v1++
@@ -111,7 +111,11 @@ private saveEdits() {
   this .http.post(url, jData).subscribe(res =>{                     // do the http.post
     this .getVacs().subscribe(get => {                              // reload the vacData
       this .vacData = get;                                          // store the new vacData
+      for (const tRow in this. vacData){
+        this.makeDaysOfRow(this .vacData[tRow])
+      }  
     })
+
   })
 }
 private editReasonIdx(ev){
