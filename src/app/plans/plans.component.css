@@ -32,6 +32,34 @@ td.hd3 {
 #enterVac {
 	width:80%;
 }
+
+
+.h50 {
+	width:200px;
+	padding-left: 10px;
+
+  }
+  div.center { 
+	width: 220px;
+	height:50px;
+	margin: auto; 
+  }
+  .Button {
+	width:160px;  
+    color: #333;
+    box-shadow: -3px 3px grey, -2px 2px orange, -1px 1px orange;
+    border: 1px solid grey;
+}
 #spacer {
+	padding-top:30px;
 	height:150px;
+	width:1200px;
+}
+#raised{
+    /* ... */
+
+    width:1200px;
+    border:8px outset #999;
+    -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+    -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
 }
