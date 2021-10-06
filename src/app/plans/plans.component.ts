@@ -53,14 +53,19 @@ export class PlansComponent implements OnInit {
       console.log(" res is %o", res)
       this.getUsers().subscribe(rusers=>{
         this .users = rusers;
-    //    console.log("41 this.userw %o", this .users)
-      })
-     this .vacData = res;
-      console.log("vacData is %o", this. vacData)
-    for (const tRow in this. vacData){
-      this.makeDaysOfRow(this .vacData[tRow])
-    }  
+      //    console.log("41 this.userw %o", this .users)
+        })
+      this .vacData = res;
+        console.log("vacData is %o", this. vacData)
+      for (const tRow in this. vacData){
+        this.makeDaysOfRow(this .vacData[tRow])
+  
+        this .vacData[tRow][9] = (this .dayArray);
+        console.log(" 62 has vacData %o", this .vacData[tRow])  
+      }  
+      console.log("64 dayArray is %o", this .dayArray)
     })
+
     this. setCalDates();
   }
 public makeDaysOfRow(vacRow){
@@ -72,9 +77,10 @@ public makeDaysOfRow(vacRow){
   console.log("676767 vacRow %o", vacRow)
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
     this. dayArray[0][i] = i + 1;
+
  //   index++;
   }
-
+  console.log("80 dayArray is %o", this .dayArray[0])
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] +1
   this .dayArray[1].push(v1)                            // firstDay after tA[0]
 
@@ -101,6 +107,7 @@ public makeDaysOfRow(vacRow){
     v1++;
     this .dayArray[2].push(v1);
   }
+  console.log("107 dayArray is %o", this .dayArray[0])
   if (!vacRow[3]){
     v1 += vacRow[2]['vacLength']
     this .makeTillEndDays(v1,3);
@@ -110,16 +117,18 @@ console.log( " 72 dayArray %o", this .dayArray)
 }  
 private makeTillEndDays(v1, n ){
   console.log("111 v1 %o -- n %o ", v1, n)
+  console.log("117 dayArray is %o", this .dayArray[0])
   let tillEnd = 31 - v1;
   for (let k=0; k < tillEnd; k++){
     v1++
     if (!this .dayArray[n]){
       this .dayArray[n] = Array()
-      this. dayArray[0] = v1;
+      this. dayArray[n][0] = v1;
     }
     else
       this .dayArray[n].push(v1);
   }
+  console.log("127 dayArray is %o", this .dayArray[0])
 }
 
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
