@@ -17,7 +17,7 @@ cellpadding="2">
   <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "showEditFunc(item.value[0])"   >      {{ item.value[0]['LastName'] }}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
-   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index'  >  {{ item.value[9][1][ip2]}}</td>
+   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index'  >  {{ item.value[9][1][ip2]}}  ww</td>
    <td [attr.colspan] = 'item.value[1].vacLength' (click) = "showEditFunc(item.value[1])" class = "green"       >  {{ item.value[1]['LastName'] }} </td>
   </ng-container> 
   <ng-container  *ngIf = '!item.value[1]'  > 

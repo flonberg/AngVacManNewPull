@@ -58,6 +58,7 @@ export class PlansComponent implements OnInit {
       this .vacData = res;
         console.log("vacData is %o", this. vacData)
       for (const tRow in this. vacData){
+console.log("61 tRos is %o", tRow)        
         this.makeDaysOfRow(this .vacData[tRow])
         this .vacData[tRow][9] = (this .dayArray);
       }  
@@ -66,7 +67,7 @@ export class PlansComponent implements OnInit {
 
     this. setCalDates();
   }
-public makeDaysOfRow(vacRow){
+private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
   this .dayArray[0] = Array();
   this .dayArray[1] = Array();
@@ -76,9 +77,8 @@ public makeDaysOfRow(vacRow){
     this. dayArray[0][i] = i + 1;
   }
 // go to a date after the end of the tA  
-  let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] +1
-//  this .dayArray[1].push(v1)                            // firstDay after tA[0]
-
+  let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
+  console.log("81 v1 is %o", v1)
   if (!vacRow[1]){                                      // this is the last tA in the row
     this .makeTillEndDays(v1,1);                        // fill out the rest of the dayNum
     return;                                             // don't do anything else
@@ -89,10 +89,9 @@ public makeDaysOfRow(vacRow){
     v1++;                                                                           
     this .dayArray[1].push(v1);                         // into the dataStruct
   }
-  v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]
- // this .dayArray[2].push(v1);                           
-  if (!vacRow[2]){
-    this .makeTillEndDays(v1,2);
+  v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
+  if (!vacRow[2]){                                      // if this is the LAST tA
+    this .makeTillEndDays(v1,2);                        // fill out the rest of the days
     return;
   }
   let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
@@ -105,14 +104,10 @@ public makeDaysOfRow(vacRow){
     this .makeTillEndDays(v1,3);
     return;
   }
-console.log( " 72 dayArray %o", this .dayArray)
 }  
 private makeTillEndDays(v1, n ){
-  console.log("111 v1 %o -- n %o ", v1, n)
-  console.log("117 dayArray is %o", this .dayArray[0])
   let tillEnd = 31 - v1;
   for (let k=0; k < tillEnd; k++){
-
     if (!this .dayArray[n]){
       this .dayArray[n] = Array()
       this. dayArray[n][0] = v1;
