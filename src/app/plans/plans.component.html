@@ -33,7 +33,7 @@ cellpadding="2">
    <td  *ngFor='let l4 of counter ( daysTillEnd(item.value[2])); let ip = index'> {{ item.value[9][3][ip]}}</td>
    </ng-container>
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
-     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])+1);  let ip = index' [className] = "incDay1(1,item.value[0].vacLength + item.value[1].vacLength)" > {{ item.value[9][3][ip]  }}  </td>
+     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])+1);  let ip = index'  > {{ item.value[9][2][ip]  }}  </td>
    </ng-container>
 
    <ng-container *ngIf = 'item.value[3]'> 

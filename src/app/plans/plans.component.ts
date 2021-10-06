@@ -75,14 +75,12 @@ public makeDaysOfRow(vacRow){
   console.log("676767 vacRow %o", vacRow)
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
     this. dayArray[0][i] = i + 1;
-
- //   index++;
   }
-  console.log("80 dayArray is %o", this .dayArray[0])
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] +1
   this .dayArray[1].push(v1)                            // firstDay after tA[0]
 
   if (!vacRow[1]){
+    console.log("85 ")
     this .makeTillEndDays(v1,1);
     return;
   }
@@ -108,7 +106,7 @@ public makeDaysOfRow(vacRow){
   console.log("107 dayArray is %o", this .dayArray[0])
   if (!vacRow[3]){
     v1 += vacRow[2]['vacLength']
-    this .makeTillEndDays(v1,3);
+    this .makeTillEndDays(v1+1,3);
     return;
   }
 console.log( " 72 dayArray %o", this .dayArray)
@@ -118,7 +116,7 @@ private makeTillEndDays(v1, n ){
   console.log("117 dayArray is %o", this .dayArray[0])
   let tillEnd = 31 - v1;
   for (let k=0; k < tillEnd; k++){
-    v1 += 2
+    v1 += 1
     if (!this .dayArray[n]){
       this .dayArray[n] = Array()
       this. dayArray[n][0] = v1;
@@ -173,6 +171,10 @@ private editReasonIdx(ev){
     this .showEdit = false;
     this .getVacs().subscribe(res =>{
       this. vacData = res;
+      for (const tRow in this. vacData){
+        this.makeDaysOfRow(this .vacData[tRow])
+        this .vacData[tRow][9] = (this .dayArray);
+      }  
     })
  }
 
