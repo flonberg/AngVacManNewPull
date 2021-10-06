@@ -63,7 +63,7 @@ export class PlansComponent implements OnInit {
     })
     this. setCalDates();
   }
-private makeDaysOfRow(vacRow){
+public makeDaysOfRow(vacRow){
   this .dayArray = [[]];
   this .dayArray[0] = Array();
   this .dayArray[1] = Array();
@@ -77,6 +77,7 @@ private makeDaysOfRow(vacRow){
 
   index += vacRow[0]['vacLength']
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] +1
+  console.log("80 v1 is %o", v1)
   this .dayArray[1].push(v1)
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
   v1++
