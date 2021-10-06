@@ -68,17 +68,21 @@ public makeDaysOfRow(vacRow){
   this .dayArray[0] = Array();
   this .dayArray[1] = Array();
   this .dayArray[2] = Array();
-  let index:number = 1;
-  console.log("676767 %o", vacRow)
+//  let index:number = 1;
+  console.log("676767 vacRow %o", vacRow)
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
     this. dayArray[0][i] = i + 1;
-    index++;
+ //   index++;
   }
 
-  index += vacRow[0]['vacLength']
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] +1
-  console.log("80 v1 is %o", v1)
-  this .dayArray[1].push(v1)
+  this .dayArray[1].push(v1)                            // firstDay after tA[0]
+
+  if (!vacRow[1]){
+    this .makeTillEndDays(v1,1);
+    return;
+  }
+
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
   v1++
   for (let k=0; k < d1; k++){
@@ -87,14 +91,37 @@ public makeDaysOfRow(vacRow){
   }
   v1 += (vacRow[1]['vacLength'] + 1)
   this .dayArray[2].push(v1);
+  if (!vacRow[2]){
+    this .makeTillEndDays(v1,2);
+    return;
+  }
   let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
   console.log("90 d2 is %o", d2)
   for (let k=0; k < d2; k++){
     v1++;
     this .dayArray[2].push(v1);
   }
+  if (!vacRow[3]){
+    v1 += vacRow[2]['vacLength']
+    this .makeTillEndDays(v1,3);
+    return;
+  }
 console.log( " 72 dayArray %o", this .dayArray)
 }  
+private makeTillEndDays(v1, n ){
+  console.log("111 v1 %o -- n %o ", v1, n)
+  let tillEnd = 31 - v1;
+  for (let k=0; k < tillEnd; k++){
+    v1++
+    if (!this .dayArray[n]){
+      this .dayArray[n] = Array()
+      this. dayArray[0] = v1;
+    }
+    else
+      this .dayArray[n].push(v1);
+  }
+}
+
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     console.log("53 %o --%o", type, ev.value)
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
@@ -267,14 +294,14 @@ private editReasonIdx(ev){
     return diff;
   }  
   daysBetweenA(val1, val2){
-    console.log("248 %o --- %o", val1, val2)
+   
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
     var d1 = new Date(val1)
     var d2= new Date( val2)
     var tst = d2.valueOf() - d1.valueOf();
-    console.log("252 %o", tst)
+
     var diff =Math.round( (d2.valueOf() - d1.valueOf())/oneDay);
-    console.log("254 %o", diff)
+
     return diff -1;
   }  
 }
