@@ -59,11 +59,9 @@ export class PlansComponent implements OnInit {
         console.log("vacData is %o", this. vacData)
       for (const tRow in this. vacData){
         this.makeDaysOfRow(this .vacData[tRow])
-  
         this .vacData[tRow][9] = (this .dayArray);
-        console.log(" 62 has vacData %o", this .vacData[tRow])  
       }  
-      console.log("64 dayArray is %o", this .dayArray)
+      console.log("64 vacData is %o", this .vacData)
     })
 
     this. setCalDates();
@@ -120,7 +118,7 @@ private makeTillEndDays(v1, n ){
   console.log("117 dayArray is %o", this .dayArray[0])
   let tillEnd = 31 - v1;
   for (let k=0; k < tillEnd; k++){
-    v1++
+    v1 += 2
     if (!this .dayArray[n]){
       this .dayArray[n] = Array()
       this. dayArray[n][0] = v1;
@@ -150,9 +148,11 @@ private saveEdits() {
       this .vacData = get;                                          // store the new vacData
       for (const tRow in this. vacData){
         this.makeDaysOfRow(this .vacData[tRow])
+        this .vacData[tRow][9] = (this .dayArray);
       }  
+    
+   console.log("152 vacData is %o", this .vacData)
     })
-
   })
 }
 private editReasonIdx(ev){
