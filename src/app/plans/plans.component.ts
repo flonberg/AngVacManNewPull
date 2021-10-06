@@ -71,40 +71,37 @@ public makeDaysOfRow(vacRow){
   this .dayArray[0] = Array();
   this .dayArray[1] = Array();
   this .dayArray[2] = Array();
-//  let index:number = 1;
-  console.log("676767 vacRow %o", vacRow)
+// store the dayNums for daysTillStartDate
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
     this. dayArray[0][i] = i + 1;
   }
+// go to a date after the end of the tA  
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] +1
-  this .dayArray[1].push(v1)                            // firstDay after tA[0]
+//  this .dayArray[1].push(v1)                            // firstDay after tA[0]
 
-  if (!vacRow[1]){
-    console.log("85 ")
-    this .makeTillEndDays(v1,1);
-    return;
+  if (!vacRow[1]){                                      // this is the last tA in the row
+    this .makeTillEndDays(v1,1);                        // fill out the rest of the dayNum
+    return;                                             // don't do anything else
   }
+  // If there is a SECOND tA in the row, find the days between the first and second tA
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
-  for (let k=0; k < d1; k++){
-    v1++;
-    this .dayArray[1].push(v1);
-
+  for (let k=0; k < d1; k++){                           // loop and push required dayNums
+    v1++;                                                                           
+    this .dayArray[1].push(v1);                         // into the dataStruct
   }
-  v1 += (vacRow[1]['vacLength'] )
-  this .dayArray[2].push(v1);
+  v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]
+ // this .dayArray[2].push(v1);                           
   if (!vacRow[2]){
     this .makeTillEndDays(v1,2);
     return;
   }
   let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
-  console.log("101 daysBetween is  d2 is %o", d2)
   for (let k=0; k < d2; k++){
     v1++;
     this .dayArray[2].push(v1);
- 
   }
+  v1 += vacRow[2]['vacLength']
   if (!vacRow[3]){
-    v1 += vacRow[2]['vacLength']
     this .makeTillEndDays(v1,3);
     return;
   }
@@ -115,13 +112,14 @@ private makeTillEndDays(v1, n ){
   console.log("117 dayArray is %o", this .dayArray[0])
   let tillEnd = 31 - v1;
   for (let k=0; k < tillEnd; k++){
-    v1 += 1
+
     if (!this .dayArray[n]){
       this .dayArray[n] = Array()
       this. dayArray[n][0] = v1;
     }
     else
       this .dayArray[n].push(v1);
+   v1 += 1  
   }
   console.log("127 dayArray is %o", this .dayArray[0])
 }
@@ -296,6 +294,7 @@ private editReasonIdx(ev){
 
     return diff -1;
   }  
+  /*
   daysBetweenX(val1, val2){
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
     var endDate = new Date(val1['endDate'])
@@ -303,6 +302,7 @@ private editReasonIdx(ev){
     var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
     return diff;
   }  
+    */ 
   daysBetweenA(val1, val2){
 
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
@@ -313,5 +313,6 @@ private editReasonIdx(ev){
     var diff =Math.round( (d2.valueOf() - d1.valueOf())/oneDay);
     console.log("308 daysBetween %o --- %o  -> %o", val1, val2, diff) 
     return diff ;
-  }  
+  } 
+
 }
