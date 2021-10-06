@@ -84,29 +84,27 @@ public makeDaysOfRow(vacRow){
     this .makeTillEndDays(v1,1);
     return;
   }
-
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
-  v1++
+  
   for (let k=0; k < d1; k++){
     this .dayArray[1].push(v1);
     v1++;
   }
-  v1 += (vacRow[1]['vacLength'] + 1)
+  v1 += (vacRow[1]['vacLength'] )
   this .dayArray[2].push(v1);
   if (!vacRow[2]){
     this .makeTillEndDays(v1,2);
     return;
   }
   let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
-  console.log("90 d2 is %o", d2)
+  console.log("101 daysBetween is  d2 is %o", d2)
   for (let k=0; k < d2; k++){
-    v1++;
     this .dayArray[2].push(v1);
+    v1++;
   }
-  console.log("107 dayArray is %o", this .dayArray[0])
   if (!vacRow[3]){
     v1 += vacRow[2]['vacLength']
-    this .makeTillEndDays(v1+1,3);
+    this .makeTillEndDays(v1,3);
     return;
   }
 console.log( " 72 dayArray %o", this .dayArray)
@@ -305,14 +303,14 @@ private editReasonIdx(ev){
     return diff;
   }  
   daysBetweenA(val1, val2){
-   
+
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
     var d1 = new Date(val1)
     var d2= new Date( val2)
     var tst = d2.valueOf() - d1.valueOf();
 
     var diff =Math.round( (d2.valueOf() - d1.valueOf())/oneDay);
-
-    return diff -1;
+    console.log("308 daysBetween %o --- %o  -> %o", val1, val2, diff) 
+    return diff ;
   }  
 }
