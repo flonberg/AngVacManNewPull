@@ -99,8 +99,9 @@ public makeDaysOfRow(vacRow){
   let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
   console.log("101 daysBetween is  d2 is %o", d2)
   for (let k=0; k < d2; k++){
-    this .dayArray[2].push(v1);
     v1++;
+    this .dayArray[2].push(v1);
+ 
   }
   if (!vacRow[3]){
     v1 += vacRow[2]['vacLength']
