@@ -41,6 +41,7 @@ export class PlansComponent implements OnInit {
 
   ngOnInit(): void {
     this .dayOfMonth = new Date().getDate();
+    console.log("46 dayOgMong %o", this.dayOfMonth)
     this. dayNum = 1;
     this. vacDays = 1;
     this .currentItem = "test"
@@ -69,9 +70,9 @@ console.log("61 tRos is %o", tRow)
   }
 private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
-  this .dayArray[0] = Array();
-  this .dayArray[1] = Array();
-  this .dayArray[2] = Array();
+ // this .dayArray[0] = Array();
+ // this .dayArray[1] = Array();
+ // this .dayArray[2] = Array();
 // store the dayNums for daysTillStartDate
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
     this. dayArray[0][i] = i + 1;
@@ -87,7 +88,12 @@ private makeDaysOfRow(vacRow){
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
     v1++;                                                                           
-    this .dayArray[1].push(v1);                         // into the dataStruct
+    if (!this .dayArray[1]){
+      this .dayArray[1] = Array();
+      this .dayArray[1][0] = v1;
+    }
+    else
+      this .dayArray[1].push(v1);                         // into the dataStruct
   }
   v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
   if (!vacRow[2]){                                      // if this is the LAST tA
@@ -97,7 +103,12 @@ private makeDaysOfRow(vacRow){
   let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
   for (let k=0; k < d2; k++){
     v1++;
-    this .dayArray[2].push(v1);
+    if (!this .dayArray[2]){
+      this .dayArray[2] = Array();
+      this .dayArray[2][0] = v1;
+    }
+    else
+      this .dayArray[2].push(v1);
   }
   v1 += vacRow[2]['vacLength']
   if (!vacRow[3]){
@@ -107,14 +118,16 @@ private makeDaysOfRow(vacRow){
 }  
 private makeTillEndDays(v1, n ){
   let tillEnd = 31 - v1;
+console.log("110 v1 %o -- n %o", v1, n)  
   for (let k=0; k < tillEnd; k++){
+    v1++
     if (!this .dayArray[n]){
       this .dayArray[n] = Array()
       this. dayArray[n][0] = v1;
     }
     else
       this .dayArray[n].push(v1);
-   v1 += 1  
+
   }
   console.log("127 dayArray is %o", this .dayArray[0])
 }
@@ -190,8 +203,8 @@ private editReasonIdx(ev){
     if (d.getDay() == 6  || d.getDay() == 0)
         return 'weekend'
   }
-  getClass(){
-    if (this. dayNum == this .dayOfMonth)
+  getClass(n){
+    if (n == this .dayOfMonth)
     return 'todayCell'
   }
 
