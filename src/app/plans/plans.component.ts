@@ -85,10 +85,10 @@ public makeDaysOfRow(vacRow){
     return;
   }
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
-  
   for (let k=0; k < d1; k++){
-    this .dayArray[1].push(v1);
     v1++;
+    this .dayArray[1].push(v1);
+
   }
   v1 += (vacRow[1]['vacLength'] )
   this .dayArray[2].push(v1);
