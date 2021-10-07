@@ -112,7 +112,7 @@ private makeDaysOfRow(vacRow){
     this .makeTillEndDays(v1,3);
     return;
   }
-    // if there is a THIRD tA
+    // if there is a FOURTH tA
     let d3 = this.daysBetweenA(vacRow[2]['endDate'], vacRow[3]['startDate']) -1
     for (let k=0; k < d3; k++){
       v1++;
@@ -122,12 +122,10 @@ private makeDaysOfRow(vacRow){
       }
       else
         this .dayArray[3].push(v1);
-        console.log("126 k  dayArray %o", k,  this .dayArray)  
     }
-
     v1 += vacRow[3]['vacLength']
     if (!vacRow[4]){
-      this .makeTillEndDays(v1,3);
+      this .makeTillEndDays(v1,4);
       return;
     }
 }  
@@ -138,7 +136,7 @@ private makeDaysOfRow(vacRow){
 
 private makeTillEndDays(v1, n ){
   let tillEnd = 31 - v1;
-  if (n == 3)
+  if (n == 4)
 console.log("117  %o  === %o", v1 , n)  
   for (let k=0; k < tillEnd; k++){
     v1++
@@ -149,7 +147,7 @@ console.log("117  %o  === %o", v1 , n)
     else
       this .dayArray[n].push(v1);
   }
-  if (n == 3)
+  if (n == 4)
   console.log("127 dayArray is %o", this .dayArray[n])
 }
 
