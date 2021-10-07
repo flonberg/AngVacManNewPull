@@ -70,10 +70,6 @@ console.log("61 tRos is %o", tRow)
   }
 private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
- // this .dayArray[0] = Array();
- // this .dayArray[1] = Array();
- // this .dayArray[2] = Array();
-// store the dayNums for daysTillStartDate
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
     this. dayArray[0][i] = i + 1;
   }
@@ -118,7 +114,6 @@ private makeDaysOfRow(vacRow){
 }  
 private makeTillEndDays(v1, n ){
   let tillEnd = 31 - v1;
-console.log("110 v1 %o -- n %o", v1, n)  
   for (let k=0; k < tillEnd; k++){
     v1++
     if (!this .dayArray[n]){
@@ -127,9 +122,8 @@ console.log("110 v1 %o -- n %o", v1, n)
     }
     else
       this .dayArray[n].push(v1);
-
   }
-  console.log("127 dayArray is %o", this .dayArray[0])
+  console.log("127 dayArray is %o", this .dayArray[n])
 }
 
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
