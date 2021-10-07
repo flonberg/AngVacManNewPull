@@ -6,10 +6,10 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { throwError } from 'rxjs';
 interface tAparams {
-  startDate : string,
-  endDate: string,
-  reason: number,
-  note: string,
+  startDate? : string,
+  endDate?: string,
+  reasonIdx?: number,
+  note?: string,
   vidx: string;
 }
 
@@ -143,6 +143,11 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     }
     console.log("103 %o", this .tAparams)
 }
+private deleteTa(ev){
+  this .tAparams.reasonIdx = 99;
+  console.log("147 tAparams %o", this.tAparams)
+  this .saveEdits();
+}
 private saveEdits() {
   var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
@@ -208,12 +213,7 @@ private editReasonIdx(ev){
     return 'todayCell'
   }
 
-  //showIp(ip: number){
-  //  return ip;
- // }
-  //getDayNum(){
-  //  return this. dayNum;
- // }
+ 
   zeroDayNum(){                                         // reset the dayNum for each row of Cal
     this. dayNum = 0;
   }
