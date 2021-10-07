@@ -96,6 +96,7 @@ private makeDaysOfRow(vacRow){
     this .makeTillEndDays(v1,2);                        // fill out the rest of the days
     return;
   }
+  // if there is a THIRD tA
   let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
   for (let k=0; k < d2; k++){
     v1++;
@@ -111,9 +112,34 @@ private makeDaysOfRow(vacRow){
     this .makeTillEndDays(v1,3);
     return;
   }
+    // if there is a THIRD tA
+    let d3 = this.daysBetweenA(vacRow[2]['endDate'], vacRow[3]['startDate']) -1
+    for (let k=0; k < d3; k++){
+      v1++;
+      if (!this .dayArray[3]){
+        this .dayArray[3] = Array();
+        this .dayArray[3][0] = v1;
+      }
+      else
+        this .dayArray[3].push(v1);
+        console.log("126 k  dayArray %o", k,  this .dayArray)  
+    }
+
+    v1 += vacRow[3]['vacLength']
+    if (!vacRow[4]){
+      this .makeTillEndDays(v1,3);
+      return;
+    }
 }  
+
+
+
+
+
 private makeTillEndDays(v1, n ){
   let tillEnd = 31 - v1;
+  if (n == 3)
+console.log("117  %o  === %o", v1 , n)  
   for (let k=0; k < tillEnd; k++){
     v1++
     if (!this .dayArray[n]){
@@ -123,6 +149,7 @@ private makeTillEndDays(v1, n ){
     else
       this .dayArray[n].push(v1);
   }
+  if (n == 3)
   console.log("127 dayArray is %o", this .dayArray[n])
 }
 
@@ -288,32 +315,19 @@ private editReasonIdx(ev){
       var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
      return diff;
     }
-  daysBetween(val1, val2){
+  daysBetween(val1, val2){                        // used by counter function
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
     var endDate = new Date(val1['endDate'])
     var calEndDate = new Date( val2['startDate'])
     var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
-
     return diff -1;
   }  
-  /*
-  daysBetweenX(val1, val2){
-    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-    var endDate = new Date(val1['endDate'])
-    var calEndDate = new Date( val2['startDate'])
-    var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
-    return diff;
-  }  
-    */ 
   daysBetweenA(val1, val2){
-
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
     var d1 = new Date(val1)
     var d2= new Date( val2)
     var tst = d2.valueOf() - d1.valueOf();
-
     var diff =Math.round( (d2.valueOf() - d1.valueOf())/oneDay);
-    console.log("308 daysBetween %o --- %o  -> %o", val1, val2, diff) 
     return diff ;
   } 
 
