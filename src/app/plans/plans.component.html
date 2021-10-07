@@ -20,29 +20,38 @@ cellpadding="2">
    <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index' [className] = 'getClass( item.value[9][1][ip2])' >   </td>
    <td [attr.colspan] = 'item.value[1].vacLength' class = "green"  (click) = "showEditFunc(item.value[1])"      >  {{ item.value[1]['LastName'] }} </td>
   </ng-container> 
-  <ng-container  *ngIf = '!item.value[1]'  > 
-    <td *ngFor = "let lp0 of counter( daysTillEnd(item.value[0])+1); let ip=index" > {{ item.value[9][1][ip]  }}   </td>
+
+
+  <ng-container  *ngIf = '!item.value[1] && item.value[9][1]'  > 
+    <td *ngFor = "let lp of counter( daysTillEnd(item.value[0])+1); let ip=index" [className] = 'getClass( item.value[9][1][lp])'  > 
+      <div *ngIf= 'item.value[9][1]' > {{ item.value[9][1][lp]  }}   </div>
+    </td> 
   </ng-container>
   
 
   <ng-container *ngIf = 'item.value[2]'> 
-    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2])); let ip = index'  [className] = 'getClass( item.value[9][2][ip])'  >  {{ item.value[9][2][ip]}}</td>
+    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2])); let ip = index'  [className] = 'getClass( item.value[9][2][ip])'  >  </td>
     <td [attr.colspan] = 'item.value[2].vacLength'  class = "green"  (click) = "showEditFunc(item.value[2])" >{{ item.value[1]['LastName'] }}</td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2] && item.value[9][3]' >
-   <td  *ngFor='let l4 of counter ( daysTillEnd(item.value[2])); let ip = index'> {{ item.value[9][3][ip]  }} </td>
+   <td  *ngFor='let l4 of counter ( daysTillEnd(item.value[2])); let ip = index'> 
+     <div *ngIf='item.value[9][3]' >{{ item.value[9][3][ip]  }} </div>
+    </td>
    </ng-container>
 
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
-     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])+1);  let ip = index'  > {{ item.value[9][2][ip]  }}  </td>
+     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1]));  let ip = index'    > 
+      <div   *ngIf = 'item.value[9][2]'>  </div> 
+       </td>
    </ng-container>
 
    <ng-container *ngIf = 'item.value[3]'> 
-    <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3])); let ip = index '    >  {{ item.value[9][3][ip]}}  </td>
+    <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3])); let ip = index ' [className] = 'getClass( item.value[9][3][ip])'     >   </td>
     <td [attr.colspan] = 'item.value[3].vacLength'  class = "green" (click) = "showEditFunc(item.value[3])"  >{{ item.value[2]['LastName'] }} </td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[4] && item.value[2]'>
-    <td *ngFor='let l3 of counter( daysTillEnd(item.value[1])+1);  let ip = index'  > {{ item.value[9][4][ip]  }}  </td>
+    <td *ngFor='let l3 of counter( daysTillEnd(item.value[3]));  let ip = index'  > 
+      <div *ngIf = 'item.value[9][4]' >{{ item.value[9][4][ip]  }} </div> </td>
   </ng-container>
 </tr>
 </table>

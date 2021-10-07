@@ -177,7 +177,7 @@ private saveEdits() {
         this.makeDaysOfRow(this .vacData[tRow])
         this .vacData[tRow][9] = (this .dayArray);
       }  
-    
+   this .showEdit = false; 
    console.log("152 vacData is %o", this .vacData)
     })
   })
