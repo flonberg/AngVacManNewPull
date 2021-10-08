@@ -37,6 +37,7 @@ export class PlansComponent implements OnInit {
   reason: string;
   dayArray: any;
   startDateConvent: string;
+  endDateConvent: string;
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
@@ -188,7 +189,8 @@ private toConventFormat(dateStr){
   return this.datePipe.transform(dateStr, 'MM-d-yyyy')
 }
  private showEditFunc(vacEdit){
-  this .startDateConvent = this .toConventFormat(vacEdit.startDate)
+   this .startDateConvent = this .toConventFormat(vacEdit.startDate)
+   this .endDateConvent = this .toConventFormat(vacEdit.endDate)
    console.log("49 %o", vacEdit)
    this .tAparams ={} as tAparams;
    this .tAparams.vidx  = vacEdit.vidx;
@@ -199,8 +201,8 @@ private toConventFormat(dateStr){
  } 
  public doSomething(ev){                                            // access point for enterData component
     console.log("49 in PlansComponent.ts ev %o", ev)
-    let startDate = new Date(ev.startDate)
-    this .tAparams.startDate = this.datePipe.transform(startDate, 'MM-dd-YYYY')
+  //  let startDate = new Date(ev.startDate)
+  //  this .tAparams.startDate = this.datePipe.transform(startDate, 'MM-dd-YYYY')
     this .showEdit = false;
     this .getVacs().subscribe(res =>{
       this. vacData = res;
