@@ -199,7 +199,7 @@ private toConventFormat(dateStr){
   
    this. showEdit = true;
  } 
- public doSomething(ev){                                            // access point for enterData component
+ public doSomething(ev){                                     // access point for enterData component
     console.log("49 in PlansComponent.ts ev %o", ev)
   //  let startDate = new Date(ev.startDate)
   //  this .tAparams.startDate = this.datePipe.transform(startDate, 'MM-dd-YYYY')
@@ -314,6 +314,8 @@ private toConventFormat(dateStr){
     }
   daysTillEnd(val){
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+      if (!val)
+          return;
       var endDate = new Date(val['endDate'])
       var calEndDate = new Date( this. calDates[this. calDates.length-1])
       var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
@@ -321,6 +323,7 @@ private toConventFormat(dateStr){
     }
   daysBetween(val1, val2){                        // used by counter function
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
     var endDate = new Date(val1['endDate'])
     var calEndDate = new Date( val2['startDate'])
     var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);

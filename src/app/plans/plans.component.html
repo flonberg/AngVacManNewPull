@@ -81,7 +81,7 @@ cellpadding="2">
     <td class='h50' >
       <div class='center'>
       <mat-form-field appearance="fill"  class='h50'  >
-        <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="editDate('endDate', $event)" placeholder=" {{ vacEdit.endDate }}">
+        <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="editDate('endDate', $event)" placeholder=" {{ endDateConvent}}">
         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
         <mat-datepicker #picker2></mat-datepicker>
       </mat-form-field>

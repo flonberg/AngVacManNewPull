@@ -72,7 +72,7 @@ export class EntertaComponent implements OnInit {
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
   this .http.post(url, jData).subscribe(ret=>
     this .postRes =  ret)
-    console.log(this .postRes)
+    console.log("75' ret from enterAndGac %o", this .postRes)
  }
  checkTAparams(){
   if (!this .tAparams){

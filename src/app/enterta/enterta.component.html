@@ -2,36 +2,46 @@
 <div class='raised'>
 <table class='centerSmall'>
     <caption> Enter a Time Away </caption>
+    <tr>
   <td>
-  <mat-form-field appearance="fill">
-    <mat-label>Enter a date range</mat-label>
-    <mat-date-range-input [rangePicker]="picker">
-      <input matStartDate plaPeceholder="Start date" #dateRangeStart [value] = "setStart">  
-      <input matEndDate placeholder="End date" #dateRangeEnd  (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)">
-    </mat-date-range-input>
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-  </mat-form-field>
-  </td>
-  <td>
-    <mat-form-field appearance="fill">
-      <mat-label> Reason</mat-label>
-      <mat-select (selectionChange) = "reasonSelect($event)">
-        <mat-option value="1">Personal Vacation</mat-option>
-        <mat-option value="2" >Meeting </mat-option>
-        <mat-option value="3">Other </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </td>
-  <td>
-      <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>Note</mat-label>
-        <input matInput (change) = "noteChange($event)">
+    <div class='center'>
+      <mat-form-field appearance="fill">
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate plaPeceholder="Start date" #dateRangeStart [value] = "setStart">  
+          <input matEndDate placeholder="End date" #dateRangeEnd  (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
+    </div>  
   </td>
   <td>
-    <button mat-raised-button (click) = "pickDate('test')">Submit Time Away</button>
+    <div class='center'>
+      <mat-form-field appearance="fill">
+        <mat-label> Reason</mat-label>
+        <mat-select (selectionChange) = "reasonSelect($event)" >
+          <mat-option value="1">Personal Vacation</mat-option>
+          <mat-option value="2" >Meeting </mat-option>
+          <mat-option value="3">Other </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>  
   </td>
+  <td>
+    <div class='center'>
+        <mat-form-field class="example-full-width" appearance="fill">
+          <mat-label>Note</mat-label>
+          <input matInput (change) = "noteChange($event)" class='note'>
+        </mat-form-field>
+    </div>    
+  </td>
+  <td>
+    <div class='center'>
+    <button class='Button' (click) = "pickDate('test')">Submit Time Away</button>
+    </div>
+  </td>
+</tr>
   </table>
   <div *ngIf = "showError"> Please enter all fields </div>
 </div>
