@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ThrowStmt } from '@angular/compiler';
 interface tAparams {
   startDate : string,
   endDate: string,
@@ -25,6 +26,7 @@ export class EntertaComponent implements OnInit {
   postRes: object;
   valueEmittedFromChildComponent:any;
   buttonClicked: any;
+  overlap: boolean;
   
 
 
@@ -37,6 +39,7 @@ export class EntertaComponent implements OnInit {
     })
     this .showError = false;
     this .buttonClicked = "";
+    this .overlap = false;
   }
 
   @Output() onDatePicked = new EventEmitter<any>();   //
@@ -70,9 +73,15 @@ export class EntertaComponent implements OnInit {
   this .checkTAparams();
   var jData = JSON.stringify(this .tAparams)
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
-  this .http.post(url, jData).subscribe(ret=>
-    this .postRes =  ret)
-    console.log("75' ret from enterAndGac %o", this .postRes)
+  this .http.post(url, jData).subscribe(ret=>{
+    this .postRes = (ret)
+    console.log("75' ret from enterAndGac %o",this .postRes)
+    if (this. postRes['result'] == 0)
+      this .overlap = true;
+      }
+    )
+
+
  }
  checkTAparams(){
   if (!this .tAparams){

@@ -8,3 +8,7 @@
 td {
     padding-left:30px;
 }
+.warning {
+    color:red;
+    font-weight:bold;
+}
