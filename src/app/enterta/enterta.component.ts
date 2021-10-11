@@ -69,7 +69,7 @@ export class EntertaComponent implements OnInit {
   this .tAparams.note= ev.target.value;
    console.log("note is %o", ev.target.value)
  }
- submitTA(){
+ submitTA(){                                                                  // need to put in full error checking. 
   this .checkTAparams();
   var jData = JSON.stringify(this .tAparams)
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
