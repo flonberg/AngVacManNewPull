@@ -70,6 +70,11 @@ console.log("61 tRos is %o", tRow)
 
     this. setCalDates();
   }
+  /**
+   * Main loop for filling out the Calendar Row for a TimeAway
+   * @param vacRow 
+   * @returns 
+   */
 private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
   for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
@@ -130,12 +135,37 @@ private makeDaysOfRow(vacRow){
       this .makeTillEndDays(v1,4);
       return;
     }
-}  
+}                                           // end of loop to fill out calendar row to tA. 
+private makeDaysTillStartDate(){
 
+}
+/**
+ * 
+ * @param tA0 The EARLIER of the pair of tAs
+ * @param tA1 the LATER of the pair of tAs
+ * @param v1  The current day/index
+ * @param n   The index of the row, e.g. the 3rd row in the calendar
+ */
+private fillOutRow(tA0, tA1, v1, n){
+  let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate'] -1)
+  for (let k=0; k < d1; k++){                           // loop and push required dayNums
+    v1++;                                                                           
+    if (!this .dayArray[n]){
+      this .dayArray[n] = Array();
+      this .dayArray[n][0] = v1;
+    }
+    else
+      this .dayArray[n].push(v1);                         // into the dataStruct
+  }
+}
+/**
+ *  Fills in the days from the last day of the tA till the end of the month
+ *  Used when this is the last tA of a row
+ * @param v1   this index/day of the last day of the tA
+ * @param n    the index of the dayArray which is being filled in
+ */
 private makeTillEndDays(v1, n ){
   let tillEnd = 31 - v1;
-  if (n == 4)
-console.log("117  %o  === %o", v1 , n)  
   for (let k=0; k < tillEnd; k++){
     v1++
     if (!this .dayArray[n]){
@@ -144,9 +174,7 @@ console.log("117  %o  === %o", v1 , n)
     }
     else
       this .dayArray[n].push(v1);
-  }
-  if (n == 4)
-  console.log("127 dayArray is %o", this .dayArray[n])
+  }   
 }
 
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
