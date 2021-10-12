@@ -60,24 +60,14 @@ export class PlansComponent implements OnInit {
         })
       this .vacData = res;
         console.log("62 vacData is %o", this. vacData)
-      for (const tRow in this. vacData){
-console.log("61 tRos is %o", this .vacData[tRow])        
+      for (const tRow in this. vacData){ 
         this.makeDaysOfRow(this .vacData[tRow])
         this .vacData[tRow][9] = (this .dayArray);
       }  
       console.log("64 vacData is %o", this .vacData)
     })
-
     this. setCalDates();
   }                                                   // end of ngOnInit
-private isUnderLap(startDate){
-  let firstStartDate = new Date(startDate)
-  console.log("77 underlap for %o", startDate)  
-  if (firstStartDate > this.calDates[0])
-    return false;
-
-  return true;
-}  
   /**
    * Main loop for filling out the Calendar Row for a TimeAway
    * @param vacRow 
@@ -85,13 +75,10 @@ private isUnderLap(startDate){
    */
 private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
-  let tst = this .isUnderLap(vacRow[0]['startDate'])
-  console.log("88 tst is %o", tst)
-  if (!this .isUnderLap(vacRow[0]['startDate'])){
-    console.log("80 vacRos %o  calDates %o", vacRow, this .calDates[0])
+
     for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
       this. dayArray[0][i] = i + 1;
-  }
+
 }
 // go to a date after the end of the tA  
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
@@ -134,7 +121,7 @@ private makeDaysTillStartDate(){
  */
 private fillOutRow(tA0, tA1, v1, n){
   let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate']) -1
-  console.log("154 d1 is %o", d1)
+
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
     v1++;                                                                           
     if (!this .dayArray[n]){
@@ -145,7 +132,6 @@ private fillOutRow(tA0, tA1, v1, n){
       this .dayArray[n].push(v1);                         // into the dataStruct
   }
   return v1;
- console.log("163 this.dayArray %o", this .dayArray) 
 }
 /**
  *  Fills in the days from the last day of the tA till the end of the month
