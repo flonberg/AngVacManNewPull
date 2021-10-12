@@ -40,8 +40,8 @@ cellpadding="2">
    </ng-container>
 
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
-     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1]));  let ip = index'    > 
-      <div   *ngIf = 'item.value[9][2]'>  </div> 
+     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1]));  let ip = index'  [className] = 'getClass( item.value[9][2][ip])'   > 
+      <div   *ngIf = 'item.value[9][2]'> {{ item.value[9][2][ip]  }} </div> 
        </td>
    </ng-container>
 

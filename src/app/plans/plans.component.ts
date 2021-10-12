@@ -87,7 +87,10 @@ private makeDaysOfRow(vacRow){
     this .makeTillEndDays(v1,1);                        // fill out the rest of the dayNum
     return;                                             // don't do anything else
   }
+  console.log("90 vacRow[1] %o", vacRow)
+ // this .fillOutRow(vacRow[0], vacRow[1], v1, 1)
   // If there is a SECOND tA in the row, find the days between the first and second tA
+  
   let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
     v1++;                                                                           
@@ -98,8 +101,10 @@ private makeDaysOfRow(vacRow){
     else
       this .dayArray[1].push(v1);                         // into the dataStruct
   }
+  
+  console.log("103 dayArray is %o", this .dayArray)
   v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
-  if (!vacRow[2]){                                      // if this is the LAST tA
+  if (!vacRow[2]){                                      // if this is the LAST tA / there is NO THIRD tA
     this .makeTillEndDays(v1,2);                        // fill out the rest of the days
     return;
   }
@@ -147,7 +152,8 @@ private makeDaysTillStartDate(){
  * @param n   The index of the row, e.g. the 3rd row in the calendar
  */
 private fillOutRow(tA0, tA1, v1, n){
-  let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate'] -1)
+  let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate']) -1
+  console.log("154 d1 is %o", d1)
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
     v1++;                                                                           
     if (!this .dayArray[n]){
@@ -157,6 +163,7 @@ private fillOutRow(tA0, tA1, v1, n){
     else
       this .dayArray[n].push(v1);                         // into the dataStruct
   }
+ console.log("163 this.dayArray %o", this .dayArray) 
 }
 /**
  *  Fills in the days from the last day of the tA till the end of the month
