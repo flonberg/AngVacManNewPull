@@ -49,7 +49,7 @@ export class EntertaComponent implements OnInit {
 }
 
   dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
-    var tDate = new Date(dateRangeStart.value)
+    var tDate = new Date(dateRangeStart.value)                              // save for editing
     if (  dateRangeEnd.value  ){
      var eDate = new Date(dateRangeEnd.value)
         this .tAparams = {startDate: this.datePipe.transform(tDate, 'yyyy-MM-dd'), 
@@ -80,8 +80,6 @@ export class EntertaComponent implements OnInit {
       this .overlap = true;
       }
     )
-
-
  }
  checkTAparams(){
   if (!this .tAparams){
