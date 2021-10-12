@@ -319,7 +319,10 @@ private toConventFormat(dateStr){
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       if (!val)
           return;
+console.log("322 endCate %o", val['endDate'])          
       var endDate = new Date(val['endDate'])
+      endDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000)
+ //     endDate.toLocaleString('en-US', { timeZone: 'America/New_York' })
       var calEndDate = new Date( this. calDates[this. calDates.length-1])
       var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
      return diff;
