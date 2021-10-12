@@ -38,6 +38,8 @@ export class PlansComponent implements OnInit {
   dayArray: any;
   startDateConvent: string;
   endDateConvent: string;
+  v1: number;
+  numDaysOnCal: number;
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
@@ -81,31 +83,31 @@ private makeDaysOfRow(vacRow){
 
 }
 // go to a date after the end of the tA  
-  let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
+  this .v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
   if (!vacRow[1]){                                      // this is the last tA in the row
-    this .makeTillEndDays(v1,1);                        // fill out the rest of the dayNum
+    this .makeTillEndDays(this .v1,1);                        // fill out the rest of the dayNum
     return;                                             // don't do anything else
   }
-  v1 = this .fillOutRow(vacRow[0], vacRow[1], v1, 1)
-  v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
+  this .v1 = this .fillOutRow(vacRow[0], vacRow[1], this .v1, 1)
+  this .v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
   if (!vacRow[2]){                                      // if this is the LAST tA / there is NO THIRD tA
-    this .makeTillEndDays(v1,2);                        // fill out the rest of the days
+    this .makeTillEndDays(this .v1,2);                        // fill out the rest of the days
     return;
   }
   // if there is a THIRD tA  
-  v1 = this .fillOutRow(vacRow[1], vacRow[2], v1, 2)
+  this .v1 = this .fillOutRow(vacRow[1], vacRow[2], this .v1, 2)
 
-  v1 += vacRow[2]['vacLength']
+  this .v1 += vacRow[2]['vacLength']
   if (!vacRow[3]){
-    this .makeTillEndDays(v1,3);
+    this .makeTillEndDays(this .v1,3);
     return;
   }
     // if there is a FOURTH tA
-  v1 = this .fillOutRow(vacRow[2], vacRow[3], v1, 3)
+  this .v1 = this .fillOutRow(vacRow[2], vacRow[3], this .v1, 3)
 
-    v1 += vacRow[3]['vacLength']
+    this .v1 += vacRow[3]['vacLength']
     if (!vacRow[4]){
-      this .makeTillEndDays(v1,4);
+      this .makeTillEndDays(this .v1,4);
       return;
     }
 }                                           // end of loop to fill out calendar row to tA. 
@@ -121,17 +123,16 @@ private makeDaysTillStartDate(){
  */
 private fillOutRow(tA0, tA1, v1, n){
   let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate']) -1
-
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
-    v1++;                                                                           
+    this .v1++;                                                                           
     if (!this .dayArray[n]){
       this .dayArray[n] = Array();
-      this .dayArray[n][0] = v1;
+      this .dayArray[n][0] = this .v1;
     }
     else
-      this .dayArray[n].push(v1);                         // into the dataStruct
+      this .dayArray[n].push(this .v1);                         // into the dataStruct
   }
-  return v1;
+  return this .v1;
 }
 /**
  *  Fills in the days from the last day of the tA till the end of the month
@@ -140,7 +141,7 @@ private fillOutRow(tA0, tA1, v1, n){
  * @param n    the index of the dayArray which is being filled in
  */
 private makeTillEndDays(v1, n ){
-  let tillEnd = 31 - v1;
+  let tillEnd = 61 - v1;
   for (let k=0; k < tillEnd; k++){
     v1++
     if (!this .dayArray[n]){
@@ -238,7 +239,9 @@ private toConventFormat(dateStr){
   }
   getClass(n){
     if (n == this .dayOfMonth)
-    return 'todayCell'
+      return 'todayCell'
+    if (n > 61)
+      return 'noBorder'  
   }
 
  
@@ -298,8 +301,20 @@ private toConventFormat(dateStr){
       for (var i=0; i < n; i++ ){
         ar[i] = i;
       }
+  
       return ar;
   }
+counterE(n){                                            // used for looper in Calendar
+    var ar = Array();
+    n = n -1;
+
+    for (var i=0; i < n; i++ ){
+      ar[i] = i;
+
+    }
+ 
+    return ar;
+}
 
   setCalDates(){
       var date = new Date();
@@ -314,12 +329,13 @@ private toConventFormat(dateStr){
         firstDay.setDate(firstDay.getDate() + 1);
       }
       while (firstDay <= lastDay)
+      this .numDaysOnCal = 61; 
     }
+
   daysTillEnd(val){
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       if (!val)
           return;
-console.log("322 endCate %o", val['endDate'])          
       var endDate = new Date(val['endDate'])
       endDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000)
  //     endDate.toLocaleString('en-US', { timeZone: 'America/New_York' })
