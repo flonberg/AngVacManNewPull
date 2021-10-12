@@ -82,59 +82,27 @@ private makeDaysOfRow(vacRow){
   }
 // go to a date after the end of the tA  
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
-  console.log("81 v1 is %o", v1)
   if (!vacRow[1]){                                      // this is the last tA in the row
     this .makeTillEndDays(v1,1);                        // fill out the rest of the dayNum
     return;                                             // don't do anything else
   }
-  console.log("90 vacRow[1] %o", vacRow)
- // this .fillOutRow(vacRow[0], vacRow[1], v1, 1)
-  // If there is a SECOND tA in the row, find the days between the first and second tA
-  
-  let d1 = this.daysBetweenA(vacRow[0]['endDate'], vacRow[1]['startDate']) -1
-  for (let k=0; k < d1; k++){                           // loop and push required dayNums
-    v1++;                                                                           
-    if (!this .dayArray[1]){
-      this .dayArray[1] = Array();
-      this .dayArray[1][0] = v1;
-    }
-    else
-      this .dayArray[1].push(v1);                         // into the dataStruct
-  }
-  
-  console.log("103 dayArray is %o", this .dayArray)
+  v1 = this .fillOutRow(vacRow[0], vacRow[1], v1, 1)
   v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
   if (!vacRow[2]){                                      // if this is the LAST tA / there is NO THIRD tA
     this .makeTillEndDays(v1,2);                        // fill out the rest of the days
     return;
   }
-  // if there is a THIRD tA
-  let d2 = this.daysBetweenA(vacRow[1]['endDate'], vacRow[2]['startDate']) -1
-  for (let k=0; k < d2; k++){
-    v1++;
-    if (!this .dayArray[2]){
-      this .dayArray[2] = Array();
-      this .dayArray[2][0] = v1;
-    }
-    else
-      this .dayArray[2].push(v1);
-  }
+  // if there is a THIRD tA  
+  v1 = this .fillOutRow(vacRow[1], vacRow[2], v1, 2)
+
   v1 += vacRow[2]['vacLength']
   if (!vacRow[3]){
     this .makeTillEndDays(v1,3);
     return;
   }
     // if there is a FOURTH tA
-    let d3 = this.daysBetweenA(vacRow[2]['endDate'], vacRow[3]['startDate']) -1
-    for (let k=0; k < d3; k++){
-      v1++;
-      if (!this .dayArray[3]){
-        this .dayArray[3] = Array();
-        this .dayArray[3][0] = v1;
-      }
-      else
-        this .dayArray[3].push(v1);
-    }
+  v1 = this .fillOutRow(vacRow[2], vacRow[3], v1, 3)
+
     v1 += vacRow[3]['vacLength']
     if (!vacRow[4]){
       this .makeTillEndDays(v1,4);
@@ -145,7 +113,7 @@ private makeDaysTillStartDate(){
 
 }
 /**
- * 
+ * Fills out row with dayNumbers matching the dayNumber of calendar top row, so can detect TODAY
  * @param tA0 The EARLIER of the pair of tAs
  * @param tA1 the LATER of the pair of tAs
  * @param v1  The current day/index
@@ -163,6 +131,7 @@ private fillOutRow(tA0, tA1, v1, n){
     else
       this .dayArray[n].push(v1);                         // into the dataStruct
   }
+  return v1;
  console.log("163 this.dayArray %o", this .dayArray) 
 }
 /**
