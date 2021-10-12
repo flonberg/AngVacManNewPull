@@ -59,9 +59,9 @@ export class PlansComponent implements OnInit {
       //    console.log("41 this.userw %o", this .users)
         })
       this .vacData = res;
-        console.log("vacData is %o", this. vacData)
+        console.log("62 vacData is %o", this. vacData)
       for (const tRow in this. vacData){
-console.log("61 tRos is %o", tRow)        
+console.log("61 tRos is %o", this .vacData[tRow])        
         this.makeDaysOfRow(this .vacData[tRow])
         this .vacData[tRow][9] = (this .dayArray);
       }  
@@ -69,7 +69,15 @@ console.log("61 tRos is %o", tRow)
     })
 
     this. setCalDates();
-  }
+  }                                                   // end of ngOnInit
+private isUnderLap(startDate){
+  let firstStartDate = new Date(startDate)
+  console.log("77 underlap for %o", startDate)  
+  if (firstStartDate > this.calDates[0])
+    return false;
+
+  return true;
+}  
   /**
    * Main loop for filling out the Calendar Row for a TimeAway
    * @param vacRow 
@@ -77,9 +85,14 @@ console.log("61 tRos is %o", tRow)
    */
 private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
-  for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
-    this. dayArray[0][i] = i + 1;
+  let tst = this .isUnderLap(vacRow[0]['startDate'])
+  console.log("88 tst is %o", tst)
+  if (!this .isUnderLap(vacRow[0]['startDate'])){
+    console.log("80 vacRos %o  calDates %o", vacRow, this .calDates[0])
+    for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
+      this. dayArray[0][i] = i + 1;
   }
+}
 // go to a date after the end of the tA  
   let v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
   if (!vacRow[1]){                                      // this is the last tA in the row

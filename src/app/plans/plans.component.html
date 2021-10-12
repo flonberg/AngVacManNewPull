@@ -13,24 +13,24 @@ cellpadding="2">
   </td>
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
-  <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' > </td>
+  <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' >   {{item.value[9][0][ip]}}  </td>
   <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "showEditFunc(item.value[0])"   >      {{ item.value[0]['LastName'] }}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
-   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip2= index' [className] = 'getClass( item.value[9][1][ip2])' >   </td>
+   <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip= index' [className] = 'getClass( item.value[9][1][ip])' > {{item.value[9][1][ip]}}  </td>
    <td [attr.colspan] = 'item.value[1].vacLength' class = "green"  (click) = "showEditFunc(item.value[1])"      >  {{ item.value[1]['LastName'] }} </td>
   </ng-container> 
 
 
   <ng-container  *ngIf = '!item.value[1] && item.value[9][1]'  > 
     <td *ngFor = "let lp of counter( daysTillEnd(item.value[0])+1); let ip=index" [className] = 'getClass( item.value[9][1][lp])'  > 
-      <div *ngIf= 'item.value[9][1]' > {{ item.value[9][1][lp]  }}   </div>
+      <div *ngIf= 'item.value[9][1]' > {{ item.value[9][1][lp]  }} bbb  </div>
     </td> 
   </ng-container>
   
 
   <ng-container *ngIf = 'item.value[2]'> 
-    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2])); let ip = index'  [className] = 'getClass( item.value[9][2][ip])'  >  </td>
+    <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2])); let ip = index'  [className] = 'getClass( item.value[9][2][ip])'  > </td>
     <td [attr.colspan] = 'item.value[2].vacLength'  class = "green"  (click) = "showEditFunc(item.value[2])" >{{ item.value[1]['LastName'] }}</td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2] && item.value[9][3]' >
@@ -41,17 +41,17 @@ cellpadding="2">
 
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
      <td *ngFor='let l3 of counter( daysTillEnd(item.value[1]));  let ip = index'  [className] = 'getClass( item.value[9][2][ip])'   > 
-      <div   *ngIf = 'item.value[9][2]'> {{ item.value[9][2][ip]  }} </div> 
+      <div   *ngIf = 'item.value[9][2]'> {{ item.value[9][2][ip]  }}   eee</div> 
        </td>
    </ng-container>
 
    <ng-container *ngIf = 'item.value[3]'> 
-    <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3])); let ip = index ' [className] = 'getClass( item.value[9][3][ip])'     >   </td>
+    <td *ngFor= 'let loop6 of counter( daysBetween(item.value[2], item.value[3])); let ip = index ' [className] = 'getClass( item.value[9][3][ip])'     > </td>
     <td [attr.colspan] = 'item.value[3].vacLength'  class = "green" (click) = "showEditFunc(item.value[3])"  >{{ item.value[2]['LastName'] }} </td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[4] && item.value[2]'>
     <td *ngFor='let l3 of counter( daysTillEnd(item.value[3]));  let ip = index'  > 
-      <div *ngIf = 'item.value[9][4]' >{{ item.value[9][4][ip]  }} </div> </td>
+      <div *ngIf = 'item.value[9][4]' >{{ item.value[9][4][ip]  }}    ppp</div> </td>
   </ng-container>
 </tr>
 </table>
