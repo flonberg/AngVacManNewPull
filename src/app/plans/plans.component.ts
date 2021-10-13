@@ -101,6 +101,7 @@ private makeDaysOfRow(vacRow){
     this .v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
     if (!vacRow[1]){                                      // this is the last tA in the row
       this .makeTillEndDays(this .v1,1);                        // fill out the rest of the dayNum
+      this .makeTillEndBoxes(vacRow[0])
       return;                                             // don't do anything else
     }
     this .v1 = this .fillOutRow(vacRow[0], vacRow[1], this .v1, 1)
@@ -128,7 +129,10 @@ private makeDaysOfRow(vacRow){
 }                                           // end of loop to fill out calendar row to tA. 
 public advanceMonth(){
   this. monthInc++;
+  this .dayNum = 0
+  this. numDaysOnCal += 30;
   this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
+  this .setCalDates();
   this. getTheData();
 }
 /**
@@ -159,7 +163,9 @@ private fillOutRow(tA0, tA1, v1, n){
  */
 private makeTillEndDays(v1, n ){
   let tillEnd = this .numDaysOnCal- v1;
-  
+  if (this .monthInc > 0){
+    console.log("164 %o", this .numDaysOnCal)
+  }
   for (let k=0; k < tillEnd; k++){
     v1++
     if (!this .dayArray[n]){
@@ -169,6 +175,10 @@ private makeTillEndDays(v1, n ){
     else
       this .dayArray[n].push(v1);
   }   
+}
+private makeTillEndBoxes(vac){
+ // console.log("179 va %o", vac)
+
 }
 
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
@@ -258,7 +268,7 @@ private toConventFormat(dateStr){
   getClass(n){
     if (n == this .dayOfMonth)
       return 'todayCell'
-    if (n > 61)
+    if (n > this .numDaysOnCal)
       return 'noBorder'  
   }
 
@@ -328,18 +338,23 @@ counterE(n){                                            // used for looper in Ca
 
   setCalDates(){
       var date = new Date();
+      var monthToAdd = 2 + this. monthInc
+      var monthToAddStart = this. monthInc
       var daysInMonth0 = date.getDate();
-      var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-      var lastDay = new Date(date.getFullYear(), date.getMonth() + 2, 0);
+      var firstDay = new Date(date.getFullYear(), date.getMonth() + monthToAddStart, 1);
+      var lastDay = new Date(date.getFullYear(), date.getMonth() + monthToAdd, 0);
       this. calDates = Array();
       var i = 0;
+ if (this. monthInc > 0){
+   console.log("348 %o", lastDay)
+ }     
       do {
         var cDay = new Date(firstDay.valueOf());
         this. calDates[i++] = cDay;
         firstDay.setDate(firstDay.getDate() + 1);
       }
       while (firstDay <= lastDay)
-      this .numDaysOnCal = 61; 
+  //    this .numDaysOnCal = 61; 
     }
 
   daysTillEnd(val){
@@ -347,12 +362,16 @@ counterE(n){                                            // used for looper in Ca
       if (!val)
           return;
       var endDate = new Date(val['endDate'])
+/* if (this. monthInc > 0) {    
+    console.log("359 %o", val)
+ }*/   
       endDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000)
  //     endDate.toLocaleString('en-US', { timeZone: 'America/New_York' })
       var calEndDate = new Date( this. calDates[this. calDates.length-1])
       var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
      return diff;
     }
+    
   daysBetween(val1, val2){                        // used by counter function
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
