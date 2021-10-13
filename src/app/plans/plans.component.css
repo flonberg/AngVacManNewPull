@@ -1,3 +1,23 @@
+.center {
+	margin: auto;
+	width: 50%;
+	border: 3px solid green;
+	padding: 10px;
+  }
+  div.relative {
+	position: relative;
+	left: 520px;
+	width:300px;
+	height:80px;
+
+  }  
+  div.relative2 {
+	position: relative;
+	left: 420px;
+	width:500px;
+
+  }    
+
 table.cal {
 	background-color:#FFE0C2;
 }
@@ -23,6 +43,10 @@ td.todayCell {
 }
 td.td1 {
 	padding:0;
+}
+td.noBorder {
+	border-collapse: collapse;
+	background-color: pink;
 }
 
 td.hd3 {

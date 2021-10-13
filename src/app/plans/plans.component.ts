@@ -270,16 +270,14 @@ private toConventFormat(dateStr){
     this. dayNum = this. dayNum + n;
     if ( this. dayNum + m + 1 == this. dayOfMonth)
       return "todayCell"
-   // return this. dayNum + m + 1;
   }
- // incDay2(n: number, m: number){
-  //  this. dayNum = this. dayNum + n;
-  //  return this. dayNum + m + 1;
- // }
 
-  getVacs(){
+
+  getVacs(startDate?:  string){
     var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVacs.php';
     var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php';
+    if (startDate)
+      url +='?' + startDate
     return this .http.get(url)
   }
   getUsers(){

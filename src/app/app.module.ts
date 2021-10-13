@@ -12,6 +12,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import {MatDatepickerModule, MatDateRangeInput} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatLabel } from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon'; 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
@@ -41,6 +42,7 @@ import { EntertaComponent } from './enterta/enterta.component';
     MatSelectModule,
     MatDialogModule,
     MatInputModule,
+    MatIconModule,
 
 
     BrowserAnimationsModule,
