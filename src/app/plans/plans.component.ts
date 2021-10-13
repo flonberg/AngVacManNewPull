@@ -42,6 +42,7 @@ export class PlansComponent implements OnInit {
   numDaysOnCal: number;
   monthInc: number;
   getVacURL: string; 
+
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
@@ -56,9 +57,16 @@ export class PlansComponent implements OnInit {
     this .reason = 'Personal Vacation'
     this .monthInc = 0;
     this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
+    this .numDaysOnCal = 61;
 
     this .vacData = Array();
-    this.getVacs().subscribe(res =>{
+
+    this. setCalDates();
+    this .getTheData();
+  }        
+  public getTheData(){
+    console.log("68 url is %o", this .getVacURL)
+    this .http.get(this .getVacURL).subscribe(res =>{
       console.log(" res is %o", res)
       this.getUsers().subscribe(rusers=>{
         this .users = rusers;
@@ -72,8 +80,11 @@ export class PlansComponent implements OnInit {
       }  
       console.log("64 vacData is %o", this .vacData)
     })
-    this. setCalDates();
-  }                                                   // end of ngOnInit
+  }                                           // end of ngOnInit
+
+  getVacs(){
+    return this .http.get(this .getVacURL)
+  }
   /**
    * Main loop for filling out the Calendar Row for a TimeAway
    * @param vacRow 
@@ -85,38 +96,40 @@ private makeDaysOfRow(vacRow){
     for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
       this. dayArray[0][i] = i + 1;
 
-}
-// go to a date after the end of the tA  
-  this .v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
-  if (!vacRow[1]){                                      // this is the last tA in the row
-    this .makeTillEndDays(this .v1,1);                        // fill out the rest of the dayNum
-    return;                                             // don't do anything else
   }
-  this .v1 = this .fillOutRow(vacRow[0], vacRow[1], this .v1, 1)
-  this .v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
-  if (!vacRow[2]){                                      // if this is the LAST tA / there is NO THIRD tA
-    this .makeTillEndDays(this .v1,2);                        // fill out the rest of the days
-    return;
-  }
-  // if there is a THIRD tA  
-  this .v1 = this .fillOutRow(vacRow[1], vacRow[2], this .v1, 2)
-
-  this .v1 += vacRow[2]['vacLength']
-  if (!vacRow[3]){
-    this .makeTillEndDays(this .v1,3);
-    return;
-  }
-    // if there is a FOURTH tA
-  this .v1 = this .fillOutRow(vacRow[2], vacRow[3], this .v1, 3)
-
-    this .v1 += vacRow[3]['vacLength']
-    if (!vacRow[4]){
-      this .makeTillEndDays(this .v1,4);
+  // go to a date after the end of the tA  
+    this .v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
+    if (!vacRow[1]){                                      // this is the last tA in the row
+      this .makeTillEndDays(this .v1,1);                        // fill out the rest of the dayNum
+      return;                                             // don't do anything else
+    }
+    this .v1 = this .fillOutRow(vacRow[0], vacRow[1], this .v1, 1)
+    this .v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
+    if (!vacRow[2]){                                      // if this is the LAST tA / there is NO THIRD tA
+      this .makeTillEndDays(this .v1,2);                        // fill out the rest of the days
       return;
     }
-}                                           // end of loop to fill out calendar row to tA. 
-private makeDaysTillStartDate(){
+    // if there is a THIRD tA  
+    this .v1 = this .fillOutRow(vacRow[1], vacRow[2], this .v1, 2)
 
+    this .v1 += vacRow[2]['vacLength']
+    if (!vacRow[3]){
+      this .makeTillEndDays(this .v1,3);
+      return;
+    }
+      // if there is a FOURTH tA
+    this .v1 = this .fillOutRow(vacRow[2], vacRow[3], this .v1, 3)
+
+      this .v1 += vacRow[3]['vacLength']
+      if (!vacRow[4]){
+        this .makeTillEndDays(this .v1,4);
+        return;
+      }
+}                                           // end of loop to fill out calendar row to tA. 
+public advanceMonth(){
+  this. monthInc++;
+  this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
+  this. getTheData();
 }
 /**
  * Fills out row with dayNumbers matching the dayNumber of calendar top row, so can detect TODAY
@@ -145,7 +158,8 @@ private fillOutRow(tA0, tA1, v1, n){
  * @param n    the index of the dayArray which is being filled in
  */
 private makeTillEndDays(v1, n ){
-  let tillEnd = 61 - v1;
+  let tillEnd = this .numDaysOnCal- v1;
+  
   for (let k=0; k < tillEnd; k++){
     v1++
     if (!this .dayArray[n]){
@@ -277,9 +291,7 @@ private toConventFormat(dateStr){
   }
 
 
-  getVacs(){
-    return this .http.get(this .getVacURL)
-  }
+
   getUsers(){
     var url = 'https://ion.mgh.harvard.edu/cgi-bin/imrtqa/getUsers.php';
     return this .http.get(url)
