@@ -20,7 +20,7 @@ interface tAparams {
  
 })
 export class PlansComponent implements OnInit {
-  panelOpenState: boolean;
+  // panelOpenState: boolean;
   vacData: any;
   vacEdit: any;
   users: any;
@@ -40,6 +40,8 @@ export class PlansComponent implements OnInit {
   endDateConvent: string;
   v1: number;
   numDaysOnCal: number;
+  monthInc: number;
+  getVacURL: string; 
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
@@ -52,6 +54,8 @@ export class PlansComponent implements OnInit {
     this .showEdit = false;
     this .reasonIdx = "1";
     this .reason = 'Personal Vacation'
+    this .monthInc = 0;
+    this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
 
     this .vacData = Array();
     this.getVacs().subscribe(res =>{
@@ -273,12 +277,8 @@ private toConventFormat(dateStr){
   }
 
 
-  getVacs(startDate?:  string){
-    var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVacs.php';
-    var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php';
-    if (startDate)
-      url +='?' + startDate
-    return this .http.get(url)
+  getVacs(){
+    return this .http.get(this .getVacURL)
   }
   getUsers(){
     var url = 'https://ion.mgh.harvard.edu/cgi-bin/imrtqa/getUsers.php';

@@ -1,7 +1,7 @@
 .center {
 	margin: auto;
-	width: 50%;
-	border: 3px solid green;
+	width: 120px;
+
 	padding: 10px;
   }
   div.relative {
@@ -10,14 +10,18 @@
 	width:300px;
 	height:80px;
 
-  }  
+  } 
   div.relative2 {
 	position: relative;
 	left: 420px;
 	width:500px;
 
   }    
+table.toFit {
 
+	table-layout: fixed;;
+	width: 100%
+}
 table.cal {
 	background-color:#FFE0C2;
 }
@@ -59,7 +63,7 @@ td.hd3 {
 
 
 .h50 {
-	width:200px;
+	width:180px;
 	padding-left: 10px;
 
   }
@@ -86,4 +90,7 @@ td.hd3 {
     border:8px outset #999;
     -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
     -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+}
+.centerSmall{
+	width:1100px;
 }
