@@ -119,6 +119,7 @@ console.log("98 %o", dBC)
     this .v1 += vacRow[2]['vacLength']
     if (!vacRow[3]){
       this .makeTillEndDays(this .v1,3);
+      vacRow[2][10] = this .makeTillEndBoxes(vacRow[2])
       return;
     }
       // if there is a FOURTH tA
@@ -129,6 +130,7 @@ console.log("98 %o", dBC)
         this .makeTillEndDays(this .v1,4);
         return;
       }
+      
 }                                           // end of loop to fill out calendar row to tA. 
 lessThan61(n){
   if (n <= 61)
@@ -186,8 +188,22 @@ private makeTillEndDays(v1, n ){
   }   
 }
 private makeTillEndBoxes(vac){
- // console.log("179 va %o", vac)
+  const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+  console.log("179 va %o", vac['endDate'])
+  let endDate = new Date(vac['endDate'])
+  var calEndDate = new Date( this. calDates[this. calDates.length-1])
+  var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
 
+  //endDate.toLocaleString("en-US", {timeZone: "America/New_York"})
+  console.log("197 endDate is %o lastDate is %o diff is %o", vac['endDate'], this. calDates[this. calDates.length-1], diff)
+  let arr = Array()
+  for (let i=0; i < diff; i++)
+    arr[i] = i;
+ // let endDate = new Date(vac['endDate'].getTime() + vac['endDate'].getTimezoneOffset() * 60000)
+ //     endDate.toLocaleString('en-US', { timeZone: 'America/New_York' })
+ //     var calEndDate = new Date( this. calDates[this. calDates.length-1])
+     // var diff =Math.round( (calEndDate.valueOf() - vac.valueOf())/oneDay);
+  return arr;
 }
 
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
@@ -224,6 +240,15 @@ private saveEdits() {
 private editReasonIdx(ev){
   console.log("66 %o", ev)
   
+}
+public calcDaysToEnd(vac){
+  let arr = Array();
+console.log("230 %o", vac)  
+  for (let i=0; i< 10; i++)
+    arr[i] = i;
+  return arr
+
+
 }
 public daysBeforeCalcStart(vac){
   let theStartDate = new Date(vac['startDate'])

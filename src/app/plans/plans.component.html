@@ -45,7 +45,7 @@ cellpadding="2">
     <td [attr.colspan] = 'item.value[2].vacLength'  class = "green"  (click) = "showEditFunc(item.value[2])" >{{ item.value[1]['LastName'] }}</td>
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2] && item.value[9][3]' >
-   <td  *ngFor = "let lp of counter( item.value[1]['daysTillCalEnd']); let ip=index"  > 
+   <td  *ngFor = "let lp of item.value[2][10]; let ip=index"  > 
      <div *ngIf='item.value[9][3]' >{{item.value[1]['daysTillCalEnd'] - ip}}  cc </div>
     </td>
    </ng-container>
