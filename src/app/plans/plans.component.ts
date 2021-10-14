@@ -42,6 +42,7 @@ export class PlansComponent implements OnInit {
   numDaysOnCal: number;
   monthInc: number;
   getVacURL: string; 
+  firstTest: number;
 
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
@@ -58,6 +59,7 @@ export class PlansComponent implements OnInit {
     this .monthInc = 0;
     this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
     this .numDaysOnCal = 61;
+    this .firstTest = 0;
 
     this .vacData = Array();
 
@@ -144,14 +146,15 @@ public advanceMonth(){
  */
 private fillOutRow(tA0, tA1, v1, n){
   let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate']) -1
+  let dayBefore = this. daysBeforeCalcStart(tA0)
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
     this .v1++;                                                                           
     if (!this .dayArray[n]){
       this .dayArray[n] = Array();
-      this .dayArray[n][0] = this .v1;
+      this .dayArray[n][0] = this .v1 - dayBefore;
     }
     else
-      this .dayArray[n].push(this .v1);                         // into the dataStruct
+      this .dayArray[n].push(this .v1 - dayBefore) ;                         // into the dataStruct
   }
   return this .v1;
 }
@@ -216,16 +219,35 @@ private editReasonIdx(ev){
   console.log("66 %o", ev)
   
 }
+public daysBeforeCalcStart(vac){
+  let theStartDate = new Date(vac['startDate'])
+  var diff = this .calDates[0].valueOf() - theStartDate.valueOf() ;
+  diff = Math.ceil(diff / (1000 * 3600 * 24));
+
+  console.log("228 %0", diff)
+  if (diff >  0){
+    return  diff -1 ;
+  }
+  return 0;
+}
 public calcLength(vac){
-  console.log("220 %o", vac)
   let theStartDate = new Date(vac['startDate'])
   var diff = theStartDate.valueOf() - this .calDates[0].valueOf();
   diff = Math.ceil(diff / (1000 * 3600 * 24));
-  console.log("222 %o --- %o", this .calDates[0], theStartDate)
-  console.log("224 diff is %o", diff)
   if (diff < 0)
     return vac.vacLength + diff;
   return vac.vacLength;
+}
+
+
+public calcDayNum(vac,n ){
+  let theStartDate = new Date(vac['startDate'])
+  var diff = theStartDate.valueOf() - this .calDates[0].valueOf();
+  diff = Math.ceil(diff / (1000 * 3600 * 24));
+  if (this .firstTest++ == 0){
+    console.log("234 %o", vac)
+  }
+  return n;
 }
 private toConventFormat(dateStr){
   let date = new Date(dateStr)
