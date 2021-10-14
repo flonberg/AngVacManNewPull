@@ -60,9 +60,7 @@ export class PlansComponent implements OnInit {
     this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
     this .numDaysOnCal = 61;
     this .firstTest = 0;
-
     this .vacData = Array();
-
     this. setCalDates();
     this .getTheData();
   }        
@@ -70,35 +68,35 @@ export class PlansComponent implements OnInit {
     console.log("68 url is %o", this .getVacURL)
     this .http.get(this .getVacURL).subscribe(res =>{
       console.log(" res is %o", res)
+      /*
       this.getUsers().subscribe(rusers=>{
         this .users = rusers;
       //    console.log("41 this.userw %o", this .users)
         })
+        */
       this .vacData = res;
         console.log("62 vacData is %o", this. vacData)
       for (const tRow in this. vacData){ 
         this.makeDaysOfRow(this .vacData[tRow])
         this .vacData[tRow][9] = (this .dayArray);
       }  
-      console.log("64 vacData is %o", this .vacData)
     })
   }                                           // end of ngOnInit
-
+/*
   getVacs(){
     return this .http.get(this .getVacURL)
   }
+  */
   /**
-   * Main loop for filling out the Calendar Row for a TimeAway
+   * Main loop for filling out the Calendar Row for a TimeAway, fills in all the day boxes
    * @param vacRow 
    * @returns 
    */
 private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
   let dBC = this. daysBeforeCalcStart(vacRow[0])          // if first tA starts in earlier month
-console.log("98 %o", dBC)
     for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
       this. dayArray[0][i] = i + 1;
-
   }
   // go to a date after the end of the tA  
     this .v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
@@ -133,21 +131,16 @@ console.log("98 %o", dBC)
       }
       
 }                                           // end of loop to fill out calendar row to tA. 
-lessThan61(n){
-  if (n <= 61)
-    return true
-  return true 
-}
+
 public advanceMonth(){
   this. monthInc++;
   this .dayNum = 0
- // this. numDaysOnCal += 30;
   this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   this .setCalDates();
   this. getTheData();
 }
 /**
- * Fills out row with dayNumbers matching the dayNumber of calendar top row, so can detect TODAY
+ * Fills out row with dayNumbers matching the dayNumber of calendar top row, so can detect TODAY, Used by makeDaysOfRow
  * @param tA0 The EARLIER of the pair of tAs
  * @param tA1 the LATER of the pair of tAs
  * @param v1  The current day/index
@@ -188,27 +181,28 @@ private makeTillEndDays(v1, n ){
       this .dayArray[n].push(v1);
   }   
 }
+/**
+ * Creates an array used by *ngFor to create just enuff boxes for the CalendarRow
+ * @param vac 
+ * @returns 
+ */
 private makeTillEndBoxes(vac){
   const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
   console.log("179 va %o", vac['endDate'])
   let endDate = new Date(vac['endDate'])
   var calEndDate = new Date( this. calDates[this. calDates.length-1])
   var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
-
-  //endDate.toLocaleString("en-US", {timeZone: "America/New_York"})
-  console.log("197 endDate is %o lastDate is %o diff is %o", vac['endDate'], this. calDates[this. calDates.length-1], diff)
   let arr = Array()
   for (let i=0; i < diff; i++)
     arr[i] = i;
- // let endDate = new Date(vac['endDate'].getTime() + vac['endDate'].getTimezoneOffset() * 60000)
- //     endDate.toLocaleString('en-US', { timeZone: 'America/New_York' })
- //     var calEndDate = new Date( this. calDates[this. calDates.length-1])
-     // var diff =Math.round( (calEndDate.valueOf() - vac.valueOf())/oneDay);
   return arr;
 }
-
+/**
+ * Loads parameters to use when the Save Edits button is clicked
+ * @param type 
+ * @param ev 
+ */
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
-    console.log("53 %o --%o", type, ev.value)
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
     if (type.indexOf("start") >= 0){
       this .tAparams.startDate = dateString;
@@ -216,18 +210,16 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     if (type.indexOf("end") >= 0){
       this .tAparams.endDate = dateString;
     }
-    console.log("103 %o", this .tAparams)
 }
-private deleteTa(ev){
+private deleteTa(){
   this .tAparams.reasonIdx = 99;
-  console.log("147 tAparams %o", this.tAparams)
   this .saveEdits();
 }
 private saveEdits() {
   var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
   this .http.post(url, jData).subscribe(res =>{                     // do the http.post
-    this .getVacs().subscribe(get => {                              // reload the vacData
+    this .http.get(this .getVacURL).subscribe(get => {                              // reload the vacData
       this .vacData = get;                                          // store the new vacData
       for (const tRow in this. vacData){
         this.makeDaysOfRow(this .vacData[tRow])
@@ -299,7 +291,7 @@ private toConventFormat(dateStr){
   //  let startDate = new Date(ev.startDate)
   //  this .tAparams.startDate = this.datePipe.transform(startDate, 'MM-dd-YYYY')
     this .showEdit = false;
-    this .getVacs().subscribe(res =>{
+    this .http.get(this .getVacURL).subscribe(res =>{
       this. vacData = res;
       for (const tRow in this. vacData){
         this.makeDaysOfRow(this .vacData[tRow])
@@ -308,16 +300,20 @@ private toConventFormat(dateStr){
     })
  }
 
- public newItemEvent(ev){
-   console.log("53")
- }
+/**
+ * Used to receive event from enterTa Component
+ */
  dataFromChild:any
  public eventFromChild(data) {
-   console.log("53")
+   console.log("53")                                // need to do something to make it work
  }
 
-
-  getDateClass(d: Date){
+ /**
+  * Determines if a day on Calendar Top is a Weekend or Today
+  * @param d 
+  * @returns weekend OR todayCell
+  */ 
+ getDateClass(d: Date){
     let today = new Date()
     let dDate = d.getDate();
     let todayDate = today.getDate();
@@ -328,28 +324,23 @@ private toConventFormat(dateStr){
     if (d.getDay() == 6  || d.getDay() == 0)
         return 'weekend'
   }
+  /**
+   * Determines if day on calendar is Today
+   * @param n day on the calendar
+   * @returns 
+   */
   getClass(n){
     if (n == this .dayOfMonth && this. monthInc == 0)
       return 'todayCell'
-
   }
 
- 
+ /**
+  * Go to new Row on Calendar
+  */
   zeroDayNum(){                                         // reset the dayNum for each row of Cal
     this. dayNum = 0;
   }
-  //addVacDays(n: number){
-  //  this. vacDays = this. vacDays + n;
-  //}
-  testDay(n:number){
-  //  console.log("140 %o", this .dayNum)
-    this. dayNum = this. dayNum + n;
-  }
-  testDay1(n:number){
-
-    this. dayNum = this. dayNum + n;
- 
-  }
+/*
   incDay(n: number){                                  // increment the dayNum of a Cal call. 
     this. dayNum = this. dayNum + n;
     if (this. dayNum == this .dayOfMonth -1)
@@ -361,6 +352,7 @@ private toConventFormat(dateStr){
     if ( this. dayNum + m + 1 == this. dayOfMonth)
       return "todayCell"
   }
+  */
 
 
 
