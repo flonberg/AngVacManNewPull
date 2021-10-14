@@ -23,7 +23,7 @@ cellpadding="2">
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
   <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' >   {{item.value[9][0][ip]}}  </td>
-  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "showEditFunc(item.value[0])"   >      {{ item.value[0]['LastName'] }}  </td>
+  <td [attr.colspan] = 'calcLength(item.value[0])' class = "green" (click) = "showEditFunc(item.value[0])"   >      {{ item.value[0]['LastName'] }}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
    <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip= index' [className] = 'getClass( item.value[9][1][ip])' > {{item.value[9][1][ip]}}  </td>

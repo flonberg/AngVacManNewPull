@@ -216,6 +216,17 @@ private editReasonIdx(ev){
   console.log("66 %o", ev)
   
 }
+public calcLength(vac){
+  console.log("220 %o", vac)
+  let theStartDate = new Date(vac['startDate'])
+  var diff = theStartDate.valueOf() - this .calDates[0].valueOf();
+  diff = Math.ceil(diff / (1000 * 3600 * 24));
+  console.log("222 %o --- %o", this .calDates[0], theStartDate)
+  console.log("224 diff is %o", diff)
+  if (diff < 0)
+    return vac.vacLength + diff;
+  return vac.vacLength;
+}
 private toConventFormat(dateStr){
   let date = new Date(dateStr)
   return this.datePipe.transform(dateStr, 'MM-d-yyyy')
