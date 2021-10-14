@@ -129,10 +129,15 @@ private makeDaysOfRow(vacRow){
         return;
       }
 }                                           // end of loop to fill out calendar row to tA. 
+lessThan61(n){
+  if (n <= 61)
+    return true
+  return true 
+}
 public advanceMonth(){
   this. monthInc++;
   this .dayNum = 0
-  this. numDaysOnCal += 30;
+ // this. numDaysOnCal += 30;
   this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   this .setCalDates();
   this. getTheData();
@@ -357,6 +362,14 @@ private toConventFormat(dateStr){
   
       return ar;
   }
+counterBetween(n, m){
+  var ar = Array();  
+  for (var i = +n; i <= +m; i++){
+    ar[i] = i;
+  }
+console.log("336 %o", ar)    
+  return ar;  
+}  
 counterE(n){                                            // used for looper in Calendar
     var ar = Array();
     n = n -1;
