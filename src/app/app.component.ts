@@ -33,10 +33,9 @@ export class AppComponent {
 
   
   constructor(private http: HttpClient, public datePipe: DatePipe, private activatedRoute: ActivatedRoute) {
-    console.log(" const ");
-    this.getMDs().subscribe(res =>{
+   /* this.getMDs().subscribe(res =>{
       this.setData(res);
-    })
+    }) */
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
     })

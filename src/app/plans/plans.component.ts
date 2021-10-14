@@ -188,7 +188,6 @@ private makeTillEndDays(v1, n ){
  */
 private makeTillEndBoxes(vac){
   const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-  console.log("179 va %o", vac['endDate'])
   let endDate = new Date(vac['endDate'])
   var calEndDate = new Date( this. calDates[this. calDates.length-1])
   var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
@@ -271,25 +270,23 @@ public calcDayNum(vac,n ){
   }
   return n;
 }
-private toConventFormat(dateStr){
-  let date = new Date(dateStr)
-  return this.datePipe.transform(dateStr, 'MM-d-yyyy')
-}
+/**
+ * Used when user clicks on her tA, to show the edit controls. 
+ * @param vacEdit 
+ */
  private showEditFunc(vacEdit){
-   this .startDateConvent = this .toConventFormat(vacEdit.startDate)
-   this .endDateConvent = this .toConventFormat(vacEdit.endDate)
-   console.log("49 %o", vacEdit)
+   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
+   this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
    this .tAparams ={} as tAparams;
    this .tAparams.vidx  = vacEdit.vidx;
-   this .vacEdit = vacEdit;
-
-  
+   this .vacEdit = vacEdit; 
    this. showEdit = true;
  } 
- public doSomething(ev){                                     // access point for enterData component
-    console.log("49 in PlansComponent.ts ev %o", ev)
-  //  let startDate = new Date(ev.startDate)
-  //  this .tAparams.startDate = this.datePipe.transform(startDate, 'MM-dd-YYYY')
+ /**
+  * Used by enterTa to signal a new tA has been added and we need to reload the data. 
+  * @param ev 
+  */
+ public doSomething(){                                     // access point for enterData component
     this .showEdit = false;
     this .http.get(this .getVacURL).subscribe(res =>{
       this. vacData = res;
@@ -356,7 +353,7 @@ private toConventFormat(dateStr){
 
 
 
-  getUsers(){
+    getUsers(){
     var url = 'https://ion.mgh.harvard.edu/cgi-bin/imrtqa/getUsers.php';
     return this .http.get(url)
   }
@@ -364,9 +361,9 @@ private toConventFormat(dateStr){
 //    this. users = res;
 //  }
   setData(res ) {
-    this.getUsers().subscribe(res =>{
+   /* this.getUsers().subscribe(res =>{
       this .users = res;
-    })
+    }) */
     this.vacData = res;
     console.log(this.vacData)
  }
