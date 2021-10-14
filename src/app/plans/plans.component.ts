@@ -128,6 +128,7 @@ console.log("98 %o", dBC)
       this .v1 += vacRow[3]['vacLength']
       if (!vacRow[4]){
         this .makeTillEndDays(this .v1,4);
+        vacRow[3][10] = this .makeTillEndBoxes(vacRow[3])
         return;
       }
       
@@ -328,10 +329,9 @@ private toConventFormat(dateStr){
         return 'weekend'
   }
   getClass(n){
-    if (n == this .dayOfMonth)
+    if (n == this .dayOfMonth && this. monthInc == 0)
       return 'todayCell'
-    if (n > this .numDaysOnCal)
-      return 'noBorder'  
+
   }
 
  
