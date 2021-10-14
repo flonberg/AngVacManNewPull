@@ -94,7 +94,8 @@ export class PlansComponent implements OnInit {
    */
 private makeDaysOfRow(vacRow){
   this .dayArray = [[]];
-
+  let dBC = this. daysBeforeCalcStart(vacRow[0])          // if first tA starts in earlier month
+console.log("98 %o", dBC)
     for (let i = 0; i < vacRow[0]['daysTillStartDate']; i++){
       this. dayArray[0][i] = i + 1;
 
@@ -106,14 +107,14 @@ private makeDaysOfRow(vacRow){
       this .makeTillEndBoxes(vacRow[0])
       return;                                             // don't do anything else
     }
-    this .v1 = this .fillOutRow(vacRow[0], vacRow[1], this .v1, 1)
+    this .v1 = this .fillOutRow(vacRow[0], vacRow[1], this .v1, 1, dBC)
     this .v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
     if (!vacRow[2]){                                      // if this is the LAST tA / there is NO THIRD tA
       this .makeTillEndDays(this .v1,2);                        // fill out the rest of the days
       return;
     }
     // if there is a THIRD tA  
-    this .v1 = this .fillOutRow(vacRow[1], vacRow[2], this .v1, 2)
+    this .v1 = this .fillOutRow(vacRow[1], vacRow[2], this .v1, 2, dBC)
 
     this .v1 += vacRow[2]['vacLength']
     if (!vacRow[3]){
@@ -121,7 +122,7 @@ private makeDaysOfRow(vacRow){
       return;
     }
       // if there is a FOURTH tA
-    this .v1 = this .fillOutRow(vacRow[2], vacRow[3], this .v1, 3)
+    this .v1 = this .fillOutRow(vacRow[2], vacRow[3], this .v1, 3, dBC)
 
       this .v1 += vacRow[3]['vacLength']
       if (!vacRow[4]){
@@ -149,9 +150,9 @@ public advanceMonth(){
  * @param v1  The current day/index
  * @param n   The index of the row, e.g. the 3rd row in the calendar
  */
-private fillOutRow(tA0, tA1, v1, n){
+private fillOutRow(tA0, tA1, v1, n, dayBefore){
   let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate']) -1
-  let dayBefore = this. daysBeforeCalcStart(tA0)
+  //let dayBefore = this. daysBeforeCalcStart(tA0)
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
     this .v1++;                                                                           
     if (!this .dayArray[n]){
@@ -228,8 +229,6 @@ public daysBeforeCalcStart(vac){
   let theStartDate = new Date(vac['startDate'])
   var diff = this .calDates[0].valueOf() - theStartDate.valueOf() ;
   diff = Math.ceil(diff / (1000 * 3600 * 24));
-
-  console.log("228 %0", diff)
   if (diff >  0){
     return  diff -1 ;
   }
