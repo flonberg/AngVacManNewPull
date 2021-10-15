@@ -12,6 +12,12 @@ interface tAparams {
   note?: string,
   vidx: string;
 }
+interface calParams {
+  firstMonthName: string,
+  secondMonthName: string,
+  daysInFirstMonth:number,
+  daysInSecondMonth: number,
+}
 
 @Component({
   selector: 'app-plans',
@@ -43,6 +49,7 @@ export class PlansComponent implements OnInit {
   monthInc: number;
   getVacURL: string; 
   firstTest: number;
+  calParams: calParams;
 
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
@@ -337,19 +344,7 @@ public calcDayNum(vac,n ){
   zeroDayNum(){                                         // reset the dayNum for each row of Cal
     this. dayNum = 0;
   }
-/*
-  incDay(n: number){                                  // increment the dayNum of a Cal call. 
-    this. dayNum = this. dayNum + n;
-    if (this. dayNum == this .dayOfMonth -1)
-      return 'todayCell'
-    return this. dayNum +1;
-  }
-  incDay1(n: number, m: number){
-    this. dayNum = this. dayNum + n;
-    if ( this. dayNum + m + 1 == this. dayOfMonth)
-      return "todayCell"
-  }
-  */
+
 
 
 
@@ -361,9 +356,7 @@ public calcDayNum(vac,n ){
 //    this. users = res;
 //  }
   setData(res ) {
-   /* this.getUsers().subscribe(res =>{
-      this .users = res;
-    }) */
+
     this.vacData = res;
     console.log(this.vacData)
  }
@@ -396,16 +389,27 @@ counterE(n){                                            // used for looper in Ca
 }
 
   setCalDates(){
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+             "July", "August", "September", "October", "November", "December"
+              ];
+      this .calParams = {} as calParams
       var date = new Date();
+     // date = new Date(date.setMonth(date.getMonth()+ this .monthInc));
       var monthToAdd = 2 + this. monthInc
       var monthToAddStart = this. monthInc
       var daysInMonth0 = date.getDate();
       var firstDay = new Date(date.getFullYear(), date.getMonth() + monthToAddStart, 1);
+      this .calParams.firstMonthName = firstDay.toLocaleString('default', { month: 'long' });
+      this .calParams.daysInFirstMonth = new Date(firstDay.getFullYear(), firstDay.getMonth() + 1, 0).getDate();
+  
       var lastDay = new Date(date.getFullYear(), date.getMonth() + monthToAdd, 0);
+      this .calParams.daysInSecondMonth = new Date(lastDay.getFullYear(), lastDay.getMonth() + 1, 0).getDate();
+      this .calParams.secondMonthName = lastDay.toLocaleString('default', { month: 'long' });
       this. calDates = Array();
+      this .calParams.firstMonthName = monthNames[firstDay.getMonth()]
       var i = 0;
  if (this. monthInc > 0){
-   console.log("348 %o", lastDay)
+   console.log("348 %o --- %o", firstDay, this .calParams)
  }     
       do {
         var cDay = new Date(firstDay.valueOf());
