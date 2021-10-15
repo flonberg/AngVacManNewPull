@@ -27,6 +27,8 @@ export class EntertaComponent implements OnInit {
   valueEmittedFromChildComponent:any;
   buttonClicked: any;
   overlap: boolean;
+  monthInc: number;
+  startDateEntered: Date;
   
 
 
@@ -40,16 +42,21 @@ export class EntertaComponent implements OnInit {
     this .showError = false;
     this .buttonClicked = "";
     this .overlap = false;
+    this .monthInc = 1;
   }
 
   @Output() onDatePicked = new EventEmitter<any>();   //
   public pickDate(date: any): void {
+  console.log("50 %o", date)  
     this. submitTA();
     this.onDatePicked.emit(date);
 }
 
   dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
     var tDate = new Date(dateRangeStart.value)                              // save for editing
+    this .startDateEntered = tDate;
+    this .monthInc = this.whatMonthIsStartDateIn(tDate)
+console.log("56 %o", this .monthInc)    
     if (  dateRangeEnd.value  ){
      var eDate = new Date(dateRangeEnd.value)
         this .tAparams = {startDate: this.datePipe.transform(tDate, 'yyyy-MM-dd'), 
@@ -57,6 +64,13 @@ export class EntertaComponent implements OnInit {
       }
     this .checkTAparams();  
   console.log("change %o", this .tAparams)
+ }
+ whatMonthIsStartDateIn(startDate){
+   let thisMonth = new Date();
+   var lastDate = new Date(thisMonth.getFullYear(), thisMonth.getMonth() + 2, 0);
+   if (startDate < lastDate)
+    return 0;
+  return 1;
  }
  reasonSelect(ev){
     console.log("event is %o", ev) 

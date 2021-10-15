@@ -4,8 +4,8 @@
 
 <div class='relative'>
 
-<img src="assets/prevMonthArrow.png" alt="image">
-<img src="assets/nextMonthArrow.png" (click) = 'advanceMonth()'  alt="image">
+<img src="assets/prevMonthArrow.png"  (click) = 'advanceMonth(-1)'  alt="image">
+<img src="assets/nextMonthArrow.png" (click) = 'advanceMonth(1)'  alt="image">
 </div>
 
 <table id="myTable" border="1" class="cal" *ngIf = "vacData" 
@@ -22,12 +22,12 @@ cellpadding="2">
   </td>
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
-  <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' >   {{item.value[9][0][ip]}} aa </td>
+  <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' >   </td>
   <td [attr.colspan] = 'calcLength(item.value[0])' class = "green" (click) = "showEditFunc(item.value[0])"   >      {{ item.value[0]['LastName'] }}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
    <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip= index' [className] = 'getClass( item.value[9][1][ip])' > 
-            {{    calcDayNum(item.value[0], item.value[9][1][ip])  }} bb </td>
+            </td>
    <td [attr.colspan] = 'item.value[1].vacLength' class = "green"  (click) = "showEditFunc(item.value[1])"      >  {{ item.value[1]['LastName'] }}  </td>
   </ng-container> 
 
@@ -35,7 +35,7 @@ cellpadding="2">
   <ng-container  *ngIf = '!item.value[1] && item.value[9][1]'  > 
     <td *ngFor = "let lp of counter( item.value[0]['daysTillCalEnd']); let ip=index"    [className] = 'getClass( item.value[9][1][lp])'  > 
       <div *ngIf= 'item.value[9][1]' > 
-        aa
+ 
       </div>
     </td> 
 
@@ -48,14 +48,14 @@ cellpadding="2">
    </ng-container> 
    <ng-container *ngIf = '!item.value[3] && item.value[2] && item.value[9][3]' >
    <td  *ngFor = "let lp of item.value[2][10]; let ip=index"  > 
-     <div *ngIf='item.value[9][3]' >{{item.value[1]['daysTillCalEnd'] - ip}} 
+     <div *ngIf='item.value[9][3]' >
        </div>
     </td>
    </ng-container>
 
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
      <td *ngFor='let l3 of counter( daysTillEnd(item.value[1]));  let ip = index'  [className] = 'getClass( item.value[9][2][ip])'   > 
-      <div   *ngIf = 'item.value[9][2]'> {{ item.value[9][2][ip]  }}   eee</div> 
+      <div   *ngIf = 'item.value[9][2]'>   </div> 
        </td>
    </ng-container>
 
@@ -65,7 +65,7 @@ cellpadding="2">
    </ng-container> 
    <ng-container *ngIf = '!item.value[4]  && item.value[3] && item.value[3][10] '>
     <td *ngFor='let l3 of  item.value[3][10] ;  let ip = index'  > 
-      <div *ngIf = 'item.value[9][4]' >{{ ip }}  </div> </td>
+      <div *ngIf = 'item.value[9][4]' > </div> </td>
   </ng-container>
 </tr>
 </table>
@@ -140,4 +140,4 @@ cellpadding="2">
     
 
 
-<app-enterta (onDatePicked) = "doSomething()"  ></app-enterta>
+<app-enterta (onDatePicked) = "doSomething($event)"  ></app-enterta>

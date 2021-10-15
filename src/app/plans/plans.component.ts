@@ -139,8 +139,8 @@ private makeDaysOfRow(vacRow){
       
 }                                           // end of loop to fill out calendar row to tA. 
 
-public advanceMonth(){
-  this. monthInc++;
+public advanceMonth(n){
+  this. monthInc += n;
   this .dayNum = 0
   this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   this .setCalDates();
@@ -293,8 +293,10 @@ public calcDayNum(vac,n ){
   * Used by enterTa to signal a new tA has been added and we need to reload the data. 
   * @param ev 
   */
- public doSomething(){                                     // access point for enterData component
+ public doSomething(date: any){                                     // access point for enterData component
     this .showEdit = false;
+    console.log('298 Picked date: ', date);
+
     this .http.get(this .getVacURL).subscribe(res =>{
       this. vacData = res;
       for (const tRow in this. vacData){
