@@ -74,13 +74,6 @@ export class PlansComponent implements OnInit {
   public getTheData(){
     console.log("68 url is %o", this .getVacURL)
     this .http.get(this .getVacURL).subscribe(res =>{
-      console.log(" res is %o", res)
-      /*
-      this.getUsers().subscribe(rusers=>{
-        this .users = rusers;
-      //    console.log("41 this.userw %o", this .users)
-        })
-        */
       this .vacData = res;
         console.log("62 vacData is %o", this. vacData)
       for (const tRow in this. vacData){ 
@@ -89,11 +82,6 @@ export class PlansComponent implements OnInit {
       }  
     })
   }                                           // end of ngOnInit
-/*
-  getVacs(){
-    return this .http.get(this .getVacURL)
-  }
-  */
   /**
    * Main loop for filling out the Calendar Row for a TimeAway, fills in all the day boxes
    * @param vacRow 
@@ -231,24 +219,21 @@ private saveEdits() {
         this.makeDaysOfRow(this .vacData[tRow])
         this .vacData[tRow][9] = (this .dayArray);
       }  
-   this .showEdit = false; 
-   console.log("152 vacData is %o", this .vacData)
+
     })
   })
+  this .showEdit = false; 
 }
 private editReasonIdx(ev){
   console.log("66 %o", ev)
   
 }
-public calcDaysToEnd(vac){
-  let arr = Array();
-console.log("230 %o", vac)  
-  for (let i=0; i< 10; i++)
-    arr[i] = i;
-  return arr
 
-
-}
+/**
+ * Calculate the number of days from firstDayOnCalendar to start of tA
+ * @param vac 
+ * @returns dBC
+ */
 public daysBeforeCalcStart(vac){
   let theStartDate = new Date(vac['startDate'])
   var diff = this .calDates[0].valueOf() - theStartDate.valueOf() ;
@@ -257,25 +242,6 @@ public daysBeforeCalcStart(vac){
     return  diff -1 ;
   }
   return 0;
-}
-public calcLength(vac){
-  let theStartDate = new Date(vac['startDate'])
-  var diff = theStartDate.valueOf() - this .calDates[0].valueOf();
-  diff = Math.ceil(diff / (1000 * 3600 * 24));
-  if (diff < 0)
-    return vac.vacLength + diff;
-  return vac.vacLength;
-}
-
-
-public calcDayNum(vac,n ){
-  let theStartDate = new Date(vac['startDate'])
-  var diff = theStartDate.valueOf() - this .calDates[0].valueOf();
-  diff = Math.ceil(diff / (1000 * 3600 * 24));
-  if (this .firstTest++ == 0){
-    console.log("234 %o", vac)
-  }
-  return n;
 }
 /**
  * Used when user clicks on her tA, to show the edit controls. 
@@ -293,7 +259,7 @@ public calcDayNum(vac,n ){
   * Used by enterTa to signal a new tA has been added and we need to reload the data. 
   * @param ev 
   */
- public doSomething(date: any){                                     // access point for enterData component
+ public refreshData(date: any){                                     // <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
     this .showEdit = false;
     console.log('298 Picked date: ', date);
     this .http.get(this .getVacURL).subscribe(res =>{
@@ -304,15 +270,6 @@ public calcDayNum(vac,n ){
       }  
     })
  }
-
-/**
- * Used to receive event from enterTa Component
- */
-// dataFromChild:any
-// public eventFromChild(data) {
-//   console.log("53 envent From Child")                                // need to do something to make it work
-// }
-
  /**
   * Determines if a day on Calendar Top is a Weekend or Today
   * @param d 
