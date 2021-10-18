@@ -5,6 +5,7 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { throwError } from 'rxjs';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 interface tAparams {
   startDate? : string,
   endDate?: string,
@@ -17,6 +18,7 @@ interface calParams {
   secondMonthName: string,
   daysInFirstMonth:number,
   daysInSecondMonth: number,
+  lastDateOnCal: Date,
 }
 
 @Component({
@@ -51,6 +53,7 @@ export class PlansComponent implements OnInit {
   firstTest: number;
   calParams: calParams;
 
+
   
   constructor(private http: HttpClient, private datePipe: DatePipe ) { }
 
@@ -70,18 +73,50 @@ export class PlansComponent implements OnInit {
     this .vacData = Array();
     this. setCalDates();
     this .getTheData();
-  }        
+  }      
+  /**
+   * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
+   */  
   public getTheData(){
     console.log("68 url is %o", this .getVacURL)
     this .http.get(this .getVacURL).subscribe(res =>{
       this .vacData = res;
         console.log("62 vacData is %o", this. vacData)
       for (const tRow in this. vacData){ 
-        this.makeDaysOfRow(this .vacData[tRow])
-        this .vacData[tRow][9] = (this .dayArray);
+        this.makeDaysOfRow(this .vacData[tRow])               // fill out the row of boxes for the Calenday
+        this .vacData[tRow][9] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
+
       }  
     })
-  }                                           // end of ngOnInit
+  }   
+   /**
+  * Used by enterTa to signal a new tA has been added and we need to reload the data. 
+  * @param ev 
+  */
+ public refreshData(date: any){                                     // <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
+  this .showEdit = false;
+ // let tst = this .howManyMonthForward(date)
+ // console.log('298 Picked date: %o is on cal is %o ', date, tst);
+  this .http.get(this .getVacURL).subscribe(res =>{
+    this. vacData = res;
+    for (const tRow in this. vacData){
+      this.makeDaysOfRow(this .vacData[tRow])
+      this .vacData[tRow][9] = (this .dayArray);
+    }  
+  })
+}               
+private howManyMonthForward(date){
+  let n = 0
+  let testDate = this .calParams.lastDateOnCal
+  if (date < this .calParams.lastDateOnCal)
+    return n;
+  do {
+    n++;
+    testDate = new Date(testDate.getFullYear(), testDate.getMonth() + 1, 0)               // last date of next month
+console.log("115 testDate %o", testDate)    
+  } while  (date > testDate && n < 10) ;
+  return n 
+}                         
   /**
    * Main loop for filling out the Calendar Row for a TimeAway, fills in all the day boxes
    * @param vacRow 
@@ -108,7 +143,6 @@ private makeDaysOfRow(vacRow){
     }
     // if there is a THIRD tA  
     this .v1 = this .fillOutRow(vacRow[1], vacRow[2], this .v1, 2, dBC)
-
     this .v1 += vacRow[2]['vacLength']
     if (!vacRow[3]){
       this .makeTillEndDays(this .v1,3);
@@ -117,18 +151,17 @@ private makeDaysOfRow(vacRow){
     }
       // if there is a FOURTH tA
     this .v1 = this .fillOutRow(vacRow[2], vacRow[3], this .v1, 3, dBC)
-
       this .v1 += vacRow[3]['vacLength']
       if (!vacRow[4]){
         this .makeTillEndDays(this .v1,4);
         vacRow[3][10] = this .makeTillEndBoxes(vacRow[3])
         return;
-      }
-      
+      }  
 }                                           // end of loop to fill out calendar row to tA. 
 
 public advanceMonth(n){
   this. monthInc += n;
+  this. vacData = null;                                         // don't draw until new data
   this .dayNum = 0
   this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   this .setCalDates();
@@ -212,17 +245,10 @@ private deleteTa(){
 private saveEdits() {
   var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
-  this .http.post(url, jData).subscribe(res =>{                     // do the http.post
-    this .http.get(this .getVacURL).subscribe(get => {                              // reload the vacData
-      this .vacData = get;                                          // store the new vacData
-      for (const tRow in this. vacData){
-        this.makeDaysOfRow(this .vacData[tRow])
-        this .vacData[tRow][9] = (this .dayArray);
-      }  
-
-    })
+    this .http.post(url, jData).subscribe(res =>{                     // do the http.post
+      this .getTheData();                                           // refresh the data to show the edits. 
   })
-  this .showEdit = false; 
+  this .showEdit = false;                                           // turn of editControl box. 
 }
 private editReasonIdx(ev){
   console.log("66 %o", ev)
@@ -255,21 +281,7 @@ public daysBeforeCalcStart(vac){
    this .vacEdit = vacEdit; 
    this. showEdit = true;
  } 
- /**
-  * Used by enterTa to signal a new tA has been added and we need to reload the data. 
-  * @param ev 
-  */
- public refreshData(date: any){                                     // <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
-    this .showEdit = false;
-    console.log('298 Picked date: ', date);
-    this .http.get(this .getVacURL).subscribe(res =>{
-      this. vacData = res;
-      for (const tRow in this. vacData){
-        this.makeDaysOfRow(this .vacData[tRow])
-        this .vacData[tRow][9] = (this .dayArray);
-      }  
-    })
- }
+
  /**
   * Determines if a day on Calendar Top is a Weekend or Today
   * @param d 
@@ -359,14 +371,15 @@ counterE(n){                                            // used for looper in Ca
       var firstDay = new Date(date.getFullYear(), date.getMonth() + monthToAddStart, 1);
       this .calParams.firstMonthName = firstDay.toLocaleString('default', { month: 'long' });
       this .calParams.daysInFirstMonth = new Date(firstDay.getFullYear(), firstDay.getMonth() + 1, 0).getDate();
-  
       var lastDay = new Date(date.getFullYear(), date.getMonth() + monthToAdd, 0);
+      this .calParams.lastDateOnCal = lastDay
       this .calParams.daysInSecondMonth = new Date(lastDay.getFullYear(), lastDay.getMonth() + 1, 0).getDate();
       this .calParams.secondMonthName = lastDay.toLocaleString('default', { month: 'long' });
       this. calDates = Array();
       this .calParams.firstMonthName = monthNames[firstDay.getMonth()]
       var i = 0;
- if (this. monthInc > 0){
+// if (this. monthInc > 0)
+ {
    console.log("348 %o --- %o", firstDay, this .calParams)
  }     
       do {
@@ -395,10 +408,9 @@ counterE(n){                                            // used for looper in Ca
     
   daysBetween(val1, val2){                        // used by counter function
     const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-
     var endDate = new Date(val1['endDate'])
     var calEndDate = new Date( val2['startDate'])
-    var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
+    var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay); 
     return diff -1;
   }  
   daysBetweenA(val1, val2){
@@ -407,6 +419,7 @@ counterE(n){                                            // used for looper in Ca
     var d2= new Date( val2)
     var tst = d2.valueOf() - d1.valueOf();
     var diff =Math.round( (d2.valueOf() - d1.valueOf())/oneDay);
+//console.log("420 %o --- %o --- %o", d1, d2, diff)    
     return diff ;
   } 
 

@@ -8,10 +8,7 @@
 <img src="assets/nextMonthArrow.png" (click) = 'advanceMonth(1)'  alt="image">
 </div>
 
-<table id="myTable" border="1" class="cal" *ngIf = "vacData" 
-  style="border-collapse: collapse; 
-background-color:rgb(239, 214, 208)" 
-cellpadding="2">
+<table id="myTable" border="1" class="cal" *ngIf = "vacData"  style="border-collapse: collapse; background-color:rgb(239, 214, 208)" cellpadding="2">
 <tr>
   <td [attr.colspan] = 'calParams.daysInFirstMonth'> {{ calParams.firstMonthName }} </td>
   <td [attr.colspan] = 'calParams.daysInSecondMonth'> {{ calParams.secondMonthName }}  </td>
@@ -23,12 +20,12 @@ cellpadding="2">
 </tr>
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
   <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' >   </td>
-  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "showEditFunc(item.value[0])"   >      {{ item.value[0]['LastName'] }}  </td>
+  <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "showEditFunc(item.value[0])"   >  {{ item.value[0]['vacLength'] }}  {{ item.value[0]['LastName'] }}  </td>
 
   <ng-container *ngIf = 'item.value[1]'> 
    <td *ngFor= 'let loop4 of counter(daysBetween(item.value[0], item.value[1])) ;let ip= index' [className] = 'getClass( item.value[9][1][ip])' > 
             </td>
-   <td [attr.colspan] = 'item.value[1].vacLength' class = "green"  (click) = "showEditFunc(item.value[1])"      >  {{ item.value[1]['LastName'] }}  </td>
+   <td [attr.colspan] = 'item.value[1].vacLength' class = "green"  (click) = "showEditFunc(item.value[1])"      >  {{ item.value[1]['vacLength'] }}   {{ item.value[1]['LastName'] }}  </td>
   </ng-container> 
 
 
