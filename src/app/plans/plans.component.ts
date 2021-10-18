@@ -95,8 +95,14 @@ export class PlansComponent implements OnInit {
   */
  public refreshData(date: any){                                     // <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
   this .showEdit = false;
- // let tst = this .howManyMonthForward(date)
+  let tst = this .howManyMonthForward(date) -1
+  this .monthInc = tst
+  this .advanceMonth(tst)
+ 
+ /*
+  this .setCalDates
  // console.log('298 Picked date: %o is on cal is %o ', date, tst);
+  this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ tst
   this .http.get(this .getVacURL).subscribe(res =>{
     this. vacData = res;
     for (const tRow in this. vacData){
@@ -104,6 +110,8 @@ export class PlansComponent implements OnInit {
       this .vacData[tRow][9] = (this .dayArray);
     }  
   })
+
+  */
 }               
 private howManyMonthForward(date){
   let n = 0
@@ -112,7 +120,7 @@ private howManyMonthForward(date){
     return n;
   do {
     n++;
-    testDate = new Date(testDate.getFullYear(), testDate.getMonth() + 1, 0)               // last date of next month
+    testDate = new Date(testDate.getFullYear(), testDate.getMonth() + n, 0)               // last date of next month
 console.log("115 testDate %o", testDate)    
   } while  (date > testDate && n < 10) ;
   return n 
