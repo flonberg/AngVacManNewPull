@@ -95,9 +95,9 @@ export class PlansComponent implements OnInit {
   */
  public refreshData(date: any){                                     // <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
   this .showEdit = false;
-  let tst = this .howManyMonthForward(date) -1
-  this .monthInc = tst
-  this .advanceMonth(tst)
+  let tst = this .howManyMonthForward(date) - 1
+  this .monthInc = this .howManyMonthForward(date) - 1
+  this .advanceMonth( 0)
  
  /*
   this .setCalDates
