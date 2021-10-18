@@ -296,7 +296,6 @@ public calcDayNum(vac,n ){
  public doSomething(date: any){                                     // access point for enterData component
     this .showEdit = false;
     console.log('298 Picked date: ', date);
-
     this .http.get(this .getVacURL).subscribe(res =>{
       this. vacData = res;
       for (const tRow in this. vacData){
@@ -309,10 +308,10 @@ public calcDayNum(vac,n ){
 /**
  * Used to receive event from enterTa Component
  */
- dataFromChild:any
- public eventFromChild(data) {
-   console.log("53")                                // need to do something to make it work
- }
+// dataFromChild:any
+// public eventFromChild(data) {
+//   console.log("53 envent From Child")                                // need to do something to make it work
+// }
 
  /**
   * Determines if a day on Calendar Top is a Weekend or Today
