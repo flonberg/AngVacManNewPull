@@ -67,29 +67,27 @@
 </tr>
 </table>
 
-<div id='spacer'  >
-  <div id='raised' *ngIf = showEdit >
-  <table class='toFit' *ngIf = showEdit >
-      <caption> {{ theCaption }} Edit Time Away </caption>
-    <tr *ngIf = !readOnly>
-        <th> Start Date</th>
-        <th> End Date</th>
-        <th> Reason </th>
-        <th> Start Date</th>
-    </tr>  
-    <tr>
-    <td class='h50'>
-      <div class='center'>
-    <mat-form-field appearance="fill" *ngIf = showEdit  class='h50'  >
-      <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (dateChange)="editDate('startDate', $event)" placeholder=" {{ startDateConvent }}">
-      <mat-datepicker-toggle matSuffix [for]="picker"    ></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-  </div>
-    </td>
-
-    
-    <td class='h50' >
+<div class='spacer'  >
+  <div class='raised' *ngIf = showEdit >
+      <table class='toFit' *ngIf = showEdit >
+          <caption> {{ theCaption }} Edit Time Away </caption>
+        <tr *ngIf = !readOnly>
+            <th> Start Date</th>
+            <th> End Date</th>
+            <th> Reason </th>
+            <th> Start Date</th>
+        </tr>  
+        <tr>
+        <td class='h50'>
+          <div class='center'>
+        <mat-form-field appearance="fill" *ngIf = showEdit  class='h50'  >
+          <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (dateChange)="editDate('startDate', $event)" placeholder=" {{ startDateConvent }}">
+          <mat-datepicker-toggle matSuffix [for]="picker"    ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+        </td>
+     <td class='h50' >
       <div class='center'>
       <mat-form-field appearance="fill"  class='h50'  >
         <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="editDate('endDate', $event)" placeholder=" {{ endDateConvent}}">
@@ -99,41 +97,55 @@
       </div>
       </td>
 
-    <td class='h50' >
-      <div class='center'>
-      <mat-form-field appearance="fill">
-        <mat-select (selectionChange)="editReasonIdx( $event)"  [(value)]="reasonIdx">
-          <mat-option value="1">Personal Vacation</mat-option>
-          <mat-option value="2" >Meeting </mat-option>
-          <mat-option value="3">Other </mat-option>
-        </mat-select>
-      </mat-form-field>
-      </div>
-    </td>
-    <td class='h50' >
-      <div class='center'>
-        <mat-form-field class="example-full-width" appearance="fill">
-          <mat-label>Note</mat-label>
-          <input matInput placeholder="Ex. Pizza" >
-        </mat-form-field>
-      </div>
-    </td>
-    <td class='h50' >
-      <div class='center'>
-      <table>
-      <tr><td>
-      <button class='Button' (click) = "saveEdits($event)">Save Changes</button>
-    </td></tr>  
-    <tr><td>
-      <button  class='Button' (click) = "deleteTa()">Delete Time Away</button>
-    </td></tr>
-     </table>  
-      </div>
-    </td>
+        <td class='h50' >
+          <div class='center'>
+          <mat-form-field appearance="fill">
+            <mat-select (selectionChange)="editReasonIdx( $event)"  [(value)]="reasonIdx">
+              <mat-option value="1">Personal Vacation</mat-option>
+              <mat-option value="2" >Meeting </mat-option>
+              <mat-option value="3">Other </mat-option>
+            </mat-select>
+          </mat-form-field>
+          </div>
+        </td>
+        <td class='h50' >
+          <div class='center'>
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Note</mat-label>
+              <input matInput placeholder="Ex. Pizza" >
+            </mat-form-field>
+          </div>
+        </td>
+        <td class='h50' >
+          <div class='center'>
+          <table>
+          <tr><td>
+          <button class='Button' (click) = "saveEdits($event)">Save Changes</button>
+        </td></tr>  
+        <tr><td>
+          <button  class='Button' (click) = "deleteTa()">Delete Time Away</button>
+        </td></tr>
+        </table>  
+          </div>
+        </td>
+       </tr>
+      </table>
+  </div>
+  <div class='raised' *ngIf = showReadOnly >
+    <table class='toFit' *ngIf = showReadOnly>
+      <caption> {{ theCaption }}  </caption>
+    <tr *ngIf = !readOnly>
+        <th> Start Date</th>
+        <th> End Date</th>
+        <th> Reason </th>
+        <th> Start Date</th>
+    </tr> 
+    <tr>
+         <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td>
   </tr>
-    </table>
+    </table> 
   </div>
-  </div>
+</div>
     
 
 

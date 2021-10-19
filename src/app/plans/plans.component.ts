@@ -6,6 +6,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { throwError } from 'rxjs';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import { ActivatedRoute } from '@angular/router';
 interface tAparams {
   startDate? : string,
   endDate?: string,
@@ -40,6 +41,7 @@ export class PlansComponent implements OnInit {
   currentItem:any;
   prop1: any;
   showEdit: boolean;
+  showReadOnly:boolean
   tAparams: tAparams;
   reasonIdx: string;
   reason: string;
@@ -50,12 +52,16 @@ export class PlansComponent implements OnInit {
   numDaysOnCal: number;
   monthInc: number;
   getVacURL: string; 
-  firstTest: number;
+ // firstTest: number;
   calParams: calParams;
+  userid: string;
 
 
-  
-  constructor(private http: HttpClient, private datePipe: DatePipe ) { }
+  constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
+    this. activatedRoute.queryParams.subscribe(params =>{
+      this .userid = params['userid']
+    })
+   }
 
   ngOnInit(): void {
     this .dayOfMonth = new Date().getDate();
@@ -64,12 +70,13 @@ export class PlansComponent implements OnInit {
     this. vacDays = 1;
     this .currentItem = "test"
     this .showEdit = false;
+    this .showReadOnly = false;
     this .reasonIdx = "1";
     this .reason = 'Personal Vacation'
     this .monthInc = 0;
     this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
     this .numDaysOnCal = 61;
-    this .firstTest = 0;
+   // this .firstTest = 0;
     this .vacData = Array();
     this. setCalDates();
     this .getTheData();
@@ -98,7 +105,6 @@ export class PlansComponent implements OnInit {
   let tst = this .howManyMonthForward(date) 
   console.log("9999 %o", tst)
   this .monthInc += this .howManyMonthForward(date) 
-
   this .advanceMonth( 0)
 }               
 private howManyMonthForward(date){
@@ -269,12 +275,16 @@ public daysBeforeCalcStart(vac){
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
+
+  let isUserGoAwayer = this. userid.includes(vacEdit['userid'])
+  console.log("276 vac %o  --- %o --- %o", vacEdit['userid'], this. userid, isUserGoAwayer) 
    this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
    this .tAparams ={} as tAparams;
    this .tAparams.vidx  = vacEdit.vidx;
    this .vacEdit = vacEdit; 
-   this. showEdit = true;
+   this. showEdit =  this. userid.includes(vacEdit['userid']) 
+   this. showReadOnly =  !this. userid.includes(vacEdit['userid']) 
  } 
 
  /**
