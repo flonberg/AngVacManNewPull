@@ -56,7 +56,7 @@ export class EntertaComponent implements OnInit {
     var tDate = new Date(dateRangeStart.value)                              // save for editing
     this .startDateEntered = tDate;
     this .monthInc = this.whatMonthIsStartDateIn(tDate)
-console.log("56 %o", this .monthInc)    
+console.log("56 %o", this .monthInc)   
     if (  dateRangeEnd.value  ){
      var eDate = new Date(dateRangeEnd.value)
         this .tAparams = {startDate: this.datePipe.transform(tDate, 'yyyy-MM-dd'), 

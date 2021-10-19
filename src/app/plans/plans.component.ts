@@ -95,35 +95,22 @@ export class PlansComponent implements OnInit {
   */
  public refreshData(date: any){                                     // <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
   this .showEdit = false;
-  let tst = this .howManyMonthForward(date) - 1
-  this .monthInc = this .howManyMonthForward(date) - 1
-  this .advanceMonth( 0)
- 
- /*
-  this .setCalDates
- // console.log('298 Picked date: %o is on cal is %o ', date, tst);
-  this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ tst
-  this .http.get(this .getVacURL).subscribe(res =>{
-    this. vacData = res;
-    for (const tRow in this. vacData){
-      this.makeDaysOfRow(this .vacData[tRow])
-      this .vacData[tRow][9] = (this .dayArray);
-    }  
-  })
+  let tst = this .howManyMonthForward(date) 
+  console.log("9999 %o", tst)
+  this .monthInc += this .howManyMonthForward(date) 
 
-  */
+  this .advanceMonth( 0)
 }               
 private howManyMonthForward(date){
   let n = 0
-  let testDate = this .calParams.lastDateOnCal
-  if (date < this .calParams.lastDateOnCal)
-    return n;
+  let testDate = this .calParams.lastDateOnCal                            // create a date to modify
+  if (date < this .calParams.lastDateOnCal)                               // if the new tA startDate is in present calendar range
+    return n;                                                             // return 0
   do {
-    n++;
-    testDate = new Date(testDate.getFullYear(), testDate.getMonth() + n, 0)               // last date of next month
-console.log("115 testDate %o", testDate)    
-  } while  (date > testDate && n < 10) ;
-  return n 
+    n++;                                                                  // increment the parameter
+    testDate = new Date(testDate.getFullYear(), testDate.getMonth() + n, 0)      // last date of next month 
+  } while  (date > testDate && n < 10) ;                                  // if new tA StartDate is in the month AFTER last month on calendar
+  return n                                                                // return index which is the number of months cal has to go forward to includ the tA 
 }                         
   /**
    * Main loop for filling out the Calendar Row for a TimeAway, fills in all the day boxes
