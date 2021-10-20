@@ -45,6 +45,7 @@ export class PlansComponent implements OnInit {
   tAparams: tAparams;
   reasonIdx: string;
   reason: string;
+  reasonArr: string[];
   dayArray: any;
   startDateConvent: string;
   endDateConvent: string;
@@ -73,6 +74,7 @@ export class PlansComponent implements OnInit {
     this .showReadOnly = false;
     this .reasonIdx = "1";
     this .reason = 'Personal Vacation'
+    this .reasonArr = ['null', 'Personal Vacation','Meeting', 'Other']
     this .monthInc = 0;
     this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
     this .numDaysOnCal = 61;
