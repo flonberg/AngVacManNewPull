@@ -18,6 +18,7 @@
     {{ d.getDate()}}
   </td>
 </tr>
+
 <tr *ngFor = "let item of vacData | keyvalue" > {{ zeroDayNum() }}
   <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' >   </td>
   <td [attr.colspan] = 'item.value[0].vacLength' class = "green" (click) = "showEditFunc(item.value[0])"   >   {{ item.value[0]['LastName'] }}  </td>
@@ -32,10 +33,8 @@
   <ng-container  *ngIf = '!item.value[1] && item.value[9][1]'  > 
     <td *ngFor = "let lp of counter( item.value[0]['daysTillCalEnd']); let ip=index"    [className] = 'getClass( item.value[9][1][lp])'  > 
       <div *ngIf= 'item.value[9][1]' > 
- 
       </div>
     </td> 
-
   </ng-container>
   
 
@@ -51,7 +50,9 @@
    </ng-container>
 
    <ng-container *ngIf = '!item.value[2] && item.value[1]'>
-     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1]));  let ip = index'  [className] = 'getClass( item.value[9][2][ip])'   > 
+     <td *ngFor='let l3 of counter( daysTillEnd(item.value[1]));  let ip = index' 
+      [className] = 'getClass( item.value[9][2][ip])'  
+       > 
       <div   *ngIf = 'item.value[9][2]'>   </div> 
        </td>
    </ng-container>
@@ -75,7 +76,7 @@
             <th> Start Date</th>
             <th> End Date</th>
             <th> Reason </th>
-            <th> Start Date</th>
+            <th> Note </th>
         </tr>  
         <tr>
         <td class='h50'>
@@ -98,9 +99,9 @@
       </td>
 
         <td class='h50' >
-          <div class='center'>
+          <div class='center'> 
           <mat-form-field appearance="fill">
-            <mat-select (selectionChange)="editReasonIdx( $event)"  [(value)]="reasonIdx">
+            <mat-select (selectionChange)="editReasonIdx( $event)"  [value]="selectedOption">
               <mat-option value="1">Personal Vacation</mat-option>
               <mat-option value="2" >Meeting </mat-option>
               <mat-option value="3">Other </mat-option>
@@ -112,7 +113,7 @@
           <div class='center'>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>Note</mat-label>
-              <input matInput placeholder="Ex. Pizza" >
+              <input matInput [value] = "tAparams['note']" (change) = 'editNote($event)' >
             </mat-form-field>
           </div>
         </td>
@@ -134,15 +135,12 @@
   <div class='raised' *ngIf = showReadOnly >
     <table class='toFit' *ngIf = showReadOnly>
       <caption> {{ theCaption }}  </caption>
-    <tr *ngIf = !readOnly>
-        <th> Start Date</th>
-        <th> End Date</th>
-        <th> Reason </th>
-        <th> Note </th>
-    </tr> 
-    <tr>
-         <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td>{{ reasonArr[reasonIdx] }} </td>
-  </tr>
+      <tr *ngIf = !readOnly>
+          <th> Start Date</th><th> End Date</th> <th> Reason </th> <th> Note </th>
+      </tr> 
+      <tr>
+          <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td>{{ reasonArr[reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
+      </tr>
     </table> 
   </div>
 </div>

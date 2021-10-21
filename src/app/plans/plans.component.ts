@@ -29,12 +29,14 @@ interface calParams {
  
 })
 export class PlansComponent implements OnInit {
-  // panelOpenState: boolean;
+  userid: string;
+  monthInc:number = 0;
+  getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   vacData: any;
   vacEdit: any;
-  users: any;
-  calDates: Date[];                                                         // the dates used to draw the calendat
-  dayNum: number;
+//  users: any;                                                       // the dates used to draw the calendat
+  dayArray = [[]]
+  calDates: Date[] = Array();
   vacDays: number;
   dayOfMonth: number;
   setStart: any;
@@ -46,16 +48,14 @@ export class PlansComponent implements OnInit {
   reasonIdx: string;
   reason: string;
   reasonArr: string[];
-  dayArray: any;
   startDateConvent: string;
   endDateConvent: string;
   v1: number;
   numDaysOnCal: number;
-  monthInc: number;
-  getVacURL: string; 
  // firstTest: number;
   calParams: calParams;
-  userid: string;
+
+  dayNum: number = 1;
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
@@ -66,8 +66,6 @@ export class PlansComponent implements OnInit {
 
   ngOnInit(): void {
     this .dayOfMonth = new Date().getDate();
-    console.log("46 dayOgMong %o", this.dayOfMonth)
-    this. dayNum = 1;
     this. vacDays = 1;
     this .currentItem = "test"
     this .showEdit = false;
@@ -75,8 +73,7 @@ export class PlansComponent implements OnInit {
     this .reasonIdx = "1";
     this .reason = 'Personal Vacation'
     this .reasonArr = ['null', 'Personal Vacation','Meeting', 'Other']
-    this .monthInc = 0;
-    this. getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
+   
     this .numDaysOnCal = 61;
    // this .firstTest = 0;
     this .vacData = Array();
@@ -94,7 +91,6 @@ export class PlansComponent implements OnInit {
       for (const tRow in this. vacData){ 
         this.makeDaysOfRow(this .vacData[tRow])               // fill out the row of boxes for the Calenday
         this .vacData[tRow][9] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
-
       }  
     })
   }   
@@ -134,7 +130,7 @@ private makeDaysOfRow(vacRow){
   // go to a date after the end of the tA  
     this .v1 = vacRow[0]['daysTillStartDate'] + vacRow[0]['vacLength'] 
     if (!vacRow[1]){                                      // this is the last tA in the row
-      this .makeTillEndDays(this .v1,1);                        // fill out the rest of the dayNum
+      this .makeTillEndDays(this .v1,1);                        // fill out the rest of the dayxNum
       this .makeTillEndBoxes(vacRow[0])
       return;                                             // don't do anything else
     }
@@ -241,11 +237,17 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
       this .tAparams.endDate = dateString;
     }
 }
+private editNote(ev){
+  console.log("245 %o ", ev.target.value)
+  this .tAparams.note = ev.target.value;
+  console.log("247 %o", this .tAparams)
+}
 private deleteTa(){
   this .tAparams.reasonIdx = 99;
   this .saveEdits();
 }
 private saveEdits() {
+  console.log("254 %o", this .tAparams)
   var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
@@ -254,7 +256,8 @@ private saveEdits() {
   this .showEdit = false;                                           // turn of editControl box. 
 }
 private editReasonIdx(ev){
-  console.log("66 %o", ev)
+  console.log("66 %o", ev.value)
+  this .tAparams.reasonIdx = ev.value;
   
 }
 
@@ -272,18 +275,21 @@ public daysBeforeCalcStart(vac){
   }
   return 0;
 }
+selectedOption:string
 /**
  * Used when user clicks on her tA, to show the edit controls. 
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
-
+   this .selectedOption = "1";
   let isUserGoAwayer = this. userid.includes(vacEdit['userid'])
-  console.log("276 vac %o  --- %o --- %o", vacEdit['userid'], this. userid, isUserGoAwayer) 
+  console.log("276 vac %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
    this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
    this .tAparams ={} as tAparams;
    this .tAparams.vidx  = vacEdit.vidx;
+   this .tAparams.note  = vacEdit.note;
+   this .selectedOption = String(vacEdit.reasonIdx)
    this .vacEdit = vacEdit; 
    this. showEdit =  this. userid.includes(vacEdit['userid']) 
    this. showReadOnly =  !this. userid.includes(vacEdit['userid']) 
