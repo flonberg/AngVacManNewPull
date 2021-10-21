@@ -34,20 +34,15 @@ export class PlansComponent implements OnInit {
   getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   vacData: any;
   vacEdit: any;
-//  users: any;                                                       // the dates used to draw the calendat
+  showEdit: boolean = false;
   dayArray = [[]]
   calDates: Date[] = Array();
-  vacDays: number;
+  reasonArr = ['null', 'Personal Vacation','Meeting', 'Other']
   dayOfMonth: number;
-  setStart: any;
-  currentItem:any;
-  prop1: any;
-  showEdit: boolean;
-  showReadOnly:boolean
-  tAparams: tAparams;
+  showReadOnly:boolean = false
+  tAparams: tAparams;                               // used in Edit box
   reasonIdx: string;
-  reason: string;
-  reasonArr: string[];
+//  reason: string;
   startDateConvent: string;
   endDateConvent: string;
   v1: number;
@@ -66,14 +61,8 @@ export class PlansComponent implements OnInit {
 
   ngOnInit(): void {
     this .dayOfMonth = new Date().getDate();
-    this. vacDays = 1;
-    this .currentItem = "test"
-    this .showEdit = false;
-    this .showReadOnly = false;
+
     this .reasonIdx = "1";
-    this .reason = 'Personal Vacation'
-    this .reasonArr = ['null', 'Personal Vacation','Meeting', 'Other']
-   
     this .numDaysOnCal = 61;
    // this .firstTest = 0;
     this .vacData = Array();
