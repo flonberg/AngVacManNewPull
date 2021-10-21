@@ -33,6 +33,7 @@ export class PlansComponent implements OnInit {
   monthInc:number = 0;
   getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   vacData: any;
+  coverers: any;
   vacEdit: any;
   showEdit: boolean = false;
   dayArray = [[]]
@@ -42,32 +43,30 @@ export class PlansComponent implements OnInit {
   showReadOnly:boolean = false
   tAparams: tAparams;                               // used in Edit box
   reasonIdx: string;
-//  reason: string;
   startDateConvent: string;
   endDateConvent: string;
   v1: number;
   numDaysOnCal: number;
- // firstTest: number;
   calParams: calParams;
-
   dayNum: number = 1;
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
+      this .getVacURL += '&userid=' +  params['userid']
+      this .getTheData();
     })
    }
 
   ngOnInit(): void {
     this .dayOfMonth = new Date().getDate();
-
     this .reasonIdx = "1";
     this .numDaysOnCal = 61;
    // this .firstTest = 0;
     this .vacData = Array();
     this. setCalDates();
-    this .getTheData();
+  
   }      
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
@@ -75,8 +74,10 @@ export class PlansComponent implements OnInit {
   public getTheData(){
     console.log("68 url is %o", this .getVacURL)
     this .http.get(this .getVacURL).subscribe(res =>{
-      this .vacData = res;
+      this .vacData = res['tAs'];
+      this .coverers = res['coverers']
         console.log("62 vacData is %o", this. vacData)
+        console.log("62 coverers is %o", this. coverers)
       for (const tRow in this. vacData){ 
         this.makeDaysOfRow(this .vacData[tRow])               // fill out the row of boxes for the Calenday
         this .vacData[tRow][9] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
