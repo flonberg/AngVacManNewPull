@@ -29,6 +29,7 @@ export class EntertaComponent implements OnInit {
   overlap: boolean;
   monthInc: number;
   startDateEntered: Date;
+  serviceMDs: {}
   
 
 
@@ -38,14 +39,28 @@ export class EntertaComponent implements OnInit {
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
       console.log("enterta userid %o", this .userid)
+      if (this .userid){
+        let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
+        this .http.get(url).subscribe(res =>{
+          this. serviceMDs = res;
+          console.log("5252 %o", this .serviceMDs)
+        })
+    }
     })
     this .showError = false;
     this .buttonClicked = "";
     this .overlap = false;
     this .monthInc = 1;
   }
+  getServiceMDs(userid){
+    let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
+    this .http.get(url).subscribe(res =>{
+      this. serviceMDs = res;
+      console.log("5252 %o", this .serviceMDs)
+    })
+  }
 
-  @Output() onDatePicked = new EventEmitter<any>();   //
+  @Output() onDatePicked = new EventEmitter<any>();   //  THIS GOES TO PLANS.TS
   public pickDate(date: any): void {
   console.log("50 %o", date)  
     this. submitTA();
