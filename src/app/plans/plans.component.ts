@@ -38,7 +38,7 @@ export class PlansComponent implements OnInit {
   showEdit: boolean = false;
   dayArray = [[]]
   calDates: Date[] = Array();
-  reasonArr = ['null', 'Personal Vacation','Meeting', 'Other']
+  reasonArr = ['null', 'Personal Vacation','Meeting','Health', 'Other']
   dayOfMonth: number;
   showReadOnly:boolean = false
   tAparams: tAparams;                               // used in Edit box

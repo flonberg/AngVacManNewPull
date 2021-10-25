@@ -8,7 +8,8 @@ interface tAparams {
   endDate: string,
   reason: number,
   note: string,
-  userid: string;
+  userid: string,
+  coverageA: number,
 }
 @Component({
   selector: 'app-enterta',
@@ -29,6 +30,7 @@ export class EntertaComponent implements OnInit {
   overlap: boolean;
   monthInc: number;
   startDateEntered: Date;
+  WTMdate: Date;
   serviceMDs: {}
   
 
@@ -51,6 +53,14 @@ export class EntertaComponent implements OnInit {
     this .buttonClicked = "";
     this .overlap = false;
     this .monthInc = 1;
+    this. tAparams = {
+      startDate :'',
+      endDate: '',
+      reason: 0,
+      note: '',
+      userid: '',
+      coverageA: 0
+    }
   }
   getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
@@ -74,8 +84,10 @@ export class EntertaComponent implements OnInit {
 console.log("56 %o", this .monthInc)   
     if (  dateRangeEnd.value  ){
      var eDate = new Date(dateRangeEnd.value)
-        this .tAparams = {startDate: this.datePipe.transform(tDate, 'yyyy-MM-dd'), 
-           endDate : this.datePipe.transform(eDate, 'yyyy-MM-dd'), reason:0, note:"", userid: this .userid}
+    //    this .tAparams = {startDate: this.datePipe.transform(tDate, 'yyyy-MM-dd'), 
+     //      endDate : this.datePipe.transform(eDate, 'yyyy-MM-dd'), reason:0, note:"", userid: this .userid}
+        this. tAparams.startDate = this .datePipe.transform(new Date(dateRangeStart.value), 'yyyy-MM-dd')   
+        this. tAparams.endDate = this .datePipe.transform(new Date(dateRangeEnd.value), 'yyyy-MM-dd')   
       }
     this .checkTAparams();  
   console.log("change %o", this .tAparams)
@@ -93,10 +105,15 @@ console.log("56 %o", this .monthInc)
     this .tAparams.reason= ev.value;
 
  }
+ covererSelect(ev){
+   console.log("1091091091 %o", ev)
+   this .tAparams.coverageA = ev.value
+   console.log("111 %o", this .tAparams)
+ }
  noteChange(ev){
   if (this .tAparams)
   this .tAparams.note= ev.target.value;
-   console.log("note is %o", ev.target.value)
+   console.log("note is %o", this.tAparams)
  }
  submitTA(){                                                                  // need to put in full error checking. 
   this .checkTAparams();

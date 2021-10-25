@@ -6,9 +6,20 @@
     -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
 }
 td {
-    padding-left:30px;
+
+    width:160px;
+
 }
 .warning {
     color:red;
     font-weight:bold;
 }
+.note {
+    width:1200px;
+    color:redl
+}
+table {
+
+    table-layout: fixed;
+    width: 1200px;
+  }

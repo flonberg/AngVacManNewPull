@@ -23,7 +23,8 @@
         <mat-select (selectionChange) = "reasonSelect($event)" >
           <mat-option value="1">Personal Vacation</mat-option>
           <mat-option value="2" >Meeting </mat-option>
-          <mat-option value="3">Other </mat-option>
+          <mat-option value="3" >Health </mat-option>
+          <mat-option value="4">Other </mat-option>
         </mat-select>
       </mat-form-field>
     </div>  
@@ -32,18 +33,29 @@
     <div class='center'>
       <mat-form-field appearance="fill">
         <mat-label> Coverer Nominated </mat-label>
-        <mat-select (selectionChange) = "reasonSelect($event)" >
+        <mat-select (selectionChange) = "covererSelect($event)" >
           <mat-option *ngFor="let MD of serviceMDs | keyvalue"
           [value]="MD.key ">{{MD.value.LastName }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>  
   </td>
+  <td >
+    <div class='center'>
+  <mat-form-field appearance="fill"  class='h50'  >
+    <mat-label> WTM Date </mat-label>
+    <input matInput [(ngModel)]="WTMdate" [matDatepicker]="picker2" (dateChange)="editDate('WTMdate', $event)" placeholder=" WTM Date">
+    <mat-datepicker-toggle matSuffix [for]="picker2"    ></mat-datepicker-toggle>
+    <mat-datepicker #picker2></mat-datepicker>
+  </mat-form-field>
+</div>
+  </td>
+</tr><tr> 
   <td>
     <div class='center'>
-        <mat-form-field class="example-full-width" appearance="fill">
+        <mat-form-field class="example-full-width" appearance="fill"  [style.width.px]=260>
           <mat-label>Note</mat-label>
-          <input matInput (change) = "noteChange($event)" class='note'>
+          <textarea matInput (change) = "noteChange($event)" class='note'> </textarea>
         </mat-form-field>
     </div>    
   </td>
