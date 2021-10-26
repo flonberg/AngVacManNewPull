@@ -10,6 +10,7 @@ interface tAparams {
   note: string,
   userid: string,
   coverageA: number,
+  WTMdate: string
 }
 @Component({
   selector: 'app-enterta',
@@ -37,9 +38,18 @@ export class EntertaComponent implements OnInit {
 
   constructor( public datePipe: DatePipe, private activatedRoute: ActivatedRoute, private http: HttpClient ) { 
   }
-  ngOnInit(): void {
+  ngOnInit(): void {    this. tAparams = {
+    startDate :'',
+    endDate: '',
+    reason: 0,
+    note: '',
+    userid: '',
+    coverageA: 0,
+    WTMdate:''
+  }
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
+      this .tAparams.userid = params['userid']
       console.log("enterta userid %o", this .userid)
       if (this .userid){
         let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
@@ -53,14 +63,7 @@ export class EntertaComponent implements OnInit {
     this .buttonClicked = "";
     this .overlap = false;
     this .monthInc = 1;
-    this. tAparams = {
-      startDate :'',
-      endDate: '',
-      reason: 0,
-      note: '',
-      userid: '',
-      coverageA: 0
-    }
+
   }
   getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
@@ -84,13 +87,15 @@ export class EntertaComponent implements OnInit {
 console.log("56 %o", this .monthInc)   
     if (  dateRangeEnd.value  ){
      var eDate = new Date(dateRangeEnd.value)
-    //    this .tAparams = {startDate: this.datePipe.transform(tDate, 'yyyy-MM-dd'), 
-     //      endDate : this.datePipe.transform(eDate, 'yyyy-MM-dd'), reason:0, note:"", userid: this .userid}
         this. tAparams.startDate = this .datePipe.transform(new Date(dateRangeStart.value), 'yyyy-MM-dd')   
         this. tAparams.endDate = this .datePipe.transform(new Date(dateRangeEnd.value), 'yyyy-MM-dd')   
       }
     this .checkTAparams();  
-  console.log("change %o", this .tAparams)
+
+ }
+ WTMchanged(WTMdate: HTMLInputElement){
+   this. tAparams.WTMdate = this .datePipe.transform(new Date(WTMdate.value), 'yyyy-MM-dd')  
+   console.log("change %o", this .tAparams)
  }
  whatMonthIsStartDateIn(startDate){
    let thisMonth = new Date();

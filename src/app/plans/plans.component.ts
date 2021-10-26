@@ -30,6 +30,8 @@ interface calParams {
 })
 export class PlansComponent implements OnInit {
   userid: string;
+  vidxToSee: number;
+  vidxToSeeData: object;
   monthInc:number = 0;
   getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   vacData: any;
@@ -54,6 +56,10 @@ export class PlansComponent implements OnInit {
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
+      this .vidxToSee = params['vidxToSee']                   // used by Coverer to Accept Coverage and Select WTM date
+      if (params['vidxToSee']){
+        this .getTheVidxToSee();
+      }
       this .getVacURL += '&userid=' +  params['userid']
       this .getTheData();
     })
@@ -68,6 +74,13 @@ export class PlansComponent implements OnInit {
     this. setCalDates();
   
   }      
+  private getTheVidxToSee(){
+    let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee;
+    this .http.get(url).subscribe(res =>{
+      this .vidxToSeeData = res;
+      console.log("818181 %o", this .vidxToSeeData)
+    })
+  }
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
    */  
