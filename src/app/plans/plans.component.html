@@ -134,22 +134,30 @@
        </tr>
       </table>
   </div>
-  <div class='raised' *ngIf = showReadOnly >
+  <div class='raised' *ngIf = 'showReadOnly || vidxToSee' >
+
     <table class='toFit' *ngIf = showReadOnly>
       <caption> {{ theCaption }}  </caption>
-      <tr *ngIf = !readOnly>
+      <tr >
           <th> Start Date</th><th> End Date</th> <th> Reason </th> <th> Note </th>
       </tr> 
       <tr>
           <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td>{{ reasonArr[reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
       </tr>
     </table> 
+    <table *ngIf = vidxToSee class='toFit'>
+      <caption> Coverer</caption>
+      <tr >
+        <th> Start Date</th><th> End Date</th> <th>Accept Coverage</th><th> WTM Date</th><th> WTM Note</th>
+          </tr> 
+          <tr>
+            <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td> </td> <td></td>
+        </tr>
+    </table>
   </div>
 </div>
-<div >
-  vidxToSee {{ vidxToSee }} userid  {{ userid }}
-</div>
-    
 
-
-<app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
+<br><br>
+<div>
+  <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
+  </div>

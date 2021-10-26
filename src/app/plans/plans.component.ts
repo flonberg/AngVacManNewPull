@@ -44,6 +44,7 @@ export class PlansComponent implements OnInit {
   dayOfMonth: number;
   showReadOnly:boolean = false
   tAparams: tAparams;                               // used in Edit box
+  toSeeParams: any;
   reasonIdx: string;
   startDateConvent: string;
   endDateConvent: string;
@@ -59,6 +60,7 @@ export class PlansComponent implements OnInit {
       this .vidxToSee = params['vidxToSee']                   // used by Coverer to Accept Coverage and Select WTM date
       if (params['vidxToSee']){
         this .getTheVidxToSee();
+        console.log("616161")
       }
       this .getVacURL += '&userid=' +  params['userid']
       this .getTheData();
@@ -77,8 +79,12 @@ export class PlansComponent implements OnInit {
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee;
     this .http.get(url).subscribe(res =>{
-      this .vidxToSeeData = res;
-      console.log("818181 %o", this .vidxToSeeData)
+
+      this .toSeeParams = res;
+      console.log("818181 %o", this .toSeeParams['startDate'].date)
+      this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
+      this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
+      console.log("818181 %o", this .toSeeParams['startDate'])
     })
   }
   /**
