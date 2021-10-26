@@ -148,12 +148,35 @@
     <table *ngIf = vidxToSee class='toFit'>
       <caption> Coverer</caption>
       <tr >
-        <th> Start Date</th><th> End Date</th> <th>Accept Coverage</th><th> WTM Date</th><th> WTM Note</th>
+        <th> Start Date</th><th> End Date</th> <th> Coverage</th><th> WTM Date</th><th> WTM Note</th>
           </tr> 
           <tr>
-            <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td> </td> <td></td>
+            <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> 
+            <td> 
+            
+              <mat-radio-group >
+                <mat-radio-button class="example-margin" value="after">Accept</mat-radio-button>
+                <mat-radio-button class="example-margin" value="before">Decline</mat-radio-button>
+              </mat-radio-group>
+            </td> 
+            <td> 
+              <mat-form-field appearance="fill"  class='h50'  >
+                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editDate('startDate', $event)" placeholder=" {{ WTMdateConvent }}">
+                <mat-datepicker-toggle matSuffix [for]="picker3"    ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </td>
+            <td>  <mat-form-field class="example-full-width" appearance="fill">
+
+       
+                <mat-label>Note</mat-label>
+                <textarea matInput (change) = "noteChange($event)" class='note'> </textarea>
+    
+            </mat-form-field>
+          </td>
         </tr>
     </table>
+
   </div>
 </div>
 

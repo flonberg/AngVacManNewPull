@@ -48,6 +48,7 @@ export class PlansComponent implements OnInit {
   reasonIdx: string;
   startDateConvent: string;
   endDateConvent: string;
+  WTMdateConvent: string;
   v1: number;
   numDaysOnCal: number;
   calParams: calParams;
@@ -81,9 +82,10 @@ export class PlansComponent implements OnInit {
     this .http.get(url).subscribe(res =>{
 
       this .toSeeParams = res;
-      console.log("818181 %o", this .toSeeParams['startDate'].date)
+      console.log("818181 %o", this .toSeeParams)
       this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
       this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
+      this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
       console.log("818181 %o", this .toSeeParams['startDate'])
     })
   }

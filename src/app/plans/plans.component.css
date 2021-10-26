@@ -94,3 +94,6 @@ td.hd3 {
 .centerSmall{
 	width:1100px;
 }
+.mat-radio-button ~ .mat-radio-button {
+	margin-left: 16px;
+  }
