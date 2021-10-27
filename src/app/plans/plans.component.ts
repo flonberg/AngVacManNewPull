@@ -12,6 +12,8 @@ interface tAparams {
   endDate?: string,
   reasonIdx?: number,
   note?: string,
+  WTMnote?: string,
+  WTMdate?: string,
   vidx: string;
 }
 interface calParams {
@@ -32,6 +34,7 @@ export class PlansComponent implements OnInit {
   userid: string;
   vidxToSee: number;
   vidxToSeeData: object;
+  isLoggedInUserCoverer: boolean = false;
   monthInc:number = 0;
   getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   vacData: any;
@@ -78,15 +81,18 @@ export class PlansComponent implements OnInit {
   
   }      
   private getTheVidxToSee(){
-    let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee;
+    let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
 
       this .toSeeParams = res;
       console.log("818181 %o", this .toSeeParams)
+      if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
+        this .isLoggedInUserCoverer = true;
+      }
       this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
       this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
-      this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
-      console.log("818181 %o", this .toSeeParams['startDate'])
+      if (this. toSeeParams['WTMdate']  )
+        this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
     })
   }
   /**
@@ -241,18 +247,15 @@ private makeTillEndBoxes(vac){
  */
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
-    if (type.indexOf("start") >= 0){
+    if (type.indexOf("start") >= 0)
       this .tAparams.startDate = dateString;
-    }
-    if (type.indexOf("end") >= 0){
+    if (type.indexOf("end") >= 0)
       this .tAparams.endDate = dateString;
-    }
+    if (type.indexOf("WTM") >= 0)
+      this .tAparams.WTMdate = dateString;  
+    
 }
-private editNote(ev){
-  console.log("245 %o ", ev.target.value)
-  this .tAparams.note = ev.target.value;
-  console.log("247 %o", this .tAparams)
-}
+
 private deleteTa(){
   this .tAparams.reasonIdx = 99;
   this .saveEdits();
@@ -266,12 +269,20 @@ private saveEdits() {
   })
   this .showEdit = false;                                           // turn of editControl box. 
 }
-private editReasonIdx(ev){
-  console.log("66 %o", ev.value)
-  this .tAparams.reasonIdx = ev.value;
-  
-}
 
+private editTaParams(name, value){
+  console.log("277 %o  --- %o ", name, value)
+  if (name == 'WTMdate')
+    this .tAparams.WTMdate = value;
+  if (name == 'WTMnote')
+    this .tAparams.WTMnote = value;
+  if (name == 'reasonIdx')
+    this .tAparams.reasonIdx = value.value;  
+  if (name == 'note')
+    this .tAparams.note = value;    
+
+  console.log("285 %o", this .tAparams)  
+}
 /**
  * Calculate the number of days from firstDayOnCalendar to start of tA
  * @param vac 

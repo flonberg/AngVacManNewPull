@@ -103,7 +103,7 @@
         <td class='h50' >
           <div class='center'> 
           <mat-form-field appearance="fill">
-            <mat-select (selectionChange)="editReasonIdx( $event)"  [value]="selectedOption">
+            <mat-select (selectionChange)="editTaParams( 'reasonIdx', $event)"  [value]="selectedOption">
               <mat-option value="1">Personal Vacation</mat-option>
               <mat-option value="2" >Meeting </mat-option>
               <mat-option value="3">Other </mat-option>
@@ -115,7 +115,7 @@
           <div class='center'>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>Note</mat-label>
-              <input matInput [value] = "tAparams['note']" (change) = 'editNote($event)' >
+              <input matInput [value] = "tAparams['note']" (change) = "editTaParams('note', $event.target.value)" >
             </mat-form-field>
           </div>
         </td>
@@ -134,17 +134,18 @@
        </tr>
       </table>
   </div>
-  <div class='raised' *ngIf = 'showReadOnly || vidxToSee' >
-
+  <div class='raised' *ngIf = 'showReadOnly ' >
     <table class='toFit' *ngIf = showReadOnly>
       <caption> {{ theCaption }}  </caption>
       <tr >
-          <th> Start Date</th><th> End Date</th> <th> Reason </th> <th> Note </th>
+          <th> Start Date</th><th> End Date</th> <th> Reason 888</th> <th> Note </th>
       </tr> 
       <tr>
           <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td>{{ reasonArr[reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
       </tr>
     </table> 
+   </div>
+   <div *ngIf = 'isLoggedInUserCoverer' class='raised'> 
     <table *ngIf = vidxToSee class='toFit'>
       <caption> Coverer</caption>
       <tr >
@@ -152,28 +153,27 @@
           </tr> 
           <tr>
             <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> 
-            <td> 
-            
+            <td>   
               <mat-radio-group >
-                <mat-radio-button class="example-margin" value="after">Accept</mat-radio-button>
-                <mat-radio-button class="example-margin" value="before">Decline</mat-radio-button>
+                <mat-radio-button class="example-margin" value="accept" (click) = "editTaParams('CovAccepted', 1)" >Accept</mat-radio-button>
+                <mat-radio-button class="example-margin" value="decline"  (click) = "editTaParams('CovAccepted', 0)" >Decline</mat-radio-button>
               </mat-radio-group>
             </td> 
             <td> 
               <mat-form-field appearance="fill"  class='h50'  >
-                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editDate('startDate', $event)" placeholder=" {{ WTMdateConvent }}">
+                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editDate('WTMdate', $event)" placeholder=" {{ WTMdateConvent }}">
                 <mat-datepicker-toggle matSuffix [for]="picker3"    ></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
               </mat-form-field>
             </td>
-            <td>  <mat-form-field class="example-full-width" appearance="fill">
-
-       
-                <mat-label>Note</mat-label>
-                <textarea matInput (change) = "noteChange($event)" class='note'> </textarea>
-    
-            </mat-form-field>
-          </td>
+            <td> 
+               <mat-form-field class="example-full-width" appearance="fill">
+                <textarea matInput (change) = "editTaParams('note', $event.target.value)" class='note'> </textarea>
+               </mat-form-field>
+            </td>
+            <td>
+              <button class='Button' (click) = "saveEdits($event)">Save </button>
+            </td>
         </tr>
     </table>
 
