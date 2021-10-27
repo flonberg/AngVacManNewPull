@@ -152,7 +152,7 @@
             <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> 
             <td>   
               <mat-radio-group >
-                <mat-radio-button class="example-margin" value="accept" (click) = "editTaParams('CovAccepted', 1)" >Accept</mat-radio-button>
+                <mat-radio-button class="example-margin" value="accept" [checked] ="covAccepted" (click) = "editTaParams('CovAccepted', 1)" >Accept</mat-radio-button>
                 <mat-radio-button class="example-margin" value="decline"  (click) = "editTaParams('CovAccepted', 0)" >Decline</mat-radio-button>
               </mat-radio-group>
             </td> 
@@ -165,7 +165,7 @@
             </td>
             <td> 
                <mat-form-field class="example-full-width" appearance="fill">
-                <textarea matInput (change) = "editTaParams('WTMnote', $event.target.value)" class='note'> </textarea>
+                <textarea matInput (change) = "editTaParams('WTMnote', $event.target.value)" class='note'  > {{ WTMnote }} </textarea>
                </mat-form-field>
             </td>
             <td>

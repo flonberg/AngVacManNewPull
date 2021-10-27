@@ -53,6 +53,8 @@ export class PlansComponent implements OnInit {
   startDateConvent: string;
   endDateConvent: string;
   WTMdateConvent: string;
+  covAccepted: boolean;
+  WTMnote: string;
   v1: number;
   numDaysOnCal: number;
   calParams: calParams;
@@ -84,7 +86,6 @@ export class PlansComponent implements OnInit {
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
-
       this .toSeeParams = res;
       console.log("818181 %o", this .toSeeParams)
       if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
@@ -94,7 +95,12 @@ export class PlansComponent implements OnInit {
       this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
       if (this. toSeeParams['WTMdate']  )
         this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
+      if (this .toSeeParams['CovAccepted'] == 1)
+        this .covAccepted = true;  
+      this. WTMnote = this .toSeeParams['WTMnote']  
+    console.log("100 %o", this .WTMnote)
     })
+
   }
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
