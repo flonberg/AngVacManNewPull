@@ -271,6 +271,8 @@ private saveEdits() {
 }
 
 private editTaParams(name, value){
+  if (!this. tAparams)
+    this .tAparams ={} as tAparams;
   console.log("277 %o  --- %o ", name, value)
   if (name == 'WTMdate')
     this .tAparams.WTMdate = value;
