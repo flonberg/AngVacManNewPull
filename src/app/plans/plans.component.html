@@ -97,9 +97,6 @@
       </mat-form-field>
       </div>
       </td>
-
-
-
         <td class='h50' >
           <div class='center'> 
           <mat-form-field appearance="fill">
@@ -161,14 +158,14 @@
             </td> 
             <td> 
               <mat-form-field appearance="fill"  class='h50'  >
-                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editDate('WTMdate', $event)" placeholder=" {{ WTMdateConvent }}">
+                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editTaParams('WTMdate', $event)" placeholder=" {{ WTMdateConvent }}">
                 <mat-datepicker-toggle matSuffix [for]="picker3"    ></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
+                <mat-datepicker #picker3></mat-datepicker>
               </mat-form-field>
             </td>
             <td> 
                <mat-form-field class="example-full-width" appearance="fill">
-                <textarea matInput (change) = "editTaParams('note', $event.target.value)" class='note'> </textarea>
+                <textarea matInput (change) = "editTaParams('WTMnote', $event.target.value)" class='note'> </textarea>
                </mat-form-field>
             </td>
             <td>

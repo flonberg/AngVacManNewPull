@@ -15,6 +15,7 @@ interface tAparams {
   WTMnote?: string,
   WTMdate?: string,
   vidx: string;
+  CovAccepted: number;
 }
 interface calParams {
   firstMonthName: string,
@@ -273,6 +274,7 @@ private saveEdits() {
 private editTaParams(name, value){
   if (!this. tAparams)
     this .tAparams ={} as tAparams;
+  this .tAparams.vidx = String(this .vidxToSee)  
   console.log("277 %o  --- %o ", name, value)
   if (name == 'WTMdate')
     this .tAparams.WTMdate = value;
@@ -282,7 +284,12 @@ private editTaParams(name, value){
     this .tAparams.reasonIdx = value.value;  
   if (name == 'note')
     this .tAparams.note = value;    
-
+  if (name == 'CovAccepted')
+    this .tAparams.CovAccepted = value;    
+  if (name == 'WTMdate'){
+    let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
+    this .tAparams.WTMdate = dateString;
+  }  
   console.log("285 %o", this .tAparams)  
 }
 /**
