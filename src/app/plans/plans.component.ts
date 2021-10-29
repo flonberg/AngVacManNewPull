@@ -33,23 +33,23 @@ interface calParams {
 })
 export class PlansComponent implements OnInit {
   userid: string;
-  vidxToSee: number;
-  vidxToSeeData: object;
+  vidxToSee: number;                               // used by AcceptCoverage control
+  //vidxToSeeData: object;
   isLoggedInUserCoverer: boolean = false;
   monthInc:number = 0;
   getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDtAs.php?adv='+ this.monthInc;
   vacData: any;
-  coverers: any;
-  vacEdit: any;
+  coverers: any;                                    // the coveres are the MDs in the same SERVICE as goAwayer
+  vacEdit: any;                                     // data for the EditVac boxes 
   showEdit: boolean = false;
-  dayArray = [[]]
-  calDates: Date[] = Array();
+  dayArray = [[]]                                  // make the boxes BEFORE and BETWEEN and TILL_END of timeAways 
+  calDates: Date[] = Array();                       // for filling out the calendar and making the TODAY stiled boxes
   reasonArr = ['null', 'Personal Vacation','Meeting','Health', 'Other']
   dayOfMonth: number;
   showReadOnly:boolean = false
-  tAparams: tAparams;                               // used in Edit box
-  toSeeParams: any;
-  reasonIdx: string;
+  tAparams: tAparams;                               // used in Edit box and AcceptCoverage box
+  toSeeParams: any;                                 // the params used in the AcceptCoverage box
+  reasonIdx: string;                                // reason[reasonIdx]  and reasonIdx =99 for delete
   startDateConvent: string;
   endDateConvent: string;
   WTMdateConvent: string;
@@ -57,17 +57,17 @@ export class PlansComponent implements OnInit {
   WTMnote: string;
   v1: number;
   numDaysOnCal: number;
-  calParams: calParams;
+  calParams: calParams;                             // e.g daysInSecondMonth, firstMonthName
   dayNum: number = 1;
+  vidxToEdit: number = 0;                           // for debugging
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
-      this .vidxToSee = params['vidxToSee']                   // used by Coverer to Accept Coverage and Select WTM date
+      this .vidxToSee = params['vidxToSee']          // used by Coverer to Accept Coverage and Select WTM date
       if (params['vidxToSee']){
         this .getTheVidxToSee();
-        console.log("616161")
       }
       this .getVacURL += '&userid=' +  params['userid']
       this .getTheData();
@@ -86,19 +86,23 @@ export class PlansComponent implements OnInit {
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
-      this .toSeeParams = res;
-      console.log("818181 %o", this .toSeeParams)
-      if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
-        this .isLoggedInUserCoverer = true;
-      }
-      this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
-      this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
-      if (this. toSeeParams['WTMdate']  )
-        this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
-      if (this .toSeeParams['CovAccepted'] == 1)
-        this .covAccepted = true;  
-      this. WTMnote = this .toSeeParams['WTMnote']  
-    console.log("100 %o", this .WTMnote)
+        this .toSeeParams = res;
+
+        console.log("818181 %o", this .toSeeParams)
+        console.log("calDates %o", this .calDates[this. calDates.length-1])
+        let tst = this .toSeeParams.endDate > this .calDates[this. calDates.length-1]
+        console.log("tst is %o", tst)
+        if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
+          this .isLoggedInUserCoverer = true;
+        }
+        this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
+        this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
+        if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
+          this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
+        if (this .toSeeParams['CovAccepted'] == 1)
+          this .covAccepted = true;  
+        this. WTMnote = this .toSeeParams['WTMnote']  
+      console.log("100 %o", this .WTMnote)
     })
 
   }
@@ -199,7 +203,6 @@ public advanceMonth(n){
  */
 private fillOutRow(tA0, tA1, v1, n, dayBefore){
   let d1 = this. daysBetweenA(tA0['endDate'], tA1['startDate']) -1
-  //let dayBefore = this. daysBeforeCalcStart(tA0)
   for (let k=0; k < d1; k++){                           // loop and push required dayNums
     this .v1++;                                                                           
     if (!this .dayArray[n]){
@@ -325,6 +328,7 @@ selectedOption:string
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
    this .tAparams ={} as tAparams;
    this .tAparams.vidx  = vacEdit.vidx;
+   this .vidxToEdit = vacEdit.vidx;                   // for debugging
    this .tAparams.note  = vacEdit.note;
    this .selectedOption = String(vacEdit.reasonIdx)
    this .vacEdit = vacEdit; 

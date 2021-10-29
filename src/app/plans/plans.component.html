@@ -71,7 +71,7 @@
 <div class='spacer'  >
   <div class='raised' *ngIf = showEdit >
       <table class='toFit' *ngIf = showEdit >
-          <caption> {{ theCaption }} Edit Time Away </caption>
+          <caption> {{ theCaption }} Edit Time Away  {{ vidxToEdit }}</caption>
         <tr *ngIf = !readOnly>
             <th> Start Date</th>
             <th> End Date</th>
@@ -135,7 +135,7 @@
     <table class='toFit' *ngIf = showReadOnly>
       <caption> {{ theCaption }}  </caption>
       <tr >
-          <th> Start Date</th><th> End Date</th> <th> Reason 888</th> <th> Note </th>
+          <th> Start Date</th><th> End Date</th> <th> Reason {{ vidxToEdit }} </th> <th> Note </th>
       </tr> 
       <tr>
           <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td>{{ reasonArr[reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
@@ -144,27 +144,28 @@
    </div>
    <div *ngIf = 'isLoggedInUserCoverer' class='raised'> 
     <table *ngIf = vidxToSee class='toFit'>
-      <caption> Coverer</caption>
+      <caption> Please Accept or Decline this coverage.  </caption>
       <tr >
         <th> Start Date</th><th> End Date</th> <th> Coverage</th><th> WTM Date</th><th> WTM Note</th>
           </tr> 
           <tr>
             <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> 
-            <td>   
-              <mat-radio-group >
-                <mat-radio-button class="example-margin" value="accept" [checked] ="covAccepted" (click) = "editTaParams('CovAccepted', 1)" >Accept</mat-radio-button>
-                <mat-radio-button class="example-margin" value="decline"  (click) = "editTaParams('CovAccepted', 0)" >Decline</mat-radio-button>
-              </mat-radio-group>
+            <td >   
+                <mat-radio-group>
+                  <mat-radio-button class="example-margin" value="accept" [checked] ="covAccepted" (click) = "editTaParams('CovAccepted', 1)" >Accept</mat-radio-button>
+                  <mat-radio-button class="example-margin" value="decline"  (click) = "editTaParams('CovAccepted', 0)" >Decline</mat-radio-button>
+                </mat-radio-group>
             </td> 
+       
             <td> 
-              <mat-form-field appearance="fill"  class='h50'  >
+              <mat-form-field  class='h50'  >
                 <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editTaParams('WTMdate', $event)" placeholder=" {{ WTMdateConvent }}">
                 <mat-datepicker-toggle matSuffix [for]="picker3"    ></mat-datepicker-toggle>
                 <mat-datepicker #picker3></mat-datepicker>
               </mat-form-field>
             </td>
             <td> 
-               <mat-form-field class="example-full-width" appearance="fill">
+               <mat-form-field class="example-full-width" >
                 <textarea matInput (change) = "editTaParams('WTMnote', $event.target.value)" class='note'  > {{ WTMnote }} </textarea>
                </mat-form-field>
             </td>
