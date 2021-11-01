@@ -60,6 +60,7 @@ export class PlansComponent implements OnInit {
   calParams: calParams;                             // e.g daysInSecondMonth, firstMonthName
   dayNum: number = 1;
   vidxToEdit: number = 0;                           // for debugging
+  acknowlegeEdits: string = '-';
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
@@ -95,8 +96,8 @@ export class PlansComponent implements OnInit {
         if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
           this .isLoggedInUserCoverer = true;
         }
-        this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
-        this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
+   //     this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
+   //     this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
         if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
           this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
         if (this .toSeeParams['CovAccepted'] == 1)
@@ -266,12 +267,14 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     
 }
 
-private deleteTa(){
+private deleteTa(ev){
   this .tAparams.reasonIdx = 99;
-  this .saveEdits();
+  this .saveEdits(ev);
 }
-private saveEdits() {
+private saveEdits(ev, detail?) {
   console.log("254 %o", this .tAparams)
+  if (detail == 'CovAccept')
+    this. acknowlegeEdits = 'Edits Saved'
   var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post

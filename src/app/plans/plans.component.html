@@ -123,7 +123,7 @@
           <button class='Button' (click) = "saveEdits($event)">Save Changes</button>
         </td></tr>  
         <tr><td>
-          <button  class='Button' (click) = "deleteTa()">Delete Time Away</button>
+          <button  class='Button' (click) = "deleteTa($event)">Delete Time Away</button>
         </td></tr>
         </table>  
           </div>
@@ -144,12 +144,12 @@
    </div>
    <div *ngIf = 'isLoggedInUserCoverer' class='raised'> 
     <table *ngIf = vidxToSee class='toFit'>
-      <caption> Please Accept or Decline this coverage.  </caption>
+      <caption> Please Accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}  time away. </caption>
       <tr >
         <th> Start Date</th><th> End Date</th> <th> Coverage</th><th> WTM Date</th><th> WTM Note</th>
           </tr> 
           <tr>
-            <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> 
+            <td>  {{ toSeeParams['startDateConvent'] }} </td> <td>  {{toSeeParams['endDateConvent']}} </td> 
             <td >   
                 <mat-radio-group>
                   <mat-radio-button class="example-margin" value="accept" [checked] ="covAccepted" (click) = "editTaParams('CovAccepted', 1)" >Accept</mat-radio-button>
@@ -159,7 +159,7 @@
        
             <td> 
               <mat-form-field  class='h50'  >
-                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editTaParams('WTMdate', $event)" placeholder=" {{ WTMdateConvent }}">
+                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editTaParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
                 <mat-datepicker-toggle matSuffix [for]="picker3"    ></mat-datepicker-toggle>
                 <mat-datepicker #picker3></mat-datepicker>
               </mat-form-field>
@@ -170,7 +170,11 @@
                </mat-form-field>
             </td>
             <td>
-              <button class='Button' (click) = "saveEdits($event)">Save </button>
+              <table>
+                 <tr><td><button class='Button' (click) = "saveEdits($event, 'CovAccept')">Save </button></td></tr>
+                 <tr ><td> {{ acknowlegeEdits }}</td></tr>
+              
+             </table>
             </td>
         </tr>
     </table>
