@@ -82,7 +82,6 @@ export class PlansComponent implements OnInit {
    // this .firstTest = 0;
     this .vacData = Array();
     this. setCalDates();
-  
   }      
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
@@ -91,8 +90,7 @@ export class PlansComponent implements OnInit {
 
         console.log("818181 %o", this .toSeeParams)
         console.log("calDates %o", this .calDates[this. calDates.length-1])
-        let tst = this .toSeeParams.endDate > this .calDates[this. calDates.length-1]
-        console.log("tst is %o", tst)
+
         if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
           this .isLoggedInUserCoverer = true;
         }
