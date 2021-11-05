@@ -71,12 +71,6 @@ export class PlansComponent implements OnInit {
         this .getTheVidxToSee();
       }
       this .getVacURL += '&userid=suit'
-<<<<<<< HEAD
-=======
-  console.log("74 %o", this .userid)    
-  console.log("76 %o", this.vacEdit)
-      if (this .userid)
->>>>>>> 8b78a5c0c1ad6de6b279bb9964e1dbb452460400
       this .getTheData();
     })
    }
