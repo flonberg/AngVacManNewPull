@@ -70,7 +70,7 @@ export class PlansComponent implements OnInit {
       if (params['vidxToSee']){
         this .getTheVidxToSee();
       }
-      this .getVacURL += '&userid=' +  params['userid']
+      this .getVacURL += '&userid=suit'
       this .getTheData();
     })
    }
