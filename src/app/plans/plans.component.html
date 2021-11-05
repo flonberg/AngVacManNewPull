@@ -129,7 +129,7 @@
           </div>
         </td>
        </tr>
-       <tr>
+       <tr><td> {{ vacEdit.WTMdate  }} </td>
         <th> Coverer </th> <th> WTM Date </th>  <th> WTM Note </th>
        </tr>
       </table>
@@ -147,10 +147,10 @@
     <table class = 'toFit'>
       <caption> Coverage </caption>
       <tr>
-        <th> Covering Physician</th> <th> WTM Date</th><th> WTM Location</th><th>WTM Note</th>
+        <th> Covering Physician</th> <th> WTM Date</th><th>WTM Note</th>
       </tr>
       <tr>
-        <td> Dr. {{ vacEdit.covererDetails.LastName }}</td><td> {{ vacEdit.WTMdate  }} </td>
+        <td> Dr. {{ vacEdit.covererDetails.LastName }}</td><td> {{ vacEdit.WTMdate  }} </td><td> {{ vacEdit.WTMnote }} </td>
       </tr>
     </table>
    </div>
@@ -190,12 +190,7 @@
             </td>
         </tr>
     </table>
-    <table class = 'toFit'>
-      <caption> Coverage </caption>
-      <tr>
-        <th> Covering Physician</th> <th> WTM Date</th><th> WTM Location</th><th>WTM Note</th>
-      </tr>
-    </table>
+
 
   </div>
 </div>
