@@ -138,19 +138,19 @@
     <table class='toFit' *ngIf = showReadOnly>
       <caption> {{ theCaption }}  </caption>
       <tr >
-          <th> Start- Date</th><th> End Date</th> <th> Reason  8888  </th> <th> Note </th>
+          <th> Start- Date</th><th> End Date</th> <th> Reason   </th> <th> Note </th>
       </tr> 
       <tr>
           <td>  {{ startDateConvent }} </td> <td>  {{ endDateConvent }} </td> <td>{{ reasonArr[reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
       </tr>
     </table> 
-    <table class = 'toFit'>
+    <table class = 'toFit' >
       <caption> Coverage </caption>
       <tr>
-        <th> Covering Physician</th> <th> WTM Date</th><th>WTM Note</th>
+        <th> Covering Physician</th> <th> WTM-Date</th><th>WTM Note</th>
       </tr>
       <tr>
-        <td> Dr. {{ vacEdit.covererDetails.LastName }}</td><td> {{ vacEdit.WTMdate  }} </td><td> {{ vacEdit.WTMnote }} </td>
+        <td> Dr. {{ vacEdit.covererDetails.LastName }}</td><td> {{ vacEdit.WTMdate  }} </td><td> {{ vacEdit.WTMnote}} </td>
       </tr>
     </table>
    </div>
