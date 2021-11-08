@@ -77,6 +77,9 @@ export class EntertaComponent implements OnInit {
   public pickDate(date: any): void {
   console.log("50 %o", date)  
     this. submitTA();
+    for (let i = 0; i < 10000; i++){
+      let m = i * i;
+    }
     this.onDatePicked.emit(date);
 }
 
