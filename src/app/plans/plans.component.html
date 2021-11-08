@@ -129,9 +129,24 @@
           </div>
         </td>
        </tr>
-       <tr><td> {{ vacEdit.WTMdate  }} </td>
+       <tr>
         <th> Coverer </th> <th> WTM Date </th>  <th> WTM Note </th>
        </tr>
+       <tr><td>
+       <div class='center'>
+        <mat-form-field >
+          <mat-label> Coverer Nominated </mat-label>
+          <mat-select (selectionChange) = "covererSelect($event)" >
+            <mat-option *ngFor="let MD of serviceMDs | keyvalue"
+            [value]="MD.key ">{{MD.value.LastName }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>  
+    </td>
+    <td> {{ vacEdit.WTMdate}} </td>
+    <td> {{ vacEdit.WTMnote}} </td>
+  </tr>
+
       </table>
   </div>
   <div class='raised' *ngIf = 'showReadOnly ' >
@@ -197,5 +212,5 @@
 
 <br><br>
 <div>
-  <app-enterta (onDatePicked) = "refreshData($event)"  ></app-enterta>
+  <app-enterta (onDatePicked) = "refreshData($event)" *ngIf = !vidxToSee ></app-enterta>
   </div>

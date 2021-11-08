@@ -61,6 +61,7 @@ export class PlansComponent implements OnInit {
   dayNum: number = 1;
   vidxToEdit: number = 0;                           // for debugging
   acknowlegeEdits: string = '-';
+  serviceMDs: {}
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
@@ -72,6 +73,7 @@ export class PlansComponent implements OnInit {
       }
       this .getVacURL += '&userid=suit'
       this .getTheData();
+      this .getServiceMDs(this .userid)
     })
    }
 
@@ -121,6 +123,16 @@ export class PlansComponent implements OnInit {
       }  
     })
   }   
+
+  getServiceMDs(userid){
+    let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
+    this .http.get(url).subscribe(res =>{
+      this. serviceMDs = res;
+      console.log("5252 %o", this .serviceMDs)
+    })
+  }
+
+
    /**
   * Used by enterTa to signal a new tA has been added and we need to reload the data. 
   * @param ev 
@@ -298,6 +310,7 @@ private editTaParams(name, value){
     this .tAparams.CovAccepted = value;    
   if (name == 'WTMdate'){
     let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
+
     this .tAparams.WTMdate = dateString;
   }  
   console.log("285 %o", this .tAparams)  
@@ -327,6 +340,7 @@ selectedOption:string
   console.log("276 vac %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
    this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
+
    this .tAparams ={} as tAparams;
    this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
