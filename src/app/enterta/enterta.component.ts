@@ -123,6 +123,9 @@ console.log("56 %o", this .monthInc)
   this .tAparams.note= ev.target.value;
    console.log("note is %o", this.tAparams)
  }
+ /**
+  * REST request of enterAngVac.php
+  */
  submitTA(){                                                                  // need to put in full error checking. 
   this .checkTAparams();
   var jData = JSON.stringify(this .tAparams)

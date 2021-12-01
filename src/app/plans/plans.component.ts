@@ -310,10 +310,12 @@ private editTaParams(name, value){
     this .tAparams.CovAccepted = value;    
   if (name == 'WTMdate'){
     let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
-
     this .tAparams.WTMdate = dateString;
   }  
   console.log("285 %o", this .tAparams)  
+
+
+  
 }
 /**
  * Calculate the number of days from firstDayOnCalendar to start of tA
