@@ -46,20 +46,16 @@
 
   <td>
     <div class='center'>
-        <mat-form-field class="example-full-width"   >
           <mat-label>Note</mat-label>
           <textarea matInput (change) = "noteChange($event)" class='note'> </textarea>
-        </mat-form-field>
     </div>    
   </td>
 
   <td>
-    <div class='center'>
-
-        <mat-checkbox class="example-margin" [(ngModel)]="checked">WTM Change </mat-checkbox>
-
-    <button class='Button' (click) = "pickDate(startDateEntered)">Submit </button>
-    </div>
+    <table>
+       <tr> <td>  <mat-checkbox class="example-margin" [(ngModel)]="checked">WTM Change Needed</mat-checkbox></td></tr>
+       <button class='Button' (click) = "pickDate(startDateEntered)">Submit </button>
+      </table>
   </td>
 </tr>
   </table>
