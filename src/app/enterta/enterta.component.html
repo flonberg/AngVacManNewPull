@@ -29,6 +29,7 @@
       </mat-form-field>
     </div>  
   </td>
+
   <td>
     <div class='center'>
       <mat-form-field >
@@ -37,9 +38,11 @@
           <mat-option *ngFor="let MD of serviceMDs | keyvalue"
           [value]="MD.key ">{{MD.value.LastName }}</mat-option>
         </mat-select>
+        <mat-checkbox class="example-margin" [(ngModel)]="checked">WTM Change Needed</mat-checkbox>
       </mat-form-field>
     </div>  
   </td>
+  
 
 
   <td>
@@ -60,3 +63,6 @@
   <div *ngIf = "showError"> Please enter all fields </div>
   <div *ngIf = "overlap"  class='warning'  > This Time Away overlaps an already scheduled Time Away therefore  cannot be added to the data base. </div>
 </div>
+<section class="example-section">
+  <mat-checkbox class="example-margin">WTM Change Required</mat-checkbox>
+</section>

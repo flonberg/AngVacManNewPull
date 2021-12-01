@@ -47,6 +47,7 @@ import { EntertaComponent } from './enterta/enterta.component';
     MatInputModule,
     MatIconModule,
     MatRadioModule,
+    MatCheckboxModule,
 
 
     BrowserAnimationsModule,
