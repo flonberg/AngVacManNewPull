@@ -6,8 +6,8 @@
     -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
 }
 td {
-    width:160px;
-    border: solid;
+    width:140px;
+
 }
 .warning {
     color:red;
@@ -20,7 +20,7 @@ td {
 table {
 
     table-layout: fixed;
-    width: 1400px;
+    width: 100%;
   }
 
   .example-margin {
