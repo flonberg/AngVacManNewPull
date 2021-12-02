@@ -10,7 +10,8 @@ interface tAparams {
   note: string,
   userid: string,
   coverageA: number,
-  WTMdate: string
+  WTMdate: string,
+  WTMchange: number
 }
 @Component({
   selector: 'app-enterta',
@@ -38,15 +39,17 @@ export class EntertaComponent implements OnInit {
 
   constructor( public datePipe: DatePipe, private activatedRoute: ActivatedRoute, private http: HttpClient ) { 
   }
-  ngOnInit(): void {    this. tAparams = {
-    startDate :'',
-    endDate: '',
-    reason: 0,
-    note: '',
-    userid: '',
-    coverageA: 0,
-    WTMdate:''
-  }
+  ngOnInit(): void {    
+    this. tAparams = {
+      startDate :'',
+      endDate: '',
+      reason: 0,
+      note: '',
+      userid: '',
+      coverageA: 0,
+      WTMdate:'',
+      WTMchange: 0
+    }
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
       this .tAparams.userid = params['userid']
@@ -82,7 +85,12 @@ export class EntertaComponent implements OnInit {
     }
     this.onDatePicked.emit(date);
 }
-
+ WTMchangeNeeded(ev){
+   if (ev.checked)
+      this.tAparams.WTMchange = 1;
+   else   
+      this.tAparams.WTMchange = 0;
+ }
   dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
     var tDate = new Date(dateRangeStart.value)                              // save for editing
     this .startDateEntered = tDate;
@@ -111,7 +119,6 @@ console.log("56 %o", this .monthInc)
     console.log("event is %o", ev) 
     if (this .tAparams)
     this .tAparams.reason= ev.value;
-
  }
  covererSelect(ev){
    console.log("1091091091 %o", ev)

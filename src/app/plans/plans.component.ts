@@ -17,6 +17,10 @@ interface tAparams {
   vidx: string;
   CovAccepted: number;
 }
+interface CovParams {
+  accepted: boolean,
+  WTMdate?: string
+}
 interface calParams {
   firstMonthName: string,
   secondMonthName: string,
@@ -61,7 +65,8 @@ export class PlansComponent implements OnInit {
   dayNum: number = 1;
   vidxToEdit: number = 0;                           // for debugging
   acknowlegeEdits: string = '-';
-  serviceMDs: {}
+  serviceMDs: {};
+  CovParams: CovParams
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
@@ -84,6 +89,10 @@ export class PlansComponent implements OnInit {
    // this .firstTest = 0;
     this .vacData = Array();
     this. setCalDates();
+    this .CovParams = {
+      accepted: false,
+    }
+
   }      
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
@@ -291,6 +300,17 @@ private saveEdits(ev, detail?) {
       this .getTheData();                                           // refresh the data to show the edits. 
   })
   this .showEdit = false;                                           // turn of editControl box. 
+}
+private editCovParams(param, value){
+  console.log('305 %o --- %o', param, value);
+  if (param == 'CovAccepted')
+      this .CovParams.accepted = value;
+  if (param == 'WTMdate'){
+    this .CovParams.WTMdate = this.datePipe.transform(value.value, 'yyyy-MM-dd')
+    console.log( 'WTMdate has %o', this .CovParams);
+ 
+
+  }
 }
 
 private editTaParams(name, value){

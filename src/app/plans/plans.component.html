@@ -67,6 +67,10 @@
   </ng-container>
 </tr>
 </table>
+<br><br>
+<div>
+  <app-enterta (onDatePicked) = "refreshData($event)" *ngIf = !vidxToSee ></app-enterta>
+  </div>
 
 <div class='spacer'  >
   <div class='raised' *ngIf = showEdit >
@@ -130,7 +134,7 @@
         </td>
        </tr>
        <tr>
-        <th> Coverer </th> <th> WTM Date </th>  <th> WTM Note </th>
+        <th> Coverer </th> <th > WTM Date </th>  <th> WTM Note </th>
        </tr>
        <tr><td>
        <div class='center'>
@@ -160,7 +164,7 @@
       </tr>
     </table> 
     <table class = 'toFit' >
-      <caption> Coverage </caption>
+      <caption> Coverage {{ vacEdit.vidx }} </caption>
       <tr>
         <th> Covering Physician</th> <th> WTM-Date</th><th>WTM Note</th>
       </tr>
@@ -171,31 +175,29 @@
    </div>
    <div *ngIf = 'isLoggedInUserCoverer' class='raised'> 
     <table *ngIf = vidxToSee class='toFit'>
-      <caption> Please Accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}  time away. </caption>
+      <caption  *ngIf = "toSeeParams['WTM_Change_Needed'] == 0"  > Please Accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </caption>
+      <caption  *ngIf = "toSeeParams['WTM_Change_Needed'] == 1"  > Please Accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away and select a WTM date. </caption>
+  
       <tr >
-        <th> Start Date</th><th> End Date</th> <th> Coverage</th><th> WTM Date</th><th> WTM Note</th>
+        <th> Start Date</th><th> End Date</th> <th> Coverage</th><th *ngIf = "toSeeParams['WTM_Change_Needed'] == 1" > WTM Date</th>
           </tr> 
           <tr>
             <td>  {{ toSeeParams['startDateConvent'] }} </td> <td>  {{toSeeParams['endDateConvent']}} </td> 
             <td >   
                 <mat-radio-group>
-                  <mat-radio-button class="example-margin" value="accept" [checked] ="covAccepted" (click) = "editTaParams('CovAccepted', 1)" >Accept</mat-radio-button>
-                  <mat-radio-button class="example-margin" value="decline"  (click) = "editTaParams('CovAccepted', 0)" >Decline</mat-radio-button>
+                  <mat-radio-button class="example-margin" value="accept" [checked] ="covAccepted" (click) = "editCovParams('CovAccepted', 1)" >Accept</mat-radio-button>
+                  <mat-radio-button class="example-margin" value="decline"  (click) = "editCovParams('CovAccepted', 0)" >Decline</mat-radio-button>
                 </mat-radio-group>
             </td> 
        
-            <td> 
+            <td *ngIf = "toSeeParams['WTM_Change_Needed'] == 1" > 
               <mat-form-field  class='h50'  >
-                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editTaParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
+                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editCovParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
                 <mat-datepicker-toggle matSuffix [for]="picker3"    ></mat-datepicker-toggle>
                 <mat-datepicker #picker3></mat-datepicker>
               </mat-form-field>
             </td>
-            <td> 
-               <mat-form-field class="example-full-width" >
-                <textarea matInput (change) = "editTaParams('WTMnote', $event.target.value)" class='note'  > {{ WTMnote }} </textarea>
-               </mat-form-field>
-            </td>
+   
             <td>
               <table>
                  <tr><td><button class='Button' (click) = "saveEdits($event, 'CovAccept')">Save </button></td></tr>
@@ -211,6 +213,3 @@
 </div>
 
 <br><br>
-<div>
-  <app-enterta (onDatePicked) = "refreshData($event)" *ngIf = !vidxToSee ></app-enterta>
-  </div>

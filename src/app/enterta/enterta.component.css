@@ -7,8 +7,6 @@
 }
 td {
     width:140px;
-
-
 }
 .warning {
     color:red;
@@ -25,4 +23,11 @@ table {
 
   .example-margin {
     margin: 0 10px;
+  }
+  tr {
+      padding:30px;
+  }
+ 
+  tr.spaceUnder>td {
+    padding-bottom: 1em;
   }
