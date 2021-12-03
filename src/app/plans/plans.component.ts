@@ -16,6 +16,7 @@ interface tAparams {
   WTMdate?: string,
   vidx: string;
   CovAccepted: number;
+  WTNcoverer: string;
 }
 interface CovParams {
   accepted: boolean,
@@ -67,7 +68,8 @@ export class PlansComponent implements OnInit {
   vidxToEdit: number = 0;                           // for debugging
   acknowlegeEdits: string = '-';
   serviceMDs: {};
-  CovParams: CovParams
+  CovParams: CovParams;
+
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {

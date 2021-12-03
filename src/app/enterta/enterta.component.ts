@@ -11,7 +11,9 @@ interface tAparams {
   userid: string,
   coverageA: number,
   WTMdate: string,
-  WTMchange: number
+  WTMchange: number,
+  WTMcoverer: string,
+  WTMself: boolean
 }
 @Component({
   selector: 'app-enterta',
@@ -36,8 +38,6 @@ export class EntertaComponent implements OnInit {
   serviceMDs: {}
   pserviceMDs:[number]
   
-
-
   constructor( public datePipe: DatePipe, private activatedRoute: ActivatedRoute, private http: HttpClient ) { 
   }
   ngOnInit(): void {    
@@ -49,7 +49,9 @@ export class EntertaComponent implements OnInit {
       userid: '',
       coverageA: 0,
       WTMdate:'',
-      WTMchange: 0
+      WTMchange: 0,
+      WTMcoverer:'',
+      WTMself: false
     }
     this .pserviceMDs = [0]
     this. activatedRoute.queryParams.subscribe(params =>{
@@ -60,25 +62,21 @@ export class EntertaComponent implements OnInit {
         let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
         this .http.get(url).subscribe(res =>{
           this. serviceMDs = res;
-          let obj = res;
-          let k: keyof typeof obj;  // Type is "one" | "two" | "three"
-   let ind = 1;       
-for (k in obj) {
-  const v = obj[k];  // OK
-  console.log("k is ")
-  this .pserviceMDs[ind] = ind;
-  ind++;
-  
-}
-          console.log("5252 %o", this .pserviceMDs)
+          this .makeIndex(this .serviceMDs);        
         })
-    }
+      }
     })
     this .showError = false;
     this .buttonClicked = "";
     this .overlap = false;
     this .monthInc = 1;
-
+  }
+  makeIndex(obj){                                             // create an array of integers to use for index of SELECT in html    
+    let k: keyof typeof obj;  
+    let ind = 1;                                            
+    for (k in obj) {
+      this .pserviceMDs[ind] = ind++;
+    }
   }
 
   getServiceMDs(userid){
@@ -101,28 +99,30 @@ for (k in obj) {
     }
     this.onDatePicked.emit(date);
 }
- WTMchangeNeeded(ev){
-   if (ev.checked)
-      this.tAparams.WTMchange = 1;
-   else   
-      this.tAparams.WTMchange = 0;
+ WTMparam(ev, pName){
+   console.log("101 %o", ev)
+   if (pName == 'WTMdateChange')
+     this .tAparams.WTMchange = ev.checked ? 1 : 0
+   if (pName == 'WTMcoverer')
+     this .tAparams.WTMself = ev.checked ? true : false
+   if (pName == 'WTMdate')
+    this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'yyyy-MM-dd')  
+
+console.log("108 %o", this .tAparams)
  }
   dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
     var tDate = new Date(dateRangeStart.value)                              // save for editing
     this .startDateEntered = tDate;
     this .monthInc = this.whatMonthIsStartDateIn(tDate)
-console.log("56 %o", this .monthInc)   
     if (  dateRangeEnd.value  ){
      var eDate = new Date(dateRangeEnd.value)
         this. tAparams.startDate = this .datePipe.transform(new Date(dateRangeStart.value), 'yyyy-MM-dd')   
         this. tAparams.endDate = this .datePipe.transform(new Date(dateRangeEnd.value), 'yyyy-MM-dd')   
       }
     this .checkTAparams();  
-
  }
  WTMchanged(WTMdate: HTMLInputElement){
    this. tAparams.WTMdate = this .datePipe.transform(new Date(WTMdate.value), 'yyyy-MM-dd')  
-   console.log("change %o", this .tAparams)
  }
  whatMonthIsStartDateIn(startDate){
    let thisMonth = new Date();

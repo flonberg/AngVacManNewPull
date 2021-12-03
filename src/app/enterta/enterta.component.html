@@ -16,7 +16,7 @@
       </mat-form-field>
     </div>  
   </td>
-  <td>
+  <td> 
     <div class='center'>
       <mat-form-field >
         <mat-label> Reason</mat-label>
@@ -49,12 +49,23 @@
       </mat-form-field>    
     </div>    
   </td>
-
+</tr><tr> 
   <td>
-    <table>
-       <tr class='spaceUnder'> <td>  <mat-checkbox [(ngModel)]="checked" (change) = "WTMchangeNeeded($event)"  >WTM Change Needed</mat-checkbox></td></tr>
+       <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
+  </td>
+  <td  *ngIf = "tAparams.WTMchange == 1">
+    <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMcoverer' )"  >Self-Covering WTM </mat-checkbox>
+</td>
+<td>
+  <mat-form-field appearance="fill" *ngIf = "tAparams.WTMself" class='h50'  >
+    <mat-label>WTM Date</mat-label>
+    <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (dateChange)="WTMparam($event, 'WTMdate')" placeholder=" {{ startDateConvent }}">
+    <mat-datepicker-toggle matSuffix [for]="picker"    ></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</td>
+  <td>     
        <button class='Button' (click) = "pickDate(startDateEntered)">Submit </button>
-      </table>
   </td>
 </tr>
   </table>
