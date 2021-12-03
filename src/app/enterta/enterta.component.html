@@ -29,13 +29,13 @@
       </mat-form-field>
     </div>  
   </td>
-  <td>
+  <td> 
     <div class='center'>
       <mat-form-field >
         <mat-label> Coverer Nominated </mat-label>
         <mat-select (selectionChange) = "covererSelect($event)" >
-          <mat-option *ngFor="let MD of serviceMDs | keyvalue"
-          [value]="MD.key ">{{MD.value.LastName }}</mat-option>
+          <mat-option *ngFor="let MD of pserviceMDs "
+          [value]="MD.key ">{{  serviceMDs[MD]?.LastName }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>  

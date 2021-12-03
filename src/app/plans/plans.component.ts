@@ -139,7 +139,7 @@ export class PlansComponent implements OnInit {
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
-      console.log("5252 %o", this .serviceMDs)
+      console.log("522345 %o", this .serviceMDs)
     })
   }
 

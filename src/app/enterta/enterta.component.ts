@@ -34,6 +34,7 @@ export class EntertaComponent implements OnInit {
   startDateEntered: Date;
   WTMdate: Date;
   serviceMDs: {}
+  pserviceMDs:[number]
   
 
 
@@ -50,6 +51,7 @@ export class EntertaComponent implements OnInit {
       WTMdate:'',
       WTMchange: 0
     }
+    this .pserviceMDs = [0]
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
       this .tAparams.userid = params['userid']
@@ -58,7 +60,17 @@ export class EntertaComponent implements OnInit {
         let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
         this .http.get(url).subscribe(res =>{
           this. serviceMDs = res;
-          console.log("5252 %o", this .serviceMDs)
+          let obj = res;
+          let k: keyof typeof obj;  // Type is "one" | "two" | "three"
+   let ind = 1;       
+for (k in obj) {
+  const v = obj[k];  // OK
+  console.log("k is ")
+  this .pserviceMDs[ind] = ind;
+  ind++;
+  
+}
+          console.log("5252 %o", this .pserviceMDs)
         })
     }
     })
@@ -68,11 +80,15 @@ export class EntertaComponent implements OnInit {
     this .monthInc = 1;
 
   }
+
   getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
+      for (const key in res){
+        console.log("key is %o value is %o", key, res[key])
+      }
       this. serviceMDs = res;
-      console.log("5252 %o", this .serviceMDs)
+      console.log("525288888 %o", this .serviceMDs)
     })
   }
 
