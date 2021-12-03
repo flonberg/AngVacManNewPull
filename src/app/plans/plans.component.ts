@@ -19,7 +19,8 @@ interface tAparams {
 }
 interface CovParams {
   accepted: boolean,
-  WTMdate?: string
+  WTMdate?: string,
+  vidx: number
 }
 interface calParams {
   firstMonthName: string,
@@ -91,6 +92,7 @@ export class PlansComponent implements OnInit {
     this. setCalDates();
     this .CovParams = {
       accepted: false,
+      vidx: 0
     }
 
   }      
@@ -292,9 +294,13 @@ private deleteTa(ev){
 }
 private saveEdits(ev, detail?) {
   console.log("254 %o", this .tAparams)
-  if (detail == 'CovAccept')
+  var jData = JSON.stringify(this .tAparams)                      // the default edit params
+  if (detail == 'CovAccept'){
     this. acknowlegeEdits = 'Edits Saved'
-  var jData = JSON.stringify(this .tAparams)                        // form the data to pass to php script
+    this. CovParams.vidx = this .vidxToSee                        
+    jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
+  }
+                      // form the data to pass to php script
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
@@ -307,8 +313,7 @@ private editCovParams(param, value){
       this .CovParams.accepted = value;
   if (param == 'WTMdate'){
     this .CovParams.WTMdate = this.datePipe.transform(value.value, 'yyyy-MM-dd')
-    console.log( 'WTMdate has %o', this .CovParams);
- 
+    console.log( 'this.CovParams has %o', this .CovParams);
 
   }
 }
