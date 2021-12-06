@@ -68,7 +68,7 @@
 </tr>
 </table>
 <br><br>
-<div>
+<div *ngIf = " !CovererView " > 
   <app-enterta (onDatePicked) = "refreshData($event)" ></app-enterta>
   </div>
 
@@ -134,20 +134,28 @@
         </td>
        </tr>
        <tr>
-        <th> Coverer </th> <th > WTM Date </th>  <th> WTM Note </th>
+        <th> Coverer </th> <th *ngIf = "tAparams.WTM_Self == 0" > WTM Coverer </th> 
+                            <th   *ngIf = "tAparams.WTM_Self == 1" > WTM Date </th>  <th> WTM Note </th>
        </tr>
        <tr><td>
        <div class='center'>
         <mat-form-field >
           <mat-label> {{ vacEdit.covererDetails.LastName }} </mat-label>
-          <mat-select (selectionChange) = "covererSelect($event)" >
+          <mat-select (selectionChange) ="editTaParams('WTMcoverer', $event)" >
             <mat-option *ngFor="let MD of serviceMDs | keyvalue"
-            [value]="MD.key ">{{MD.value.LastName }}</mat-option>
+            [value]="MD.value.UserKey ">{{ MD.value.LastName }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>  
     </td>
-    <td> {{ vacEdit.WTMdate}} </td>
+    {{ vacEdit | json }}
+    <td >
+      <mat-radio-group aria-label="Select an option">
+        <mat-radio-button value="1"   (click) = "editTaParams('WTM_Self', $event  )"   >Self </mat-radio-button>
+        <mat-radio-button value="2"   (click) = "editTaParams( 'WTM_CoveringMD', $event )" >Covering MD </mat-radio-button>
+      </mat-radio-group>
+    </td>
+    <td *ngIf = "tAparams.WTM_self == 1"> {{ vacEdit.WTMdate}} </td>
     <td> {{ vacEdit.WTMnote}} </td>
   </tr>
 
