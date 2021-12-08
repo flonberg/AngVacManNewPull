@@ -142,8 +142,8 @@
         <mat-form-field >
           <mat-label> {{ vacEdit.covererDetails.LastName }} </mat-label>
           <mat-select (selectionChange) ="editTaParams('WTMcoverer', $event)" >
-            <mat-option *ngFor="let MD of serviceMDs | keyvalue"
-            [value]="MD.value.UserKey ">{{ MD.value.LastName }}</mat-option>
+            <mat-option *ngFor="let MD of serviceMDs "
+            [value]="MD ">{{ MD.LastName | json }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>  
