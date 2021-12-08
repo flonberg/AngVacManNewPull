@@ -13,7 +13,7 @@ interface tAparams {
   WTMdate: string,
   WTMchange: number,
   WTMcoverer: string,
-  WTMself: boolean
+  WTMself: number
 }
 @Component({
   selector: 'app-enterta',
@@ -37,6 +37,7 @@ export class EntertaComponent implements OnInit {
   WTMdate: Date;
   serviceMDs: {}
   pserviceMDs:[number]
+  modeSelect:string='test'
   
   constructor( public datePipe: DatePipe, private activatedRoute: ActivatedRoute, private http: HttpClient ) { 
   }
@@ -51,9 +52,10 @@ export class EntertaComponent implements OnInit {
       WTMdate:'',
       WTMchange: 0,
       WTMcoverer:'',
-      WTMself: false
+      WTMself: 0
     }
     this .pserviceMDs = [0]
+    this .modeSelect = 'test'
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
       this .tAparams.userid = params['userid']
@@ -82,11 +84,9 @@ export class EntertaComponent implements OnInit {
   getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
-      for (const key in res){
-        console.log("key is %o value is %o", key, res[key])
-      }
       this. serviceMDs = res;
-      console.log("525288888 %o", this .serviceMDs)
+      console.log("12345 %o", this .serviceMDs)
+
     })
   }
 
@@ -100,15 +100,16 @@ export class EntertaComponent implements OnInit {
     this.onDatePicked.emit(date);
 }
  WTMparam(ev, pName){
-   console.log("101 %o", ev)
+   console.log("101 %o --- %o ", ev, pName)
    if (pName == 'WTMdateChange')
      this .tAparams.WTMchange = ev.checked ? 1 : 0
-   if (pName == 'WTMcoverer')
-     this .tAparams.WTMself = ev.checked ? true : false
+   if (pName == 'WTM_Self')
+     this .tAparams.WTMself = 1
+   if (pName == 'WTM_CoveringMD')
+     this .tAparams.WTMself = 0
    if (pName == 'WTMdate')
     this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'yyyy-MM-dd')  
-
-console.log("108 %o", this .tAparams)
+  console.log("108 %o", this .tAparams)
  }
   dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
     var tDate = new Date(dateRangeStart.value)                              // save for editing
@@ -137,9 +138,9 @@ console.log("108 %o", this .tAparams)
     this .tAparams.reason= ev.value;
  }
  covererSelect(ev){
-   console.log("1091091091 %o", ev)
-   this .tAparams.coverageA = ev.value
-   console.log("111 %o", this .tAparams)
+   console.log("1091091091 ")
+  // this .tAparams.coverageA = ev.value
+  // console.log("111 %o", this .tAparams)
  }
  noteChange(ev){
   if (this .tAparams)

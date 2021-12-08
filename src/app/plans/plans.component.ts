@@ -1,6 +1,6 @@
 import { AppComponent } from './../app.component';
 import { HttpClient } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NumberSymbol } from '@angular/common';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -16,7 +16,8 @@ interface tAparams {
   WTMdate?: string,
   vidx: string;
   CovAccepted: number;
-  WTNcoverer: string;
+  WTMcoverer: string;
+  WTM_self:NumberSymbol
 }
 interface CovParams {
   accepted: boolean,
@@ -69,6 +70,7 @@ export class PlansComponent implements OnInit {
   acknowlegeEdits: string = '-';
   serviceMDs: {};
   CovParams: CovParams;
+  CovererView: boolean = false;
 
 
 
@@ -78,6 +80,7 @@ export class PlansComponent implements OnInit {
       this .vidxToSee = params['vidxToSee']          // used by Coverer to Accept Coverage and Select WTM date
       if (params['vidxToSee']){
         this .getTheVidxToSee();
+        this .CovererView = true; 
       }
       this .getVacURL += '&userid=suit'
       this .getTheData();
@@ -102,21 +105,15 @@ export class PlansComponent implements OnInit {
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
-
         console.log("818181 %o", this .toSeeParams)
-        console.log("calDates %o", this .calDates[this. calDates.length-1])
-
         if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
           this .isLoggedInUserCoverer = true;
         }
-   //     this .startDateConvent = this.datePipe.transform(this. toSeeParams['startDate'].date, 'MM-d-yyyy')
-   //     this .endDateConvent = this.datePipe.transform(this. toSeeParams['endDate'].date, 'MM-d-yyyy')
         if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
           this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
         if (this .toSeeParams['CovAccepted'] == 1)
           this .covAccepted = true;  
         this. WTMnote = this .toSeeParams['WTMnote']  
-      console.log("100 %o", this .WTMnote)
     })
 
   }
@@ -320,11 +317,12 @@ private editCovParams(param, value){
   }
 }
 
-private editTaParams(name, value){
+private editTaParams(name, value){  
+  console.log("277 %o  --- %o ", name, value)
   if (!this. tAparams)
     this .tAparams ={} as tAparams;
   this .tAparams.vidx = String(this .vidxToSee)  
-  console.log("277 %o  --- %o ", name, value)
+
   if (name == 'WTMdate')
     this .tAparams.WTMdate = value;
   if (name == 'WTMnote')
@@ -339,6 +337,12 @@ private editTaParams(name, value){
     let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
     this .tAparams.WTMdate = dateString;
   }  
+  if (name == 'WTM_Self'){
+    this .tAparams.WTM_self = 1;
+    console.log("342 %o", this .tAparams)
+  }
+  if (name == 'WTM_CoveringMD')
+    this .tAparams.WTM_self = 0;
   console.log("285 %o", this .tAparams)  
 
 
