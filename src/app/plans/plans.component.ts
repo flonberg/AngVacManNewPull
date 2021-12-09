@@ -14,7 +14,7 @@ interface tAparams {
   note?: string,
   WTMnote?: string,
   WTMdate?: string,
-  vidx: string;
+  vidx: number;
   CovAccepted: number;
   WTMcoverer: string;
   WTM_self:NumberSymbol
@@ -302,6 +302,7 @@ private deleteTa(ev){
 }
 private saveEdits(ev, detail?) {
   console.log("254 %o", this .tAparams)
+  this .tAparams.vidx = +this .vidxToEdit;
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
   if (detail == 'CovAccept'){
     this. acknowlegeEdits = 'Edits Saved'
@@ -330,17 +331,40 @@ private isWTM_self(){
     return true;
 }
 private editTaParams(name, value){  
+  if (!this. tAparams)
+  this .tAparams ={} as tAparams;
+  switch (name){
+    case 'WTM_Date':{
+      this .tAparams.WTMdate = value;
+      break;
+    }  
+    case 'WTMnote':{
+      this .tAparams.WTMnote = value;
+      break;
+    }   
+    case 'reasonIdx':{
+      console.log("354 reasonIdx %o", value)
+      this .tAparams.reasonIdx = value.value;  
+      break;
+    }         
+    case 'WTM_Self':{
+      this .vacEdit.WTM_self = 1;
+      break;
+    }    
+    case 'NOT_WTM_Self':{
+      this .vacEdit.WTM_self = 0;
+      break;
+    }
+    default: { 
+      console.log("Invalid choice"); 
+      break;              
+   }
+  }
   console.log("277 %o  --- %o ", name, value)
   console.log("332 %o  ", this .tAparams.vidx)
-  if (!this. tAparams)
-    this .tAparams ={} as tAparams;
+
   this .tAparams.vidx = String(this .vidxToSee)  
-  if (name == 'WTMdate')
-    this .tAparams.WTMdate = value;
-  if (name == 'WTMnote')
-    this .tAparams.WTMnote = value;
-  if (name == 'reasonIdx')
-    this .tAparams.reasonIdx = value.value;  
+
   if (name == 'note')
     this .tAparams.note = value;    
   if (name == 'CovAccepted')
@@ -349,12 +373,7 @@ private editTaParams(name, value){
     let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
     this .tAparams.WTMdate = dateString;
   }  
-  if (name == 'WTM_Self'){
-    this .vacEdit.WTM_self = 1;
-  }  
-  if (name == 'NOT_WTM_Self'){
-    this .vacEdit.WTM_self = 0;
-  }
+
   if (name == 'WTMcoveringMD'){
 console.log("354 tAparams %o", this .tAparams)    
     this .tAparams.WTM_self = 0;
@@ -376,6 +395,7 @@ public daysBeforeCalcStart(vac){
   return 0;
 }
 selectedOption:string
+
 /**
  * Used when user clicks on her tA, to show the edit controls. 
  * @param vacEdit 
