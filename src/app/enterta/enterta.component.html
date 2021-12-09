@@ -34,8 +34,8 @@
       <mat-form-field >
         <mat-label> Coverer </mat-label>
         <mat-select (selectionChange) ="covererSelect($event)" >
-          <mat-option *ngFor="let MD of serviceMDs | keyvalue"
-          [value]="MD.value.UserKey ">{{ MD.value.LastName }}</mat-option>
+          <mat-option *ngFor="let MD of serviceMDs "
+          [value]="MD ">{{ MD.LastName }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>  

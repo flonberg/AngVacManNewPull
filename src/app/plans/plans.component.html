@@ -138,21 +138,20 @@
                             <th   *ngIf = "tAparams.WTM_Self == 1" > WTM Date </th>  <th> WTM Note </th>
        </tr>
        <tr><td>
-       <div class='center'>
+       <div class='center' *ngIf ="!isWTM_self()">
         <mat-form-field >
           <mat-label> {{ vacEdit.covererDetails.LastName }} </mat-label>
-          <mat-select (selectionChange) ="editTaParams('WTMcoverer', $event)" >
+          <mat-select (selectionChange) ="editTaParams('WTMcoveringMD', $event)" >
             <mat-option *ngFor="let MD of serviceMDs "
-            [value]="MD ">{{ MD.LastName | json }}</mat-option>
+            [value]="MD ">{{ MD.LastName }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>  
     </td>
-    {{ vacEdit | json }}
     <td >
       <mat-radio-group aria-label="Select an option">
-        <mat-radio-button value="1"   (click) = "editTaParams('WTM_Self', $event  )"   >Self </mat-radio-button>
-        <mat-radio-button value="2"   (click) = "editTaParams( 'WTM_CoveringMD', $event )" >Covering MD </mat-radio-button>
+        <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   >Self </mat-radio-button>
+        <mat-radio-button value="2"  [checked]="!isWTM_self()"  (click) = "editTaParams( 'NOT_WTM_Self', $event )" >Covering MD </mat-radio-button>
       </mat-radio-group>
     </td>
     <td *ngIf = "tAparams.WTM_self == 1"> {{ vacEdit.WTMdate}} </td>

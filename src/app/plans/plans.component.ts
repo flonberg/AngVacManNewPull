@@ -71,8 +71,7 @@ export class PlansComponent implements OnInit {
   serviceMDs: {};
   CovParams: CovParams;
   CovererView: boolean = false;
-
-
+  T_WTM_self: number = 0;
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this. activatedRoute.queryParams.subscribe(params =>{
@@ -326,13 +325,16 @@ private editCovParams(param, value){
 
   }
 }
-
+private isWTM_self(){
+  if (this .vacEdit.WTM_self == 1)
+    return true;
+}
 private editTaParams(name, value){  
   console.log("277 %o  --- %o ", name, value)
+  console.log("332 %o  ", this .tAparams.vidx)
   if (!this. tAparams)
     this .tAparams ={} as tAparams;
   this .tAparams.vidx = String(this .vidxToSee)  
-
   if (name == 'WTMdate')
     this .tAparams.WTMdate = value;
   if (name == 'WTMnote')
@@ -348,15 +350,16 @@ private editTaParams(name, value){
     this .tAparams.WTMdate = dateString;
   }  
   if (name == 'WTM_Self'){
-    this .tAparams.WTM_self = 1;
-    console.log("342 %o", this .tAparams)
+    this .vacEdit.WTM_self = 1;
+  }  
+  if (name == 'NOT_WTM_Self'){
+    this .vacEdit.WTM_self = 0;
   }
-  if (name == 'WTM_CoveringMD')
+  if (name == 'WTMcoveringMD'){
+console.log("354 tAparams %o", this .tAparams)    
     this .tAparams.WTM_self = 0;
-  console.log("285 %o", this .tAparams)  
-
-
-  
+    this .vacEdit.covererDetails.LastName = '';                                           // blank out the label.
+  }
 }
 /**
  * Calculate the number of days from firstDayOnCalendar to start of tA
@@ -383,7 +386,6 @@ selectedOption:string
   console.log("276 vac %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
    this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
-
    this .tAparams ={} as tAparams;
    this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
