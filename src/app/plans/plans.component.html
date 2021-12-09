@@ -116,7 +116,7 @@
           <div class='center'>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>Note</mat-label>
-              <input matInput [value] = "tAparams['note']" (change) = "editTaParams('note', $event.target.value)" >
+              <input matInput [value] = "vacEdit['note']" (change) = "editTaParams('note', $event.target.value)" >
             </mat-form-field>
           </div>
         </td>
@@ -135,15 +135,15 @@
        </tr>
        <tr>
         <th> Coverer </th> <th *ngIf = "tAparams.WTM_Self == 0" > WTM Coverer </th> 
-                            <th   *ngIf = "tAparams.WTM_Self == 1" > WTM Date </th>  <th> WTM Note </th>
+                            <th   *ngIf = "tAparams.WTM_Self == 1" > WTM Date </th>  <th> WTM Coverer </th>
        </tr>
        <tr><td>
-       <div class='center' *ngIf ="!isWTM_self()">
+       <div class='center' >
         <mat-form-field >
-          <mat-label> {{ vacEdit.covererDetails.LastName }} </mat-label>
-          <mat-select (selectionChange) ="editTaParams('WTMcoveringMD', $event)" >
+          <mat-label *ngIf = "vacEdit.covererDetails "> {{ vacEdit.covererDetails.LastName }} </mat-label>
+          <mat-select (selectionChange) ="editTaParams('coverageA', $event)" >
             <mat-option *ngFor="let MD of serviceMDs "
-            [value]="MD ">{{ MD.LastName }}</mat-option>
+            [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>  

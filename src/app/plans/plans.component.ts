@@ -12,6 +12,7 @@ interface tAparams {
   endDate?: string,
   reasonIdx?: number,
   note?: string,
+  coverageA: 0,
   WTMnote?: string,
   WTMdate?: string,
   vidx: number;
@@ -141,14 +142,13 @@ export class PlansComponent implements OnInit {
       let k: keyof typeof obj;  // Type is "one" | "two" | "three"
    
       let i:number = 0;
-for (k in obj) {
-  const v = obj[k];  // OK
- // console.log("key is %o --- %o", k, obj[k])
-  this.numbArray[i++] = obj[k];
-}
-      console.log("522345 %o", this .serviceMDs)
-      console.log("11111 %o", this .numbArray)
-    })
+      for (k in obj) {
+        const v = obj[k];  // OK
+        this.numbArray[i++] = obj[k];
+        }
+            console.log("522345 %o", this .serviceMDs)
+            console.log("11111 %o", this .numbArray)
+          })
   }
 
 
@@ -343,16 +343,23 @@ private editTaParams(name, value){
       break;
     }   
     case 'reasonIdx':{
-      console.log("354 reasonIdx %o", value)
+
       this .tAparams.reasonIdx = value.value;  
       break;
     }         
     case 'WTM_Self':{
+      console.log("354 WTM_self %o", value)
       this .vacEdit.WTM_self = 1;
+      this .tAparams.WTM_self = 1;
       break;
     }    
     case 'NOT_WTM_Self':{
       this .vacEdit.WTM_self = 0;
+      break;
+    }
+    case 'coverageA':{
+      console.log("361 coverageA %o", value.value)
+      this .tAparams.coverageA = value.value;
       break;
     }
     default: { 
@@ -363,7 +370,7 @@ private editTaParams(name, value){
   console.log("277 %o  --- %o ", name, value)
   console.log("332 %o  ", this .tAparams.vidx)
 
-  this .tAparams.vidx = String(this .vidxToSee)  
+  this .tAparams.vidx = this .vidxToSee  
 
   if (name == 'note')
     this .tAparams.note = value;    
@@ -401,15 +408,16 @@ selectedOption:string
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
+  this .tAparams ={} as tAparams;
    this .selectedOption = "1";
   let isUserGoAwayer = this. userid.includes(vacEdit['userid'])
-  console.log("276 vac %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
+  console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
    this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
-   this .tAparams ={} as tAparams;
+
    this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
-   this .tAparams.note  = vacEdit.note;
+  // this .tAparams.note  = vacEdit.note;
    this .selectedOption = String(vacEdit.reasonIdx)
    this .vacEdit = vacEdit; 
    this. showEdit =  this. userid.includes(vacEdit['userid']) 

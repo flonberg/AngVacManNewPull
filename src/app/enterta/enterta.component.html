@@ -59,7 +59,6 @@
       <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
       <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
     </mat-radio-group>
-    <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMcoverer' )"  >Self-Covering WTM </mat-checkbox>
   </td>
   <td>
     <mat-form-field appearance="fill" *ngIf = "tAparams.WTMself" class='h50'  >
