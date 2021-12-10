@@ -161,6 +161,7 @@ export class EntertaComponent implements OnInit {
       this .overlap = true;
       }
     )
+    
  }
  checkTAparams(){
   if (!this .tAparams){

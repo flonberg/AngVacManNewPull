@@ -117,6 +117,19 @@ export class PlansComponent implements OnInit {
         vidx: 0,
         CovAccepted: 0
       }
+      this. activatedRoute.queryParams.subscribe(params =>{
+        this .userid = params['userid']
+        this .tAparams.userid = params['userid']
+        console.log("enterta userid %o", this .userid)
+        if (this .userid){
+          let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
+          this .http.get(url).subscribe(res =>{
+            this. serviceMDs = res;
+          //  this .makeIndex(this .serviceMDs);        
+          })
+        }
+      })
+
   }      
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
@@ -606,10 +619,10 @@ checkTAparams(){
     this .showError = true;
     return;
   }
-  if (this .tAparams.startDate.length < 2 || this .tAparams.endDate.length < 2  || this .tAparams.reason == 0 ){
-    this .showError = true;  
-    return
-  }
+  //if (this .tAparams.startDate.length < 2 || this .tAparams.endDate.length < 2  || this .tAparams.reason == 0 ){
+  //  this .showError = true;  
+  //  return
+ // }
   this .showError = false;
  }
  reasonSelect(ev){
@@ -639,4 +652,19 @@ WTMparam(ev, pName){
    this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'yyyy-MM-dd')  
  console.log("108 %o", this .tAparams)
 }
+postRes: any;
+overlap: boolean
+submitTA(){                                                                  // need to put in full error checking. 
+  this .checkTAparams();
+  var jData = JSON.stringify(this .tAparams)
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
+  this .http.post(url, jData).subscribe(ret=>{
+    this .postRes = (ret)
+    console.log("75' ret from enterAndGac %o",this .postRes)
+    if (this. postRes['result'] == 0)
+      this .overlap = true;
+      }
+    )
+    this .getTheData();
+ }
 }
