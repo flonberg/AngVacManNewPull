@@ -343,7 +343,9 @@ private saveEdits(ev, detail?) {
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
+
   })
+  this .ngOnInit();
   this .showEdit = false;                                           // turn of editControl box. 
 }
 private editCovParams(param, value){
@@ -627,13 +629,15 @@ checkTAparams(){
  }
  reasonSelect(ev){
   console.log("event is %o", ev) 
+  console.log("630 tAparams %o", this .tAparams)
   if (this .tAparams)
-  this .tAparams.reason= ev.value;
+    this .tAparams.reason= ev.value;
 }
 covererSelect(ev){
- console.log("1091091091 ")
-// this .tAparams.coverageA = ev.value
-// console.log("111 %o", this .tAparams)
+ console.log("1091091091 %o ", ev)
+ this .tAparams.coverageA = ev.value.UserKey
+
+ //console.log("636 tAparams %o", this .tAparams)
 }
 noteChange(ev){
 if (this .tAparams)
@@ -659,11 +663,9 @@ submitTA(){                                                                  // 
   var jData = JSON.stringify(this .tAparams)
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
   this .http.post(url, jData).subscribe(ret=>{
-    this .postRes = (ret)
-    console.log("75' ret from enterAndGac %o",this .postRes)
-    if (this. postRes['result'] == 0)
-      this .overlap = true;
-      }
+      this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
+        this .overlap = this. postRes['result'] == 0 ? true : false
+        }
     )
     this .getTheData();
  }
