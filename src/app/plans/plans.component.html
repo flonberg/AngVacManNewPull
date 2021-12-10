@@ -69,7 +69,96 @@
 </table>
 <br><br>
 <div *ngIf = " !CovererView " > 
-  <app-enterta (onDatePicked) = "refreshData($event)" ></app-enterta>
+
+  <div class='raised' *ngIf = 'serviceMDs'>
+    <table class='centerSmall'>
+        <caption> Enter a Time Away </caption>
+        <tr>
+      <td>
+        <div class='center'>
+          <mat-form-field >
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate plaPeceholder="Start date" #dateRangeStart >  
+              <input matEndDate placeholder="End date" #dateRangeEnd  (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>  
+      </td>
+      <td> 
+        <div class='center'>
+          <mat-form-field >
+            <mat-label> Reason</mat-label>
+            <mat-select (selectionChange) = "reasonSelect($event)" >
+              <mat-option value="1">Personal Vacation</mat-option>
+              <mat-option value="2" >Meeting </mat-option>
+              <mat-option value="3" >Health </mat-option>
+              <mat-option value="4">Other </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>  
+      </td>
+      <td> 
+        <div class='center'> 
+          <mat-form-field >
+            <mat-label> Coverer </mat-label>
+            <mat-select (selectionChange) ="covererSelect($event)" >
+              <mat-option *ngFor="let MD of serviceMDs "
+              [value]="MD ">{{ MD.LastName }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>  
+      </td>
+      
+      <td>
+        <div class='center'>
+          <mat-form-field >
+              <mat-label>Note</mat-label>
+              <textarea matInput (change) = "noteChange($event)" class='note'> </textarea>
+          </mat-form-field>    
+        </div>    
+      </td>
+    </tr><tr> 
+      <td>
+           <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
+    
+      </td>
+      <td *ngIf = "tAparams.WTMchange == 1" >
+        <mat-radio-group aria-label="Select an option">
+          <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
+          <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
+        </mat-radio-group>
+      </td>
+      <td>
+        <mat-form-field appearance="fill" class='h50'  >
+          <mat-label>WTM Date</mat-label>
+          <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdata')" placeholder=" {{ startDateConvent }}">
+          <mat-datepicker-toggle matSuffix [for]="picker2"    ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </td>
+      <td>     
+           <button class='Button' (click) = "pickDate(startDateEntered)">Submit </button>
+      </td>
+    </tr>
+      </table>
+      <div *ngIf = "showError"> Please enter all fields </div>
+      <div *ngIf = "overlap"  class='warning'  > This Time Away overlaps an already scheduled Time Away therefore  cannot be added to the data base. </div>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+ <!-- <app-enterta (onDatePicked) = "refreshData($event)" ></app-enterta> -->
   </div>
 
 <div class='spacer'  >
@@ -199,9 +288,9 @@
        
             <td *ngIf = "toSeeParams['WTM_Change_Needed'] == 1" > 
               <mat-form-field  class='h50'  >
-                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker3" (dateChange)="editCovParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
-                <mat-datepicker-toggle matSuffix [for]="picker3"    ></mat-datepicker-toggle>
-                <mat-datepicker #picker3></mat-datepicker>
+                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
+                <mat-datepicker-toggle matSuffix [for]="picker5"    ></mat-datepicker-toggle>
+                <mat-datepicker #picker5></mat-datepicker>
               </mat-form-field>
             </td>
    

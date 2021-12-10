@@ -11,6 +11,7 @@ interface tAparams {
   startDate? : string,
   endDate?: string,
   reasonIdx?: number,
+  reason?: number,
   note?: string,
   coverageA: 0,
   WTMnote?: string,
@@ -18,7 +19,9 @@ interface tAparams {
   vidx: number;
   CovAccepted: number;
   WTMcoverer: string;
-  WTM_self:NumberSymbol
+  WTMchange:number;
+  WTMself:Number;
+  userid: number;
 }
 interface CovParams {
   accepted: boolean,
@@ -99,7 +102,21 @@ export class PlansComponent implements OnInit {
       accepted: false,
       vidx: 0
     }
-
+   
+    this. tAparams = {
+        startDate :'',
+        endDate: '',
+        reasonIdx: 0,
+        note: '',
+        userid: 0,
+        coverageA: 0,
+        WTMdate:'',
+        WTMchange: 0,
+        WTMcoverer:'',
+        WTMself: 0,
+        vidx: 0,
+        CovAccepted: 0
+      }
   }      
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
@@ -350,7 +367,7 @@ private editTaParams(name, value){
     case 'WTM_Self':{
       console.log("354 WTM_self %o", value)
       this .vacEdit.WTM_self = 1;
-      this .tAparams.WTM_self = 1;
+      this .tAparams.WTMself = 1;
       break;
     }    
     case 'NOT_WTM_Self':{
@@ -383,7 +400,7 @@ private editTaParams(name, value){
 
   if (name == 'WTMcoveringMD'){
 console.log("354 tAparams %o", this .tAparams)    
-    this .tAparams.WTM_self = 0;
+    this .tAparams.WTMself = 0;
     this .vacEdit.covererDetails.LastName = '';                                           // blank out the label.
   }
 }
@@ -564,5 +581,62 @@ counterE(n){                                            // used for looper in Ca
 //console.log("420 %o --- %o --- %o", d1, d2, diff)    
     return diff ;
   } 
-
+  startDateEntered: Date;
+  dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+    var tDate = new Date(dateRangeStart.value)                              // save for editing
+    this .startDateEntered = tDate;
+    this .monthInc = this.whatMonthIsStartDateIn(tDate)
+    if (  dateRangeEnd.value  ){
+     var eDate = new Date(dateRangeEnd.value)
+        this. tAparams.startDate = this .datePipe.transform(new Date(dateRangeStart.value), 'yyyy-MM-dd')   
+        this. tAparams.endDate = this .datePipe.transform(new Date(dateRangeEnd.value), 'yyyy-MM-dd')   
+      }
+    this .checkTAparams();  
+ }
+ whatMonthIsStartDateIn(startDate){
+  let thisMonth = new Date();
+  var lastDate = new Date(thisMonth.getFullYear(), thisMonth.getMonth() + 2, 0);
+  if (startDate < lastDate)
+   return 0;
+ return 1;
+}
+showError: boolean;
+checkTAparams(){
+  if (!this .tAparams){
+    this .showError = true;
+    return;
+  }
+  if (this .tAparams.startDate.length < 2 || this .tAparams.endDate.length < 2  || this .tAparams.reason == 0 ){
+    this .showError = true;  
+    return
+  }
+  this .showError = false;
+ }
+ reasonSelect(ev){
+  console.log("event is %o", ev) 
+  if (this .tAparams)
+  this .tAparams.reason= ev.value;
+}
+covererSelect(ev){
+ console.log("1091091091 ")
+// this .tAparams.coverageA = ev.value
+// console.log("111 %o", this .tAparams)
+}
+noteChange(ev){
+if (this .tAparams)
+this .tAparams.note= ev.target.value;
+ console.log("note is %o", this.tAparams)
+}
+WTMparam(ev, pName){
+  console.log("101 %o --- %o ", ev, pName)
+  if (pName == 'WTMdateChange')
+    this .tAparams.WTMchange = ev.checked ? 1 : 0
+  if (pName == 'WTM_Self')
+    this .tAparams.WTMself = 1
+  if (pName == 'WTM_CoveringMD')
+    this .tAparams.WTMself = 0
+  if (pName == 'WTMdate')
+   this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'yyyy-MM-dd')  
+ console.log("108 %o", this .tAparams)
+}
 }
