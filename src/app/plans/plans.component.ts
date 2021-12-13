@@ -63,7 +63,7 @@ export class PlansComponent implements OnInit {
   reasonIdx: string;                                // reason[reasonIdx]  and reasonIdx =99 for delete
   startDateConvent: string;
   endDateConvent: string;
-  WTMdateConvent: string;
+  WTMDateConvent: string;
   covAccepted: boolean;
   WTMnote: string;
   v1: number;
@@ -140,7 +140,7 @@ export class PlansComponent implements OnInit {
           this .isLoggedInUserCoverer = true;
         }
         if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
-          this .WTMdateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
+          this .WTMDateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
         if (this .toSeeParams['CovAccepted'] == 1)
           this .covAccepted = true;  
         this. WTMnote = this .toSeeParams['WTMnote']  
@@ -223,7 +223,7 @@ private makeDaysOfRow(vacRow){
       return;                                             // don't do anything else
     }
     this .v1 = this .fillOutRow(vacRow[0], vacRow[1], this .v1, 1, dBC)
-    this .v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                  
+    this .v1 += (vacRow[1]['vacLength'] )                       // increment to end of second tA  tA[1]                
     if (!vacRow[2]){                                      // if this is the LAST tA / there is NO THIRD tA
       this .makeTillEndDays(this .v1,2);                        // fill out the rest of the days
       return;
@@ -446,6 +446,7 @@ selectedOption:string
   console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
    this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
+   this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'MM-d-yyyy')
 
    this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
@@ -631,7 +632,7 @@ checkTAparams(){
   console.log("event is %o", ev) 
   console.log("630 tAparams %o", this .tAparams)
   if (this .tAparams)
-    this .tAparams.reason= ev.value;
+    this .tAparams.reasonIdx= ev.value;
 }
 covererSelect(ev){
  console.log("1091091091 %o ", ev)
