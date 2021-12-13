@@ -217,8 +217,8 @@
         </td>
        </tr>
        <tr>
-        <th> Coverer </th> <th *ngIf = "tAparams.WTM_Self == 0" > WTM Coverer </th> 
-                            <th   *ngIf = "tAparams.WTM_Self == 1" > WTM Date </th>  <th> WTM Coverer </th>
+        <th> Coverer </th> <th *ngIf = "vacEdit.WTM_self == 0" > WTM-Coverer </th> 
+                            <th   *ngIf =  "vacEdit.WTM_self == 1" > WTM Coverer </th>  <th  *ngIf = "vacEdit.WTM_self == 1"    >WTM Date </th>
        </tr>
        <tr><td>
        <div class='center' >
@@ -236,11 +236,11 @@
         <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   >Self </mat-radio-button>
         <mat-radio-button value="2"  [checked]="!isWTM_self()"  (click) = "editTaParams( 'NOT_WTM_Self', $event )" >Covering MD </mat-radio-button>
       </mat-radio-group>
-    </td> {{ vacEdit.WTMdate | json }}
+    </td> 
     <td *ngIf = "vacEdit.WTM_self == 1"  >
       <mat-form-field appearance="fill" class='h50'  >
         <mat-label>{{ vacEdit.WTMdate }}</mat-label>
-        <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdate')" placeholder=" {{ vacEdit.WTMdate }}">
+        <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdate')" placeholder=" {{ vacEdit.WTMdate }} ">
         <mat-datepicker-toggle matSuffix [for]="picker2"    ></mat-datepicker-toggle>
         <mat-datepicker #picker2></mat-datepicker>
       </mat-form-field>
@@ -264,20 +264,22 @@
     <table class = 'toFit' >
       <caption> Coverage {{ vacEdit.vidx }} </caption>
       <tr>
-        <th> Covering Physician</th> <th> WTM-Date</th><th>WTM Note</th>
+        <th> Covering Physician</th> <th>WTM Coverer</th><th> WTM-Date</th> 
       </tr>
       <tr>
-        <td> Dr. {{ vacEdit.covererDetails.LastName }}</td><td> {{ vacEdit.WTMdate  }} </td><td> {{ vacEdit.WTMnote}} </td>
+        <td> Dr. {{ vacEdit.covererDetails.LastName }}</td><td> Dr.{{ vacEdit.LastName }} </td>
+        <td> {{ vacEdit.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}} </td>
       </tr>
     </table>
-   </div>
-   <div *ngIf = 'isLoggedInUserCoverer' class='raised'> 
+   </div> 
+   <div *ngIf = 'isLoggedInUserCoverer' class='raised'>
+    {{ toSeeParams | json}}
     <table *ngIf = vidxToSee class='toFit'>
-      <caption  *ngIf = "toSeeParams['WTM_Change_Needed'] == 0"  > Please Accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </caption>
-      <caption  *ngIf = "toSeeParams['WTM_Change_Needed'] == 1"  > Please Accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away and select a WTM date. </caption>
+      <caption  *ngIf = "toSeeParams['WTM_Change_Needed'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </caption>
+      <caption  *ngIf = "toSeeParams['WTM_Change_Needed'] == 1"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away and select a WTM date. </caption>
   
       <tr >
-        <th> Start Date</th><th> End Date</th> <th> Coverage</th><th *ngIf = "toSeeParams['WTM_Change_Needed'] == 1" > WTM Date</th>
+        <th> Start Date</th><th> End Date</th> <th> Coverage</th><th *ngIf = "toSeeParams['WTM_self'] == 0" > WTM Date</th>
           </tr> 
           <tr>
             <td>  {{ toSeeParams['startDateConvent'] }} </td> <td>  {{toSeeParams['endDateConvent']}} </td> 
@@ -288,7 +290,7 @@
                 </mat-radio-group>
             </td> 
        
-            <td *ngIf = "toSeeParams['WTM_Change_Needed'] == 1" > 
+            <td *ngIf =  "toSeeParams['WTM_self'] == 0" > 
               <mat-form-field  class='h50'  >
                 <input matInput [(ngModel)]="startDate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
                 <mat-datepicker-toggle matSuffix [for]="picker5"    ></mat-datepicker-toggle>
