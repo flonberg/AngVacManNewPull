@@ -124,17 +124,17 @@
       <td>
            <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
     
-      </td>
+      </td> 
       <td *ngIf = "tAparams.WTMchange == 1" >
         <mat-radio-group aria-label="Select an option">
           <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
           <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
         </mat-radio-group>
       </td>
-      <td>
+      <td *ngIf = "tAparams.WTMself == 1"  >
         <mat-form-field appearance="fill" class='h50'  >
           <mat-label>WTM Date</mat-label>
-          <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdata')" placeholder=" {{ startDateConvent }}">
+          <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdate')" placeholder=" {{ startDateConvent }}">
           <mat-datepicker-toggle matSuffix [for]="picker2"    ></mat-datepicker-toggle>
           <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
