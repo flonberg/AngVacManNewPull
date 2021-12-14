@@ -640,10 +640,10 @@ covererSelect(ev){
 
  //console.log("636 tAparams %o", this .tAparams)
 }
-noteChange(ev){
+noteChange(name, ev){
 if (this .tAparams)
-this .tAparams.note= ev.target.value;
- console.log("note is %o", this.tAparams)
+  this .tAparams.note= ev.target.value;
+  console.log("note is %o", this.tAparams)
 }
 WTMparam(ev, pName){
   console.log("101 %o --- %o ", ev, pName)
