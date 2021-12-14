@@ -163,21 +163,12 @@ export class PlansComponent implements OnInit {
       }  
     })
   }   
-  numbArray = [{}]
   getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
-      let obj = res;
-      let k: keyof typeof obj;  // Type is "one" | "two" | "three"
-   
-      let i:number = 0;
-      for (k in obj) {
-        const v = obj[k];  // OK
-        this.numbArray[i++] = obj[k];
-        }
-            console.log("522345 %o", this .serviceMDs)
-            console.log("11111 %o", this .numbArray)
+    //  let obj = res;
+    //  let k: keyof typeof obj;  // Type is "one" | "two" | "three"
           })
   }
 
