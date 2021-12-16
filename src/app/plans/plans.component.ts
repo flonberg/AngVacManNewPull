@@ -53,6 +53,7 @@ export class PlansComponent implements OnInit {
   coverers: any;                                    // the coveres are the MDs in the same SERVICE as goAwayer
   vacEdit: any;                                     // data for the EditVac boxes 
   showEdit: boolean = false;
+  showAcceptance: boolean = false; 
   dayArray = [[]]                                  // make the boxes BEFORE and BETWEEN and TILL_END of timeAways 
   calDates: Date[] = Array();                       // for filling out the calendar and making the TODAY stiled boxes
   reasonArr = ['null', 'Personal Vacation','Meeting','Health', 'Other']
@@ -83,9 +84,10 @@ export class PlansComponent implements OnInit {
       this .vidxToSee = params['vidxToSee']          // used by Coverer to Accept Coverage and Select WTM date
       if (params['vidxToSee']){
         this .getTheVidxToSee();
+        this .showAcceptance = true;
         this .CovererView = true; 
       }
-      this .getVacURL += '&userid=suit'
+   //   this .getVacURL += '&userid=suit'
       this .getTheData();
       this .getServiceMDs(this .userid)
     })
@@ -120,7 +122,7 @@ export class PlansComponent implements OnInit {
       this. activatedRoute.queryParams.subscribe(params =>{
         this .userid = params['userid']
         this .tAparams.userid = params['userid']
-        console.log("enterta userid %o", this .userid)
+        console.log("125  %o", this .userid)
         if (this .userid){
           let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
           this .http.get(url).subscribe(res =>{
@@ -320,6 +322,7 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
 private deleteTa(ev){
   this .tAparams.reasonIdx = 99;
   this .saveEdits(ev);
+  this .ngOnInit();
 }
 private saveEdits(ev, detail?) {
   console.log("254 %o", this .tAparams)
@@ -336,8 +339,10 @@ private saveEdits(ev, detail?) {
       this .getTheData();                                           // refresh the data to show the edits. 
 
   })
-  this .ngOnInit();
   this .showEdit = false;                                           // turn of editControl box. 
+  this .showAcceptance = false; 
+ // this .ngOnInit();
+
 }
 private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
