@@ -77,6 +77,7 @@ export class PlansComponent implements OnInit {
   CovParams: CovParams;
   CovererView: boolean = false;
   T_WTM_self: number = 0;
+  sDD: string = '';
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this. activatedRoute.queryParams.subscribe(params =>{
@@ -131,8 +132,9 @@ export class PlansComponent implements OnInit {
           })
         }
       })
-
-  }      
+    }    
+    
+    
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
@@ -362,8 +364,9 @@ private editTaParams(name, value){
   if (!this. tAparams)
   this .tAparams ={} as tAparams;
   switch (name){
-    case 'WTM_Date':{
-      this .tAparams.WTMdate = value;
+    case 'WTMdate':{
+      let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
+      this .tAparams.WTMdate = dateString;
       break;
     }  
     case 'WTMnote':{
@@ -390,30 +393,36 @@ private editTaParams(name, value){
       this .tAparams.coverageA = value.value;
       break;
     }
+    case 'covAccepted':{
+      this .tAparams.CovAccepted = value;
+      break;
+    } 
+    case 'note':{
+      this .tAparams.note = value;   
+      break;
+    } 
     default: { 
       console.log("Invalid choice"); 
       break;              
    }
   }
   console.log("277 %o  --- %o ", name, value)
-  console.log("332 %o  ", this .tAparams.vidx)
-
+  console.log("332 %o  ", this .tAparams)
   this .tAparams.vidx = this .vidxToSee  
 
-  if (name == 'note')
-    this .tAparams.note = value;    
-  if (name == 'CovAccepted')
-    this .tAparams.CovAccepted = value;    
-  if (name == 'WTMdate'){
-    let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
-    this .tAparams.WTMdate = dateString;
-  }  
+ // if (name == 'note')
+  //  this .tAparams.note = value;    
+ // if (name == 'CovAccepted')
+ //   this .tAparams.CovAccepted = value;    
+//  if (name == 'WTMdate'){
+//    let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
+ //   this .tAparams.WTMdate = dateString;
+ // }  
 
-  if (name == 'WTMcoveringMD'){
-console.log("354 tAparams %o", this .tAparams)    
-    this .tAparams.WTMself = 0;
-    this .vacEdit.covererDetails.LastName = '';                                           // blank out the label.
-  }
+ //if (name == 'WTMcoveringMD'){
+  //  this .tAparams.WTMself = 0;
+ //   this .vacEdit.covererDetails.LastName = '';                                           // blank out the label.
+ // }
 }
 /**
  * Calculate the number of days from firstDayOnCalendar to start of tA
@@ -664,6 +673,8 @@ submitTA(){                                                                  // 
         this .overlap = this. postRes['result'] == 0 ? true : false
         }
     )
+   this .sDD = '';
     this .getTheData();
  }
+
 }

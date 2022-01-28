@@ -59,14 +59,7 @@ export class AppComponent {
  }
 
 
- dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
-   var tDate = new Date(dateRangeStart.value)
-    this .dateRangeStart = this.datePipe.transform(tDate, 'yyyy-MM-dd')
-   if (  dateRangeEnd.value  ){
-    var eDate = new Date(dateRangeEnd.value)
-   this .dateRangeEnd = this.datePipe.transform(eDate, 'yyyy-MM-dd')
- }
-}
+ 
  setPlanData(res){
   let areas = new Array<Array<any>>();
   this.planData = res;
