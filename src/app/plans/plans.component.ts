@@ -684,11 +684,13 @@ submitTA(){                                                                  // 
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
   this .http.post(url, jData).subscribe(ret=>{
       this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
-        this .overlap = this. postRes['result'] == 0 ? true : false
+        this .overlap = this. postRes['result'] == 0 ? true : false;
+        this .getTheData();  
         }
     )
    this .sDD = '';
-    this .getTheData();
+
+ //  this .ngOnInit();
  }
 
 }
