@@ -26,6 +26,7 @@ interface tAparams {
 interface CovParams {
   accepted: boolean,
   WTMdate?: string,
+  WTMnote?: string,
   vidx: number
 }
 interface calParams {
@@ -350,10 +351,11 @@ private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
   if (param == 'CovAccepted')
       this .CovParams.accepted = value;
+  if (param == 'WTMnote')
+      this .CovParams.WTMnote = value.target.value;
   if (param == 'WTMdate'){
     this .CovParams.WTMdate = this.datePipe.transform(value.value, 'yyyy-MM-dd')
     console.log( 'this.CovParams has %o', this .CovParams);
-
   }
 }
 private isWTM_self(){
@@ -369,12 +371,7 @@ private editTaParams(name, value){
       this .tAparams.WTMdate = dateString;
       break;
     }  
-    case 'WTMnote':{
-      this .tAparams.WTMnote = value;
-      break;
-    }   
     case 'reasonIdx':{
-
       this .tAparams.reasonIdx = value.value;  
       break;
     }         
@@ -399,6 +396,10 @@ private editTaParams(name, value){
     } 
     case 'note':{
       this .tAparams.note = value;   
+      break;
+    } 
+    case 'WTMnote':{
+      this .tAparams.WTMnote = value.target.value;   
       break;
     } 
     default: { 
@@ -451,9 +452,12 @@ selectedOption:string
   console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
    this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
-   this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'MM-d-yyyy')
-
-   this .tAparams.vidx  = vacEdit.vidx;
+   if (vacEdit.WTMdate.includes('1900')) 
+    this .WTMDateConvent = '';  
+    else 
+      this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'MM-d-yyyy')
+  console.log("458 WTMDateConvent is %o", this.WTMDateConvent)    
+  this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
   // this .tAparams.note  = vacEdit.note;
    this .selectedOption = String(vacEdit.reasonIdx)
@@ -461,7 +465,12 @@ selectedOption:string
    this. showEdit =  this. userid.includes(vacEdit['userid']) 
    this. showReadOnly =  !this. userid.includes(vacEdit['userid']) 
  } 
-
+private validDate(dateString){
+  if (dateString.includes('1900'))
+    return '';
+  else  
+    return dateString;
+}
  /**
   * Determines if a day on Calendar Top is a Weekend or Today
   * @param d 
@@ -650,6 +659,11 @@ if (this .tAparams)
   this .tAparams.note= ev.target.value;
   console.log("note is %o", this.tAparams)
 }
+WTMnoteChange( ev){
+  if (this .tAparams)
+    this .tAparams.WTMnote= ev.target.value;
+    console.log("tAparams is %o", this.tAparams)
+  }
 WTMparam(ev, pName){
   console.log("101 %o --- %o ", ev, pName)
   if (pName == 'WTMdateChange')

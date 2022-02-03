@@ -236,7 +236,7 @@
     </td> 
     <td  >
       <mat-form-field appearance="fill" class='h50'  >
-        <mat-label>{{ vacEdit.WTMdate }}</mat-label>
+        <mat-label>{{ validDate(vacEdit.WTMdate) }}</mat-label>
         <input matInput [(ngModel)]="startDate" [matDatepicker]="picker22" (dateChange)="WTMparam($event, 'WTMdate')" 
           placeholder=" {{ vacEdit.WTMdate }} " [readonly] =  "vacEdit.WTM_self == 0"   >
         <mat-datepicker-toggle matSuffix [for]="picker22" *ngIf =   "vacEdit.WTM_self == 1"    ></mat-datepicker-toggle>
@@ -297,12 +297,12 @@
              </td> 
             <td >   
                 <mat-radio-group>
-                  <mat-radio-button class="example-margin" value="accept" [checked] ="covAccepted" (click) = "editCovParams('CovAccepted', 1)" >Accept</mat-radio-button>
+                  <mat-radio-button class="example-margin" value="accept" (click) = "editCovParams('CovAccepted', 1)" >Accept</mat-radio-button>
                   <mat-radio-button class="example-margin" value="decline"  (click) = "editCovParams('CovAccepted', 0)" >Decline</mat-radio-button>
                 </mat-radio-group>
             </td> 
        
-            <td *ngIf =  "toSeeParams['WTM_self'] == 0" > 
+            <td *ngIf =  "toSeeParams['WTM_self'] == 0 && CovParams.accepted == 1"> 
               <mat-form-field  class='h50'  >
                 <mat-label>WTM Date </mat-label>
                 <input matInput [(ngModel)]="startDate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
@@ -310,11 +310,11 @@
                 <mat-datepicker #picker5></mat-datepicker>
               </mat-form-field>
             </td>
-            <td  *ngIf =  "toSeeParams['WTM_self'] == 0"  >
+            <td  *ngIf =  "toSeeParams['WTM_self'] == 0 && CovParams.accepted == 1"  >
               <div class='center'>
                 <mat-form-field >
                     <mat-label>WTM Note</mat-label>
-                    <textarea matInput (change) = "noteChange('WTM_Note', $event)" class='note'> </textarea>
+                    <textarea matInput (change) = "editCovParams('WTMnote', $event)" class='note'> </textarea>
                 </mat-form-field>    
               </div>    
             </td>
