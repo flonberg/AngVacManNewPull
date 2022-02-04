@@ -33,6 +33,11 @@ td.green {
 	font-size:smaller;
 	cursor:pointer;	
 }
+td.orange {
+	background-color:orange;
+	font-size:smaller;
+	cursor:pointer;	
+}
 td.unApproved {
 	background-color:white;
 	font-size:smaller;

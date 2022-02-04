@@ -22,6 +22,7 @@ interface tAparams {
   WTMchange:number;
   WTMself:Number;
   userid: number;
+  WTM_Change_Needed: number;
 }
 interface CovParams {
   accepted: boolean,
@@ -119,7 +120,8 @@ export class PlansComponent implements OnInit {
         WTMcoverer:'',
         WTMself: 0,
         vidx: 0,
-        CovAccepted: 0
+        CovAccepted: 0,
+        WTM_Change_Needed: 0
       }
       this. activatedRoute.queryParams.subscribe(params =>{
         this .userid = params['userid']
@@ -160,8 +162,8 @@ export class PlansComponent implements OnInit {
     this .http.get(this .getVacURL).subscribe(res =>{
       this .vacData = res['tAs'];
       this .coverers = res['coverers']
-        console.log("62 vacData is %o", this. vacData)
-        console.log("62 coverers is %o", this. coverers)
+        console.log("165 vacData is %o", this. vacData)
+        console.log("166 coverers is %o", this. coverers)
       for (const tRow in this. vacData){ 
         this.makeDaysOfRow(this .vacData[tRow])               // fill out the row of boxes for the Calenday
         this .vacData[tRow][9] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
@@ -325,10 +327,9 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
 private deleteTa(ev){
   this .tAparams.reasonIdx = 99;
   this .saveEdits(ev);
-  this .ngOnInit();
 }
 private saveEdits(ev, detail?) {
-  console.log("254 %o", this .tAparams)
+  console.log("254 %o  detail is %o", this .tAparams, detail)
   this .tAparams.vidx = +this .vidxToEdit;
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
   if (detail == 'CovAccept'){
@@ -340,7 +341,6 @@ private saveEdits(ev, detail?) {
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
-
   })
   this .showEdit = false;                                           // turn of editControl box. 
   this .showAcceptance = false; 
@@ -495,6 +495,13 @@ private validDate(dateString){
   getClass(n){
     if (n == this .dayOfMonth && this. monthInc == 0)
       return 'todayCell'
+  }
+
+  getAcceptanceClass(n){
+    console.log("501 n is %o", n);
+    if (n == 1)
+      return 'green'
+    return "orange";
   }
 
  /**
@@ -684,13 +691,11 @@ submitTA(){                                                                  // 
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
   this .http.post(url, jData).subscribe(ret=>{
       this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
-        this .overlap = this. postRes['result'] == 0 ? true : false;
+        this .overlap = this. postRes['result'] == 0 ? true : false;    // turn on Warning message. 
         this .getTheData();  
         }
     )
    this .sDD = '';
-
- //  this .ngOnInit();
  }
 
 }
