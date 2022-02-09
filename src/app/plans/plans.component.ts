@@ -107,7 +107,6 @@ export class PlansComponent implements OnInit {
       accepted: false,
       vidx: 0
     }
-   
     this. tAparams = {
         startDate :'',
         endDate: '',
@@ -321,22 +320,25 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
       this .tAparams.endDate = dateString;
     if (type.indexOf("WTM") >= 0)
       this .tAparams.WTMdate = dateString;  
-    
+console.log("323 editDate tAparams is %o ", this. tAparams)    
 }
 
 private deleteTa(ev){
   this .tAparams.reasonIdx = 99;
+  this .tAparams. userid = this. vacEdit. userid;
   this .saveEdits(ev);
+  console.log("330 tAparams %o ", this. tAparams)
 }
 private saveEdits(ev, detail?) {
-  console.log("254 %o  detail is %o", this .tAparams, detail)
+
   this .tAparams.vidx = +this .vidxToEdit;
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
   if (detail == 'CovAccept'){
     this. acknowlegeEdits = 'Edits Saved'
-    this. CovParams.vidx = this .vidxToSee                        
+    this. CovParams.vidx = this .vidxToSee                   
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
+  console.log("341 tAparams is  %o  detail is %o  jData is %o", this .tAparams, detail, jData)
                       // form the data to pass to php script
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post

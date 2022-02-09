@@ -93,8 +93,6 @@
             <mat-label> Reason</mat-label>
             <mat-select (selectionChange) = "reasonSelect($event)" >
               <mat-option value="1">Personal Vacation</mat-option>
-              <mat-option value="2" >Meeting </mat-option>
-              <mat-option value="3" >Health </mat-option>
               <mat-option value="4">Other </mat-option>
             </mat-select>
           </mat-form-field>
@@ -202,39 +200,40 @@
         <td class='h50' >
           <div class='center'>
           <table>
-          <tr><td>
-          <button class='Button' (click) = "saveEdits($event)">Save Changes</button>
-          
-        </td></tr>  
-        <tr><td>
-          <button  class='Button' (click) = "deleteTa($event)">Delete Time Away</button>
-        </td></tr>
+              <tr><td>
+              <button class='Button' (click) = "saveEdits($event)">Save Changes</button>
+              
+            </td></tr>  
+            <tr><td>
+              <button  class='Button' (click) = "deleteTa($event)">Delete Time Away</button>
+            </td></tr>
         </table>  
           </div>
         </td>
        </tr>
        <tr>
-        <th> Coverer </th> <th *ngIf = "vacEdit.WTM_self == 0" > WTM-Coverer </th> 
-                            <th   *ngIf =  "vacEdit.WTM_self == 1" > WTM Coverer </th>  <th     >WTM Date </th>
+        <th> Coverer </th> <th *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" > WTM-Coverer </th> 
+                            <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>  <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
        </tr>
-       <tr><td>
-       <div class='center' >
-        <mat-form-field >
-          <mat-label *ngIf = "vacEdit.covererDetails "> {{ vacEdit.covererDetails.LastName }} </mat-label>
-          <mat-select (selectionChange) ="editTaParams('coverageA', $event)"   >
-            <mat-option *ngFor="let MD of serviceMDs "
-            [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>  
-    </td>
-    <td >
+       <tr>
+         <td>
+            <div class='center' >
+              <mat-form-field >
+                <mat-label *ngIf = "vacEdit.covererDetails "> {{ vacEdit.covererDetails.LastName }} </mat-label>
+                <mat-select (selectionChange) ="editTaParams('coverageA', $event)"   >
+                  <mat-option *ngFor="let MD of serviceMDs "
+                  [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>  
+      </td>
+    <td  *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" >
       <mat-radio-group aria-label="Select an option">
         <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   >Self </mat-radio-button>
         <mat-radio-button value="2"  [checked]="!isWTM_self()"  (click) = "editTaParams( 'NOT_WTM_Self', $event )" >Covering MD </mat-radio-button>
       </mat-radio-group>
     </td> 
-    <td  >
+    <td  *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1">
       <mat-form-field appearance="fill" class='h50'  >
         <mat-label>{{ validDate(vacEdit.WTMdate) }}</mat-label>
         <input matInput [(ngModel)]="startDate" [matDatepicker]="picker22" (dateChange)="WTMparam($event, 'WTMdate')" 
@@ -243,11 +242,11 @@
         <mat-datepicker #picker22></mat-datepicker>
       </mat-form-field>
     </td>
-    <td *ngIf = "tAparams.WTM_self == 1"> {{ vacEdit.WTMdate}} </td>
-    <td> {{ vacEdit.WTMnote}} </td>
+    <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"> {{ vacEdit.WTMdate}} </td>
+    <td  *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"   > {{ vacEdit.WTMnote}} </td>
   </tr>
 
-      </table>
+ </table>
   </div>
   <!--   THIRD PARTY   view-->
   <div class='raised' *ngIf = 'showReadOnly ' >
@@ -278,8 +277,8 @@
 <!--       Div for Acceptor       -->
    <div *ngIf = 'isLoggedInUserCoverer && showAcceptance' class='raised'>
     <table *ngIf = vidxToSee class='toFit'>
-      <caption  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </caption>
-      <caption  *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away and select a WTM date. </caption>
+      <caption *ngIf = "toSeeParams['WTM_Change_Needed'] == 0 ||   toSeeParams['WTM_self'] == 1"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </caption>
+      <caption *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away and select a WTM date. </caption>
   
   
           <tr>
@@ -302,7 +301,7 @@
                 </mat-radio-group>
             </td> 
        
-            <td *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 && CovParams.accepted == 1"> 
+            <td *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
               <mat-form-field  class='h50'  >
                 <mat-label>WTM Date </mat-label>
                 <input matInput [(ngModel)]="startDate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
