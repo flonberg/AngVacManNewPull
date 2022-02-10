@@ -80,6 +80,8 @@ export class PlansComponent implements OnInit {
   CovererView: boolean = false;
   T_WTM_self: number = 0;
   sDD: string = '';
+  stDt: string = '';
+
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this. activatedRoute.queryParams.subscribe(params =>{
@@ -107,17 +109,19 @@ export class PlansComponent implements OnInit {
       accepted: false,
       vidx: 0
     }
+
+    
     this. tAparams = {
         startDate :'',
         endDate: '',
-        reasonIdx: 0,
+        reasonIdx: -1,
         note: '',
         userid: 0,
         coverageA: 0,
         WTMdate:'',
         WTMchange: 0,
         WTMcoverer:'',
-        WTMself: 0,
+        WTMself: -1,
         vidx: 0,
         CovAccepted: 0,
         WTM_Change_Needed: 0
@@ -326,8 +330,10 @@ console.log("323 editDate tAparams is %o ", this. tAparams)
 private deleteTa(ev){
   this .tAparams.reasonIdx = 99;
   this .tAparams. userid = this. vacEdit. userid;
+  this .stDt = ""; 
   this .saveEdits(ev);
-  console.log("330 tAparams %o ", this. tAparams)
+  location.reload();
+
 }
 private saveEdits(ev, detail?) {
 
@@ -630,7 +636,7 @@ counterE(n){                                            // used for looper in Ca
         this. tAparams.startDate = this .datePipe.transform(new Date(dateRangeStart.value), 'yyyy-MM-dd')   
         this. tAparams.endDate = this .datePipe.transform(new Date(dateRangeEnd.value), 'yyyy-MM-dd')   
       }
-    this .checkTAparams();  
+
  }
  whatMonthIsStartDateIn(startDate){
   let thisMonth = new Date();
@@ -640,28 +646,53 @@ counterE(n){                                            // used for looper in Ca
  return 1;
 }
 showError: boolean;
+errorTxt: string;
 checkTAparams(){
+  this .errorTxt = ""; 
+  console.log("647 checkparaism has %o", this. tAparams)
   if (!this .tAparams){
+    this. errorTxt = "Please enter all parameters";
     this .showError = true;
-    return;
+    return false;
   }
-  //if (this .tAparams.startDate.length < 2 || this .tAparams.endDate.length < 2  || this .tAparams.reason == 0 ){
-  //  this .showError = true;  
-  //  return
- // }
+  if (!this. tAparams.startDate){
+    this. errorTxt = "Please re-enter Start and End Date";
+    this .showError = true;
+    return false;
+  }
+  if (this. tAparams.startDate.length < 3 || this. tAparams.endDate.length < 3){
+    this. errorTxt = "Please enter Start and End Date";
+    this .showError = true;
+    return false;
+  }
+  if (this. tAparams.reasonIdx < 0){
+    this. errorTxt = "Please enter a Reason";
+    this .showError = true;
+    return false;
+  }
+  if (this. tAparams.coverageA < 1){
+    this. errorTxt = "Please enter a Coverer";
+    this .showError = true;
+    return false;
+  } 
+  if (this .tAparams. WTMchange == 1){
+    if (this .tAparams.WTMself < 0)
+    this. errorTxt = "Please select Self or Covering MD";
+    this .showError = true;
+    return false;
+  }
   this .showError = false;
+  return true
  }
  reasonSelect(ev){
-  console.log("event is %o", ev) 
-  console.log("630 tAparams %o", this .tAparams)
-  if (this .tAparams)
+  if (this .tAparams){
     this .tAparams.reasonIdx= ev.value;
+    this .showError  = false;
+  }
 }
 covererSelect(ev){
- console.log("1091091091 %o ", ev)
  this .tAparams.coverageA = ev.value.UserKey
-
- //console.log("636 tAparams %o", this .tAparams)
+ this .showError  = false;
 }
 noteChange(name, ev){
 if (this .tAparams)
@@ -683,21 +714,41 @@ WTMparam(ev, pName){
     this .tAparams.WTMself = 0
   if (pName == 'WTMdate')
    this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'yyyy-MM-dd')  
- console.log("108 %o", this .tAparams)
 }
 postRes: any;
 overlap: boolean
+faultMessage; string;
 submitTA(){                                                                  // need to put in full error checking. 
-  this .checkTAparams();
+  this .faultMessage = "t";
+  if (this .checkTAparams()){
   var jData = JSON.stringify(this .tAparams)
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
   this .http.post(url, jData).subscribe(ret=>{
       this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
         this .overlap = this. postRes['result'] == 0 ? true : false;    // turn on Warning message. 
+        {
+          let faultArray = this. safeJSONparse(this. postRes);
+          console.log("697 postRes %o", faultArray)
+          if (faultArray && faultArray.test == 'CoverageA'){
+              this .errorTxt = 'Please re-enter Coverage';
+              this .showError = true;
+          }
+        }
         this .getTheData();  
         }
     )
    this .sDD = '';
+      }
  }
+safeJSONparse(jsonString) {
+  var valid = false;
+  var json = jsonString;
+  try {
+      json = JSON.parse(jsonString);
+      valid = true;
+  } catch (e) {}
+  return (json);
+  
+}
 
 }

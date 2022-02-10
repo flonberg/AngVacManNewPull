@@ -79,7 +79,7 @@
           <mat-form-field >
             <mat-label>Enter a date range</mat-label>
             <mat-date-range-input [rangePicker]="picker">
-              <input matStartDate plaPeceholder="Start date" #dateRangeStart  >  
+              <input [(ngModel)]='stDt' matStartDate plaPeceholder="Start date" #dateRangeStart  >  
               <input matEndDate placeholder="End date" #dateRangeEnd  (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)">
             </mat-date-range-input>
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -141,7 +141,7 @@
       </td>
     </tr>
       </table>
-      <div *ngIf = "showError"> Please enter all fields </div>
+      <div *ngIf = "showError"  class='warning'> {{ errorTxt }} </div>
       <div *ngIf = "overlap"  class='warning'  > This Time Away overlaps an already scheduled Time Away therefore  cannot be added to the data base. </div>
     </div>
   
