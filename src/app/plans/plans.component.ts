@@ -103,6 +103,7 @@ export class PlansComponent implements OnInit {
     this .dayOfMonth = new Date().getDate();
     this .reasonIdx = "1";
     this .numDaysOnCal = 61;
+    let tstVar = 1;                             // for new push to remote. 
    // this .firstTest = 0;
     this .vacData = Array();
     this. setCalDates();
