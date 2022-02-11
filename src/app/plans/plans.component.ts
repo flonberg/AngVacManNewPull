@@ -20,7 +20,7 @@ interface tAparams {
   CovAccepted: number;
   WTMcoverer: string;
   WTMchange:number;
-  WTMself:Number;
+  WTM_self:Number;
   userid: number;
   WTM_Change_Needed: number;
 }
@@ -81,6 +81,7 @@ export class PlansComponent implements OnInit {
   T_WTM_self: number = 0;
   sDD: string = '';
   stDt: string = '';
+  changesSavedShow = false;
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
@@ -109,7 +110,7 @@ export class PlansComponent implements OnInit {
       accepted: false,
       vidx: 0
     }
-
+    this. showError = 0; 
     
     this. tAparams = {
         startDate :'',
@@ -121,7 +122,7 @@ export class PlansComponent implements OnInit {
         WTMdate:'',
         WTMchange: 0,
         WTMcoverer:'',
-        WTMself: -1,
+        WTM_self: -1,
         vidx: 0,
         CovAccepted: 0,
         WTM_Change_Needed: 0
@@ -324,7 +325,7 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
       this .tAparams.endDate = dateString;
     if (type.indexOf("WTM") >= 0)
       this .tAparams.WTMdate = dateString;  
-console.log("323 editDate tAparams is %o ", this. tAparams)    
+    this .changesSavedShow = false;
 }
 
 private deleteTa(ev){
@@ -336,7 +337,6 @@ private deleteTa(ev){
 
 }
 private saveEdits(ev, detail?) {
-
   this .tAparams.vidx = +this .vidxToEdit;
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
   if (detail == 'CovAccept'){
@@ -350,7 +350,7 @@ private saveEdits(ev, detail?) {
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
   })
-  this .showEdit = false;                                           // turn of editControl box. 
+this .changesSavedShow = true;
   this .showAcceptance = false; 
  // this .ngOnInit();
 
@@ -372,7 +372,8 @@ private isWTM_self(){
 }
 private editTaParams(name, value){  
   if (!this. tAparams)
-  this .tAparams ={} as tAparams;
+      this .tAparams ={} as tAparams;
+console.log("376 name is %o", name)
   switch (name){
     case 'WTMdate':{
       let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
@@ -386,11 +387,12 @@ private editTaParams(name, value){
     case 'WTM_Self':{
       console.log("354 WTM_self %o", value)
       this .vacEdit.WTM_self = 1;
-      this .tAparams.WTMself = 1;
+      this .tAparams.WTM_self = 1;
       break;
     }    
     case 'NOT_WTM_Self':{
       this .vacEdit.WTM_self = 0;
+      this .tAparams.WTM_self = 0;
       break;
     }
     case 'coverageA':{
@@ -414,24 +416,13 @@ private editTaParams(name, value){
       console.log("Invalid choice"); 
       break;              
    }
+
   }
-  console.log("277 %o  --- %o ", name, value)
-  console.log("332 %o  ", this .tAparams)
+  this .changesSavedShow = false;
+  console.log("419  in editTaParams tAparams is %o name is %o", this. tAparams, name)    
   this .tAparams.vidx = this .vidxToSee  
 
- // if (name == 'note')
-  //  this .tAparams.note = value;    
- // if (name == 'CovAccepted')
- //   this .tAparams.CovAccepted = value;    
-//  if (name == 'WTMdate'){
-//    let dateString = this.datePipe.transform(value.value, 'yyyy-MM-dd')
- //   this .tAparams.WTMdate = dateString;
- // }  
 
- //if (name == 'WTMcoveringMD'){
-  //  this .tAparams.WTMself = 0;
- //   this .vacEdit.covererDetails.LastName = '';                                           // blank out the label.
- // }
 }
 /**
  * Calculate the number of days from firstDayOnCalendar to start of tA
@@ -631,10 +622,12 @@ counterE(n){                                            // used for looper in Ca
     var tDate = new Date(dateRangeStart.value)                              // save for editing
     this .startDateEntered = tDate;
     this .monthInc = this.whatMonthIsStartDateIn(tDate)
-    if (  dateRangeEnd.value  ){
-     var eDate = new Date(dateRangeEnd.value)
+    if (  dateRangeEnd.value && dateRangeStart.value ){
+   //  var eDate = new Date(dateRangeEnd.value)
         this. tAparams.startDate = this .datePipe.transform(new Date(dateRangeStart.value), 'yyyy-MM-dd')   
         this. tAparams.endDate = this .datePipe.transform(new Date(dateRangeEnd.value), 'yyyy-MM-dd')   
+        if (this .showError == 2)
+          this .showError = 0;
       }
 
  }
@@ -645,54 +638,60 @@ counterE(n){                                            // used for looper in Ca
    return 0;
  return 1;
 }
-showError: boolean;
+showError: number;
 errorTxt: string;
 checkTAparams(){
   this .errorTxt = ""; 
   console.log("647 checkparaism has %o", this. tAparams)
   if (!this .tAparams){
     this. errorTxt = "Please enter all parameters";
-    this .showError = true;
+    this .showError = 1;
     return false;
   }
-  if (!this. tAparams.startDate){
-    this. errorTxt = "Please re-enter Start and End Date";
-    this .showError = true;
-    return false;
-  }
+
   if (this. tAparams.startDate.length < 3 || this. tAparams.endDate.length < 3){
     this. errorTxt = "Please enter Start and End Date";
-    this .showError = true;
+    this .showError = 2;
     return false;
   }
   if (this. tAparams.reasonIdx < 0){
     this. errorTxt = "Please enter a Reason";
-    this .showError = true;
+    this .showError = 3;
     return false;
   }
   if (this. tAparams.coverageA < 1){
     this. errorTxt = "Please enter a Coverer";
-    this .showError = true;
+    this .showError = 4;
     return false;
   } 
   if (this .tAparams. WTMchange == 1){
-    if (this .tAparams.WTMself < 0)
-    this. errorTxt = "Please select Self or Covering MD";
-    this .showError = true;
-    return false;
+    if (this .tAparams.WTM_self < 0){
+      this. errorTxt = "Please select Self or Covering MD";
+      this .showError = 5;
+      return false
+    }
+    if (this .tAparams.WTM_self == 1){
+      if (this .tAparams.WTMdate.length < 3){
+        this. errorTxt = "Please select a WTM Date";
+        this .showError = 6;
+        return false
+      }
+    }
   }
-  this .showError = false;
+  this .showError = 0;
   return true
  }
  reasonSelect(ev){
   if (this .tAparams){
     this .tAparams.reasonIdx= ev.value;
-    this .showError  = false;
+    if (this .showError == 3)
+      this .showError  = 0;
   }
 }
 covererSelect(ev){
  this .tAparams.coverageA = ev.value.UserKey
- this .showError  = false;
+ if (this .showError == 4)
+  this .showError  = 0;
 }
 noteChange(name, ev){
 if (this .tAparams)
@@ -708,10 +707,17 @@ WTMparam(ev, pName){
   console.log("101 %o --- %o ", ev, pName)
   if (pName == 'WTMdateChange')
     this .tAparams.WTMchange = ev.checked ? 1 : 0
-  if (pName == 'WTM_Self')
-    this .tAparams.WTMself = 1
-  if (pName == 'WTM_CoveringMD')
-    this .tAparams.WTMself = 0
+  if (pName == 'WTM_Self'){
+    this .tAparams.WTM_self = 1
+    
+    if (this .showError == 5)
+      this .showError  = 0;
+  }
+  if (pName == 'WTM_CoveringMD'){
+    this .tAparams.WTM_self = 0
+    if (this .showError == 5)
+      this .showError  = 0;
+  }
   if (pName == 'WTMdate')
    this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'yyyy-MM-dd')  
 }
@@ -721,24 +727,27 @@ faultMessage; string;
 submitTA(){                                                                  // need to put in full error checking. 
   this .faultMessage = "t";
   if (this .checkTAparams()){
-  var jData = JSON.stringify(this .tAparams)
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
-  this .http.post(url, jData).subscribe(ret=>{
-      this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
-        this .overlap = this. postRes['result'] == 0 ? true : false;    // turn on Warning message. 
-        {
-          let faultArray = this. safeJSONparse(this. postRes);
-          console.log("697 postRes %o", faultArray)
-          if (faultArray && faultArray.test == 'CoverageA'){
-              this .errorTxt = 'Please re-enter Coverage';
-              this .showError = true;
-          }
-        }
-        this .getTheData();  
-        }
-    )
-   this .sDD = '';
+      var jData = JSON.stringify(this .tAparams)
+      var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
+      this .http.post(url, jData).subscribe(ret=>{
+          this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
+            this .overlap = this. postRes['result'] == 0 ? true : false;    // turn on Warning message. 
+            {
+              let faultArray = this. safeJSONparse(this. postRes);
+              console.log("697 postRes %o", faultArray)
+              if (faultArray && faultArray.test == 'CoverageA'){
+                  this .errorTxt = 'Please re-enter Coverage';
+                  this .showError = 3;
+              }
+            }
+            this .getTheData();  
+            }
+        )
+      this .sDD = '';
       }
+   else {
+     console.log("756 cheTAparams is return false");
+   }   
  }
 safeJSONparse(jsonString) {
   var valid = false;

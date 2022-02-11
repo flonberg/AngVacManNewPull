@@ -72,7 +72,7 @@
 
   <div class='raised' *ngIf = 'serviceMDs'>
     <table class='centerSmall'>
-        <caption> Enter a Time Away </caption>
+        <caption> Enter a Time Away {{ showError }} </caption>
         <tr>
       <td>
         <div class='center'>
@@ -128,7 +128,7 @@
           <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
         </mat-radio-group>
       </td>
-      <td *ngIf = "tAparams.WTMself == 1"  >
+      <td *ngIf = "tAparams.WTM_self == 1"  >
         <mat-form-field appearance="fill" class='h50'  >
           <mat-label>WTM Date</mat-label>
           <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdate')" placeholder=" {{ startDateConvent }}">
@@ -141,16 +141,17 @@
       </td>
     </tr>
       </table>
-      <div *ngIf = "showError"  class='warning'> {{ errorTxt }} </div>
+      <div *ngIf = "showError > 0 "  class='warning'> {{ errorTxt }} </div>
       <div *ngIf = "overlap"  class='warning'  > This Time Away overlaps an already scheduled Time Away therefore  cannot be added to the data base. </div>
     </div>
-  
   </div>
-<!--      The Edit tA  box            -->
+
+
+<!--      The Edit tA  view          -->
 <div class='spacer'  >
   <div class='raised' *ngIf = showEdit >
       <table class='toFit' *ngIf = showEdit >
-          <caption> {{ theCaption }} Edit Time Away  {{ vidxToEdit }}</caption>
+          <caption> {{ theCaption }} Edit Time Away  {{ vidxToEdit }} {{ vacEdit | json }}</caption>
         <tr *ngIf = !readOnly>
             <th> Start Date</th>
             <th> End Date</th>
@@ -181,8 +182,6 @@
           <mat-form-field appearance="fill">
             <mat-select (selectionChange)="editTaParams( 'reasonIdx', $event)"  [value]="selectedOption">
               <mat-option value="1">Personal Vacation</mat-option>
-              <mat-option value="2" >Meeting </mat-option>
-              <mat-option value="3" >Health </mat-option>
               <mat-option value="4">Other </mat-option>
             </mat-select>
           </mat-form-field>
@@ -202,8 +201,7 @@
           <table>
               <tr><td>
               <button class='Button' (click) = "saveEdits($event)">Save Changes</button>
-              
-            </td></tr>  
+            </td><td *ngIf ='changesSavedShow'  class='greenFont'> Changes Saved </td></tr>  
             <tr><td>
               <button  class='Button' (click) = "deleteTa($event)">Delete Time Away</button>
             </td></tr>
@@ -213,7 +211,8 @@
        </tr>
        <tr>
         <th> Coverer </th> <th *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" > WTM-Coverer </th> 
-                            <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>  <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
+                           <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>
+                            <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
        </tr>
        <tr>
          <td>
@@ -227,13 +226,14 @@
               </mat-form-field>
             </div>  
       </td>
-    <td  *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" >
+    <td  *ngIf = " vacEdit.WTM_Change_Needed == 1" >
       <mat-radio-group aria-label="Select an option">
         <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   >Self </mat-radio-button>
         <mat-radio-button value="2"  [checked]="!isWTM_self()"  (click) = "editTaParams( 'NOT_WTM_Self', $event )" >Covering MD </mat-radio-button>
       </mat-radio-group>
+
     </td> 
-    <td  *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1">
+    <td  *ngIf = "vacEdit.WTM_self == 1 && vacEdit.WTM_Change_Needed == 1">
       <mat-form-field appearance="fill" class='h50'  >
         <mat-label>{{ validDate(vacEdit.WTMdate) }}</mat-label>
         <input matInput [(ngModel)]="startDate" [matDatepicker]="picker22" (dateChange)="WTMparam($event, 'WTMdate')" 

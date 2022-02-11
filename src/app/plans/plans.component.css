@@ -21,17 +21,22 @@
 
   }    
 table.toFit {
-
 	table-layout: fixed;;
 	width: 100%
 }
 table.cal {
 	background-color:#FFE0C2;
 }
-td.green {
-	background-color:#75ad75;
-	font-size:smaller;
+Button {
 	cursor:pointer;	
+}
+td.greenFont{
+	color:green;
+}
+td.green {
+		background-color:#75ad75;
+		font-size:smaller;
+		cursor:pointer;	
 }
 td.orange {
 	background-color:orange;
