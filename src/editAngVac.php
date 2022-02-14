@@ -3,6 +3,7 @@
 require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
 header("Content-Type: application/json; charset=UTF-8");
 $handle = connectDB_FL();
+	$test = 1;
 
 	$fp = fopen("./Alog/editAngVacLog.txt", "w+");
 	$todayString =  date('Y-m-d H:i:s');
