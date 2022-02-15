@@ -520,7 +520,12 @@ private validDate(dateString){
   zeroDayNum(){                                         // reset the dayNum for each row of Cal
     this. dayNum = 0;
   }
-
+  showService(n, service){
+    if (n == 0 && this. MDservice)
+      return this .MDservice[service];
+    else  
+      return ''; 
+  }
 
 
 

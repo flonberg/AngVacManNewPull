@@ -41,6 +41,7 @@ function getMDtAs(){
 	$vacGraph = array();
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
+		$vacGraph[$i][$assoc['userid']]['service'] = $MDs[$UserKeys[$assoc['userid']]]['service'];
 		$vacGraph[$i][$assoc['userid']]['UserKey'] = $UserKeys[$assoc['userid']];
 		$vacGraph[$i][$assoc['userid']]['userid'] = $assoc['userid'];
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
@@ -88,7 +89,7 @@ function formatDate($dt){
 	}
 
 function sortByOrder($a, $b) {
-    return $a[0]['LastName'] > $b[0]['LastName'];
+    return $a[0]['service'] > $b[0]['service'];
 }
 
 
@@ -134,18 +135,18 @@ function getdays($day1,$day2, $firstDay)
 }
 
 function putOnOneLine2($vacGraph, $MDservice){
-
 	$ool = array();
+	$byService = array();
 	foreach($vacGraph as $key=>$val){
 		$userid = key($val);
-//		echo "<br> key is $key userid is $userid";
-//		echo "<pre>"; print_r($val); echo "</pre>"; 
-		if (!is_array($ool[$userid]))
+		$service = $val['service'];
+		if (!is_array($ool[$userid])){
 			$ool[$userid][0] = $val[$userid];
-		else
+		}
+		else {
 			array_push($ool[$userid],  $val[$userid]);
+		}
 	}
-//{ echo "\r\n  66"; echo "<pre>"; print_r($ool); echo "</pre>"; }		
 	return $ool;
 }
 
