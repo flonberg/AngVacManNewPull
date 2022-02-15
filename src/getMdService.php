@@ -1,6 +1,6 @@
 <?php
 require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
-
+ini_set("error_log", "./Alog/getMDServiceError.txt");
 $handle = connectDB_FL();
 $fp = fopen("./Alog/getMDtAsLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
     $selStr = "SELECT * FROM mdservice";
