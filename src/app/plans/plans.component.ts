@@ -488,7 +488,9 @@ private validDate(dateString){
   */ 
  getDateClass(d: Date){
     let today = new Date()
+    today.setDate(today.getDate() - 1);
     let dDate = d.getDate();
+    
     let todayDate = today.getDate();
     if (d.getDate() === today.getDate()  && 
        d.getMonth() === today.getMonth()  &&
@@ -521,8 +523,10 @@ private validDate(dateString){
     this. dayNum = 0;
   }
   showService(n, service){
-    if (n == 0 && this. MDservice)
-      return this .MDservice[service];
+    if (n == 0 && this. MDservice){
+      return this .MDservice[service]['service'];
+     // return service
+    }
     else  
       return ''; 
   }

@@ -38,10 +38,12 @@ function getMDtAs(){
 	fwrite($fp, "\r\n selStr is \r\n $selStr ");
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
+	$servArray = array('1'=>'14','2'=>'13','3'=>'3','4'=>'5','5'=>'4','6'=>'13');
 	$vacGraph = array();
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['service'] = $MDs[$UserKeys[$assoc['userid']]]['service'];
+		$vacGraph[$i][$assoc['userid']]['serviceAlph'] = $servArray[$MDs[$UserKeys[$assoc['userid']]]['service']];
 		$vacGraph[$i][$assoc['userid']]['UserKey'] = $UserKeys[$assoc['userid']];
 		$vacGraph[$i][$assoc['userid']]['userid'] = $assoc['userid'];
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
@@ -89,7 +91,7 @@ function formatDate($dt){
 	}
 
 function sortByOrder($a, $b) {
-    return $a[0]['service'] > $b[0]['service'];
+    return $a[0]['serviceAlph'] > $b[0]['serviceAlph'];
 }
 
 
