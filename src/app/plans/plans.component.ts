@@ -76,6 +76,7 @@ export class PlansComponent implements OnInit {
   vidxToEdit: number = 0;                           // for debugging
   acknowlegeEdits: string = '-';
   serviceMDs: {};
+  MDservice: {};
   CovParams: CovParams;
   CovererView: boolean = false;
   T_WTM_self: number = 0;
@@ -96,6 +97,7 @@ export class PlansComponent implements OnInit {
    //   this .getVacURL += '&userid=suit'
       this .getTheData();
       this .getServiceMDs(this .userid)
+      this. getMDService();
     })
    }
 
@@ -133,6 +135,7 @@ export class PlansComponent implements OnInit {
         this .userid = params['userid']
         this .tAparams.userid = params['userid']
         console.log("125  %o", this .userid)
+     /* 
         if (this .userid){
           let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
           this .http.get(url).subscribe(res =>{
@@ -140,6 +143,7 @@ export class PlansComponent implements OnInit {
           //  this .makeIndex(this .serviceMDs);        
           })
         }
+        */
       })
     }    
     
@@ -180,8 +184,13 @@ export class PlansComponent implements OnInit {
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
-    //  let obj = res;
-    //  let k: keyof typeof obj;  // Type is "one" | "two" | "three"
+          })
+  }
+  getMDService(){
+    let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
+    this .http.get(url).subscribe(res =>{
+      this. MDservice = res;
+ console.log("192 MDService is %o", this .MDservice)     
           })
   }
 
