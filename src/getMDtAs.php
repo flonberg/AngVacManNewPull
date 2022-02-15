@@ -20,6 +20,7 @@ $handle = connectDB_FL();
 function getMDtAs(){
 	global $handle, $fp, $tableName;
 	$MDs = getMDs();
+	$MDservice = getMDservice();
 	$UserKeys = getAllUserIds($handle);
 	$firstDay = date('Y-m-01');
 	//$secondMonth = $_GET['adv'] + 2;
@@ -40,6 +41,7 @@ function getMDtAs(){
 	$vacGraph = array();
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
+		$vacGraph[$i][$assoc['userid']]['UserKey'] = $UserKeys[$assoc['userid']];
 		$vacGraph[$i][$assoc['userid']]['userid'] = $assoc['userid'];
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
 		$vacGraph[$i][$assoc['userid']]['reasonIdx'] = $assoc['reasonIdx'];
@@ -71,7 +73,7 @@ function getMDtAs(){
 		fwrite($fp, "\r\n ".$vacGraph[$i][$assoc['userid']]['startDate']." daysTillStart is ". $vacGraph[$i][$assoc['userid']]['daysTillStartDate'] );
 	}
 	$sss = print_r($vacGraph, true); fwrite($fp, $sss);
-	$onOneLine = putOnOneLine2($vacGraph);
+	$onOneLine = putOnOneLine2($vacGraph, $MDservice);
 	usort($onOneLine, 'sortByOrder');
 
 	return $onOneLine;
@@ -102,7 +104,17 @@ function getMDs(){
 	}
 	return $row;
 }
-
+function getMDservice(){
+	global $handle;
+//	$users = getAllUserIDs($handle);
+	$selStr = "SELECT * FROM mdservice";
+	$dB = new getDBData($selStr, $handle);
+	while ($assoc = $dB->getAssoc()){
+		$row[$assoc['idx']] = $assoc['service'];
+//		$row[$assoc['UserKey']]['userData'] = $users[$assoc['UserKey']];
+	}
+	return $row;
+}
 ////////  days between dates \\\\\\\\\\\\\\\\\\\\\\\
 function getdays($day1,$day2, $firstDay) 
 { 
@@ -121,7 +133,7 @@ function getdays($day1,$day2, $firstDay)
   }
 }
 
-function putOnOneLine2($vacGraph){
+function putOnOneLine2($vacGraph, $MDservice){
 
 	$ool = array();
 	foreach($vacGraph as $key=>$val){
