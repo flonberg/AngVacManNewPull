@@ -14,6 +14,7 @@ $handle = connectDB_FL();
 	$MDtAs['tAs'] = getMDtAs();
 //	$MDtAs['coverers'] = getServiceOfGoAwayer();
 	$jData = json_encode($MDtAs);
+	//fwrite($fp, $jData);
 //	echo "<br> 14 <br>"; echo "<pre>"; print_r($MDtAs); echo "</pre>"; 
 	echo $jData;
  exit();
@@ -38,7 +39,7 @@ function getMDtAs(){
 	fwrite($fp, "\r\n selStr is \r\n $selStr ");
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
-	$servArray = array('1'=>'14','2'=>'13','3'=>'3','4'=>'5','5'=>'4','6'=>'13');
+	$servArray = array('1'=>'14','2'=>'13','3'=>'3','4'=>'5','5'=>'4','6'=>'13', '7'=>'6','8'=>'2','9'=>'1');
 	$vacGraph = array();
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
@@ -137,6 +138,7 @@ function getdays($day1,$day2, $firstDay)
 }
 
 function putOnOneLine2($vacGraph, $MDservice){
+	global $fp;
 	$ool = array();
 	$byService = array();
 	foreach($vacGraph as $key=>$val){
@@ -149,6 +151,7 @@ function putOnOneLine2($vacGraph, $MDservice){
 			array_push($ool[$userid],  $val[$userid]);
 		}
 	}
+	$sss = print_r($ool, true); fwrite($fp, $sss);
 	return $ool;
 }
 
