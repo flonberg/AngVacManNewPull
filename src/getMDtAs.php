@@ -39,7 +39,6 @@ function getMDtAs(){
 	$i = 0;
 	$vacGraph = array();
 	while ($assoc = $dB->getAssoc()){
-
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['userid'] = $assoc['userid'];
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
@@ -49,6 +48,7 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['endDate'] = $assoc['endDate']->format('Y-m-d');
 		$vacGraph[$i][$assoc['userid']]['WTMnote'] = $assoc['WTMnote'];
 		$vacGraph[$i][$assoc['userid']]['WTM_self'] = $assoc['WTM_self'];
+		$vacGraph[$i][$assoc['userid']]['WTM_Change_Needed'] = $assoc['WTM_Change_Needed'];
 		$vacGraph[$i][$assoc['userid']]['CovAccepted'] = $assoc['CovAccepted'];
 		$vacGraph[$i][$assoc['userid']]['class']=  'orange' ;
 		if ($assoc['CovAccepted'] > 0 ) 
@@ -122,14 +122,18 @@ function getdays($day1,$day2, $firstDay)
 }
 
 function putOnOneLine2($vacGraph){
+
 	$ool = array();
 	foreach($vacGraph as $key=>$val){
 		$userid = key($val);
+//		echo "<br> key is $key userid is $userid";
+//		echo "<pre>"; print_r($val); echo "</pre>"; 
 		if (!is_array($ool[$userid]))
 			$ool[$userid][0] = $val[$userid];
 		else
 			array_push($ool[$userid],  $val[$userid]);
 	}
+//{ echo "\r\n  66"; echo "<pre>"; print_r($ool); echo "</pre>"; }		
 	return $ool;
 }
 
