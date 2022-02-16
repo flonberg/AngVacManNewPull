@@ -135,15 +135,15 @@ export class PlansComponent implements OnInit {
         this .userid = params['userid']
         this .tAparams.userid = params['userid']
         console.log("125  %o", this .userid)
-     /* 
+     
         if (this .userid){
-          let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ this .userid
+          let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getLoggedInUserKey.php?userid='+ this .userid
           this .http.get(url).subscribe(res =>{
-            this. serviceMDs = res;
-          //  this .makeIndex(this .serviceMDs);        
+            let returnedObj = res;
+            console.log("143 returnedObj is %o", returnedObj)
           })
         }
-        */
+        
       })
     }    
     unsorted() { }
@@ -185,6 +185,7 @@ export class PlansComponent implements OnInit {
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
+      console.log("188 serviceMDs is %o", this. serviceMDs)
           })
   }
   getMDService(){

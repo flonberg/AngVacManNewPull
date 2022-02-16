@@ -71,8 +71,8 @@
 </tr>
 </table>
 <br><br>
+<!--       Enter tA  Panel      -->
 <div *ngIf = " !CovererView " > 
-
   <div class='raised' *ngIf = 'serviceMDs'>
     <table class='centerSmall'>
         <caption> Enter a Time Away {{ showError }} </caption>
@@ -245,8 +245,8 @@
         <mat-datepicker #picker22></mat-datepicker>
       </mat-form-field>
     </td>
-    <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"> {{ vacEdit.WTMdate}} </td>
-    <td  *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"   > {{ vacEdit.WTMnote}} </td>
+    <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"> {{ vacEdit.WTMdate}}  </td>
+    <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"   > {{ vacEdit.WTMnote}} </td>
   </tr>
 
  </table>
@@ -266,13 +266,14 @@
       <caption> Coverage {{ vacEdit.vidx }} </caption>
       <tr>
         <th> Covering Physician</th> <th>WTM Coverer</th><th> WTM-Date</th> 
+        <th *ngIf = "vacEdit.WTMnote.length > 2">WTM Note </th>
       </tr>
       <tr>
         <td> Dr.{{ vacEdit.covererDetails.LastName }} </td>
         <td *ngIf = "vacEdit.WTM_self == 0"> Dr. {{ vacEdit.covererDetails.LastName }}</td>
         <td   *ngIf = "vacEdit.WTM_self == 1"> Dr. {{ vacEdit.LastName }}</td>
    
-        <td> {{ vacEdit.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}} </td>
+        <td> {{ vacEdit.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}} 222 </td>
       </tr>
     </table>
    </div> 
