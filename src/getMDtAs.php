@@ -39,7 +39,7 @@ function getMDtAs(){
 	fwrite($fp, "\r\n selStr is \r\n $selStr ");
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
-	$servArray = array('1'=>'14','2'=>'13','3'=>'3','4'=>'5','5'=>'4','6'=>'13', '7'=>'6','8'=>'2','9'=>'1');
+	$servArray = array('1'=>14,'2'=>13,'3'=>3,'4'=>5,'5'=>4,'6'=>13, '7'=>6,'8'=>2,'9'=>1);
 	$vacGraph = array();
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];

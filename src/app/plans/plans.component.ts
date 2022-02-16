@@ -146,7 +146,7 @@ export class PlansComponent implements OnInit {
         */
       })
     }    
-    
+    unsorted() { }
     
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
@@ -177,6 +177,7 @@ export class PlansComponent implements OnInit {
       for (const tRow in this. vacData){ 
         this.makeDaysOfRow(this .vacData[tRow])               // fill out the row of boxes for the Calenday
         this .vacData[tRow][9] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
+    //    this .vacData[tRow][10] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
       }  
     })
   }   
