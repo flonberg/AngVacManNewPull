@@ -295,7 +295,7 @@ private fillOutRow(tA0, tA1, v1, n, dayBefore){
  * @param n    the index of the dayArray which is being filled in
  */
 private makeTillEndDays(v1, n ){
-  let tillEnd = this .numDaysOnCal- v1;
+  let tillEnd = this .numDaysOnCal- v1 ;
   if (this .monthInc > 0){
     console.log("164 %o", this .numDaysOnCal)
   }
@@ -320,7 +320,7 @@ private makeTillEndBoxes(vac){
   var calEndDate = new Date( this. calDates[this. calDates.length-1])
   var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
   let arr = Array()
-  for (let i=0; i < diff; i++)
+  for (let i=0; i <= diff; i++)
     arr[i] = i;
   return arr;
 }
@@ -619,7 +619,7 @@ counterE(n){                                            // used for looper in Ca
  //     endDate.toLocaleString('en-US', { timeZone: 'America/New_York' })
       var calEndDate = new Date( this. calDates[this. calDates.length-1])
       var diff =Math.round( (calEndDate.valueOf() - endDate.valueOf())/oneDay);
-     return diff;
+     return diff +1;
     }
     
   daysBetween(val1, val2){                        // used by counter function
