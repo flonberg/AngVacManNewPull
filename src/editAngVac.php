@@ -37,7 +37,7 @@ $IAP = new InsertAndUpdates();
 	{
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
 	//	$int = 0;
-		sendAcc($data['vidx']);
+		sendAcc($data);
 		}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
@@ -107,7 +107,7 @@ $IAP = new InsertAndUpdates();
 	}
 	function sendTaChangedMail($data){
 		global $handle, $fp;
-		fwrite($fp, "\r\n vidx is $vidx");
+		fwrite($fp, "\r\n vidx is ". $data['vidx']);
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
@@ -139,12 +139,42 @@ $IAP = new InsertAndUpdates();
 			$sendMail->send();	
 	}
 
-	function sendAcc($vidx){
+	function sendAcc($data){
 		global $fp, $handle;
-		$selStr = "SELECT startDate, endDate, coverageA,userid FROM MDtimeAway WHERE vidx = $vidx";
-		fwrite($fp, "\r\n $selStr \r\n ");
+		$selStr = "SELECT * FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
+//		fwrite($fp, "\r\n $selStr \r\n ");
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
+		$merged = array_merge($assoc, $data);
+		$startDateString = $merged['startDate']->format("M-d-Y");
+		$endDateString = $merged['endDate']->format("M-d-Y");
+		$WTM_dateString = $merged['WTMdate']->format("M-d-Y");
+		$std = print_r($merged, true); fwrite($fp, "\r\n in sendAcc". $std);
+		//$mailAddress = $assoCovererEmail;								
+		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+		$subj = " Time Away for Dr". $merged['goAwayerLastName'];
+		$msg =    "Dr.".$merged['goAwayerLastName']." will be away from  $startDateString to $endDateString. ";
+		$msg .= "\r\n Dr. ".$merged['CovererLastName']." will be covering.";
+		if ($merged['WTM_Change_Needed'] == '1'){
+			$msg .="\r\n The WTM date has been changed to $WTM_dateString";
+		}
+		$message = '
+			<html>
+				<head>
+					<title> Time Away Coverage </title>
+						<body>
+							<p>'. $msg .'</p>
+						</body>
+				</head>	
+			</html>
+				'; 
+			$headers = 'MIME-Version: 1.0' . "\r\n";
+			   $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+			$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
+			$headers .= 'Cc: flonberg@partners.org'. "\r\n";
+			$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
+			$sendMail->setHeaders($headers);	
+			$sendMail->send();	
 		$jData = json_encode($assoc);  echo $jData;
 		$ss = print_r($assoc, true); fwrite($fp, $ss);
 		$int = 0;

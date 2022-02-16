@@ -83,6 +83,7 @@ export class PlansComponent implements OnInit {
   sDD: string = '';
   stDt: string = '';
   changesSavedShow = false;
+  loggedInUserKey = 0;
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
@@ -140,7 +141,7 @@ export class PlansComponent implements OnInit {
           let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getLoggedInUserKey.php?userid='+ this .userid
           this .http.get(url).subscribe(res =>{
             let returnedObj = res;
-            console.log("143 returnedObj is %o", returnedObj)
+            this .loggedInUserKey = returnedObj['LoggedInUserKey'];
           })
         }
         
