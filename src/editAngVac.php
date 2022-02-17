@@ -7,6 +7,7 @@ $IAP = new InsertAndUpdates();
 
 $testChange = 3;		// test for revert
 	$fp = fopen("./Alog/editAngVacLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
+	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
 	 $s = print_r($data, true);    fwrite($fp, "\r\n data \r\n ");fwrite($fp, $s);
@@ -37,8 +38,6 @@ $testChange = 3;		// test for revert
 	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0)
 	{
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
-	//	$int = 0;
-		sendAcc($data);
 		}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
@@ -55,8 +54,13 @@ $testChange = 3;		// test for revert
 	if (isset($data['reasonIdx']) && $data['reasonIdx']=='99'){
 		sendDeleteTaEmail($data);
 		exit();
-	}		
-	sendTaChangedMail($data);
+	}	
+	if ($_GET['email'] == 0)									// some edits do NOT require an email. 
+		exit();
+	elseif ($_GET['email'] == 1)								// tA params changed
+			sendTaChangedMail($data);
+	elseif ($_GET['email'] == 2)
+		sendFinalEmail($data);		
 	exit();
 
 	function sendDeleteTaEmail($data){
@@ -138,7 +142,7 @@ $testChange = 3;		// test for revert
 			$sendMail->send();	
 	}
 
-	function sendAcc($data){
+	function sendFinalEmail($data){
 		global $fp, $handle;
 		$selStr = "SELECT * FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
 //		fwrite($fp, "\r\n $selStr \r\n ");

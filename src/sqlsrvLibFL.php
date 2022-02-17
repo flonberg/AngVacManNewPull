@@ -181,8 +181,15 @@ class InsertAndUpdates
 	public $lf;
 	public function __construct(){
 		$now = new DateTime(); $nowString = $now->format("Y-m-d H:i:s"); $nowStringShort = $now->format('Y-m-d');
-		$fileName = "H:\\inetpub\\esblogs\\_dev_\\insAndUpdate".$nowStringShort.".log"; 
-		$this->lf = fopen($fileName, "a+");
+		$fileIndex = 0;
+		do {
+			$fileIndex++;
+			$fileName = "H:\\inetpub\\esblogs\\_dev_\\insAndUpdate".$nowStringShort."-".$fileIndex.".log"; 
+			$this->lf = fopen($fileName, "a+");
+			if ($fileIndex > 10)
+				break;
+		}	while ($this->lf === FALSE);
+		
 		if ($this->lf === FALSE){														// permission proble, 
 			$fileName = "H:\\inetpub\\esblogs\\_dev_\\insAndUpdate".$nowStringShort."A.log"; 
 			$this->lf = fopen($fileName, "a+");

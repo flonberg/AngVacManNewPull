@@ -353,18 +353,24 @@ private deleteTa(ev){
 private saveEdits(ev, detail?) {
   this .tAparams.vidx = +this .vidxToEdit;
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
+  var emailParam = 0;                                             // determines IF and WHICH email 2b sent
   if (detail == 'CovAccept'){
     this. acknowlegeEdits = 'Edits Saved'
     this. CovParams.vidx = this .vidxToSee                   
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
-  console.log("341 tAparams is  %o  detail is %o  jData is %o", this .tAparams, detail, jData)
+  if (detail =='tAchanged')
+    emailParam = 1;
+  if (detail.includes('Accept'))                                      // Coverer accepted
+    emailParam = 2;                                              // signal for Final Email to Nurses and Admins  
+  console.log("341 tAparams is  %o  detail is %o  jData is %o ", this .tAparams, detail, jData)
+  console.log("367 detail is %o emalparam is %o", detail, emailParam)
                       // form the data to pass to php script
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php';  // set endPoint
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php?email='+emailParam;  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
   })
-this .changesSavedShow = true;
+  this .changesSavedShow = true;
   this .showAcceptance = false; 
  // this .ngOnInit();
 
