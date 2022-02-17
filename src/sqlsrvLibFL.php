@@ -215,10 +215,11 @@ class sendMailClassLib
 		$this->subject = $subject; 
 		$this->msg = $msg;
 		$this->headers="";
+		$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail.log", "w+");
+		$now = new DateTime(); $nowString = $now->format("Y-m-d H:i:s"); fwrite($this->logFp, "\r\n $nowString \r\n");
 	}
 	public function setHeaders($headers){
 		$this->headers = $headers;
-
 	}
 	public function send(){
 		 mail($this->address,$this->subject,$this->msg, $this->headers);
@@ -226,6 +227,18 @@ class sendMailClassLib
 	}
 	public function setSubject($subject){
 		$this->subject = $subject; 
+	}
+	public function setHTML($title, $msg){
+		$this->msg = '
+		<html>
+			<head>
+				<title>'. $title .' </title>
+					<body>
+					<p>'. $msg .'</p>
+					</body>
+			</head>	
+		</html>
+			'; 
 	}
 }
 
