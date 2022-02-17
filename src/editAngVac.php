@@ -67,6 +67,8 @@ $testChange = 3;		// test for revert
 		$mailAddress = $data->CovererEmail;								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Coverage for Time Away";
+		$title = "Title Coverage for Time Away";
+
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." has canceled the Time Away starting on $startDateString for which you were the coverage";
 		$message = '
 			<html>
@@ -81,8 +83,8 @@ $testChange = 3;		// test for revert
 			$headers = 'MIME-Version: 1.0' . "\r\n";
 			   $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 			$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
-			$headers .= 'Cc: flonberg@partners.org'. "\r\n";
-			$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
+			$headers .= 'Cc: flonberg@partners.org'. "\r\n";	
+			$sendMail = new sendMailClassLib($mailAddress, $title,  $subj, $message);	
 			$sendMail->setHeaders($headers);	
 			$sendMail->send();	
 
@@ -117,7 +119,7 @@ $testChange = 3;		// test for revert
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Coverage for Time Away";
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ."'s parameters for being away starting on $startDateString have changed. ";
-		$msg .= "\r\n <br> To accept or decline this altered coverage click on the below link.";
+		$msg .= "\r\n <br> 9999 To accept or decline this altered coverage click on the below link.";
 		$message = '
 			<html>
 				<head>
@@ -131,12 +133,8 @@ $testChange = 3;		// test for revert
 				</head>	
 			</html>
 				'; 
-			$headers = 'MIME-Version: 1.0' . "\r\n";
-			   $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-			$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
-			$headers .= 'Cc: flonberg@partners.org'. "\r\n";
 			$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
-			$sendMail->setHeaders($headers);	
+	//		$sendMail->setHeaders($headers);	
 			$sendMail->send();	
 	}
 
@@ -174,7 +172,7 @@ $testChange = 3;		// test for revert
 			$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
 			$headers .= 'Cc: flonberg@partners.org'. "\r\n";
 			$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
-			$sendMail->setHeaders($headers);	
+		//	$sendMail->setHeaders($headers);	
 			$sendMail->send();	
 		$jData = json_encode($assoc);  echo $jData;
 		$ss = print_r($assoc, true); fwrite($fp, $ss);

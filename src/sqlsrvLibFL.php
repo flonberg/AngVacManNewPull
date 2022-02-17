@@ -215,8 +215,12 @@ class sendMailClassLib
 		$this->subject = $subject; 
 		$this->msg = $msg;
 		$this->headers="";
+		$this->headers = 'MIME-Version: 1.0' . "\r\n";
+		$this->headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+	 	$this->headers .= 'From: <whiteboard@partners.org>' . "\r\n";
+	 	$this->headers .= 'Cc: flonberg@partners.org'. "\r\n";
 		$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail.log", "w+");
-		$now = new DateTime(); $nowString = $now->format("Y-m-d H:i:s"); fwrite($this->logFp, "\r\n $nowString \r\n");
+		$now = new DateTime(); $nowString = $now->format("Y-m-d H:i:s"); fwrite($this->logFp, "\r\n $nowString");
 	}
 	public function setHeaders($headers){
 		$this->headers = $headers;
@@ -227,18 +231,6 @@ class sendMailClassLib
 	}
 	public function setSubject($subject){
 		$this->subject = $subject; 
-	}
-	public function setHTML($title, $msg){
-		$this->msg = '
-		<html>
-			<head>
-				<title>'. $title .' </title>
-					<body>
-					<p>'. $msg .'</p>
-					</body>
-			</head>	
-		</html>
-			'; 
 	}
 }
 
