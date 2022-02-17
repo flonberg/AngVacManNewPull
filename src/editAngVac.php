@@ -158,6 +158,8 @@ $testChange = 3;		// test for revert
 		$subj = " Time Away for Dr". $merged['goAwayerLastName'];
 		$msg =    "Dr.".$merged['goAwayerLastName']." will be away from  $startDateString to $endDateString. ";
 		$msg .= "\r\n Dr. ".$merged['CovererLastName']." will be covering.";
+		if (isset($merged['note']) && strlen($merged['note'])>  2)
+			$msg .="\r\n ". $merged['note'];
 		if ($merged['WTM_Change_Needed'] == '1'){
 			$msg .="\r\n The WTM date has been changed to $WTM_dateString";
 		}

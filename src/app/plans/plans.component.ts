@@ -359,10 +359,12 @@ private saveEdits(ev, detail?) {
     this. CovParams.vidx = this .vidxToSee                   
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
-  if (detail =='tAchanged')
-    emailParam = 1;
-  if (detail.includes('Accept'))                                      // Coverer accepted
-    emailParam = 2;                                              // signal for Final Email to Nurses and Admins  
+  if (detail){
+    if (detail =='tAchanged')
+      emailParam = 1;
+    if (detail.includes('Accept'))                                      // Coverer accepted
+      emailParam = 2;   
+  }                                           // signal for Final Email to Nurses and Admins  
   console.log("341 tAparams is  %o  detail is %o  jData is %o ", this .tAparams, detail, jData)
   console.log("367 detail is %o emalparam is %o", detail, emailParam)
                       // form the data to pass to php script
