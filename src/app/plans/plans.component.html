@@ -154,7 +154,7 @@
 <div class='spacer'  >
   <div class='raised' *ngIf = showEdit >
       <table class='toFit' *ngIf = showEdit >
-          <caption> {{ theCaption }} Edit Time Away  {{ vidxToEdit }} {{ vacEdit | json }}</caption>
+          <caption> {{ theCaption }} Edit Time Away  {{ vidxToEdit }} </caption>
         <tr *ngIf = !readOnly>
             <th> Start Date</th>
             <th> End Date</th>
@@ -279,12 +279,13 @@
    </div> 
 
 <!--       Div for Acceptor       -->
+
    <div *ngIf = 'isLoggedInUserCoverer && showAcceptance' class='raised'>
+    <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 0 ||   toSeeParams['WTM_self'] == 1"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </p>
+    <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away.</p>
+    <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > You are also being asked to cover Dr. {{ toSeeParams['goAwayerLastName']  }}'s WTM.  .</p>
+    <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please select a WTM date and supply any additional parameters such as WTM location.</p>
     <table *ngIf = vidxToSee class='toFit'>
-      <caption *ngIf = "toSeeParams['WTM_Change_Needed'] == 0 ||   toSeeParams['WTM_self'] == 1"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </caption>
-      <caption *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away and select a WTM date. </caption>
-  
-  
           <tr>
             <td> 
               <mat-form-field class="example-full-width" appearance="fill">

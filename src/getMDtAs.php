@@ -50,6 +50,8 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
 		$vacGraph[$i][$assoc['userid']]['reasonIdx'] = $assoc['reasonIdx'];
 		$vacGraph[$i][$assoc['userid']]['vidx'] = $assoc['vidx'];
+		$assoc['startDate']->modify("+ 1 day");
+		$assoc['endDate']->modify("+ 1 day");
 		$vacGraph[$i][$assoc['userid']]['startDate'] = $assoc['startDate']->format('Y-m-d');
 		$vacGraph[$i][$assoc['userid']]['endDate'] = $assoc['endDate']->format('Y-m-d');
 		$vacGraph[$i][$assoc['userid']]['WTMnote'] = $assoc['WTMnote'];

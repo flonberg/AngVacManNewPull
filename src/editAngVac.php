@@ -10,7 +10,6 @@ $testChange = 3;		// test for revert
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
-	 $s = print_r($data, true);    fwrite($fp, "\r\n data \r\n ");fwrite($fp, $s);
 	$data = getNeededParams($data);															// get additional param needed
 	
 
@@ -65,8 +64,6 @@ $testChange = 3;		// test for revert
 
 	function sendDeleteTaEmail($data){
 		global $handle, $fp;
-		fwrite($fp, "\r\n vidx is $vidx");
-		$s = print_r($data, true);    fwrite($fp, "\r\n 64 data  \r\n ");fwrite($fp, $s);
 		$startDateString = $data['dBstartDate']->format('Y-m-d');
 		$mailAddress = $data->CovererEmail;								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
@@ -95,7 +92,6 @@ $testChange = 3;		// test for revert
 	}
 	function getNeededParams($data){
 		global $handle, $fp;
-		$s = print_r($data, true);   fwrite($fp, "\r\n in getNeededParam data \r\n ");fwrite($fp, $s);
 		$selStr = "SELECT userid, WTM_Change_Needed, WTM_self, startDate, endDate, coverageA FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
 		fwrite($fp, "\r\n $selStr \r\n");
 		$dB = new getDBData($selStr, $handle);
@@ -107,9 +103,6 @@ $testChange = 3;		// test for revert
 		$data['CovererUserId'] =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $assoc['coverageA'],  "UserID", $handle);		
 		$data['CovererLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['coverageA']  ."'", "LastName", $handle);			// get name of GoAwayer
 		$data['goAwayerLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['goAwayerUserKey']  ."'", "LastName", $handle);			// get name of GoAwayer
-		$data['Email'] = getSingle("SELECT Email FROM physicians WHERE UserKey = '".$assoc['coverageA']  ."'", "Email", $handle);			// get name of GoAwayer
-
-		$s = print_r($data, true);   fwrite($fp, "\r\n end of  getNeededParam data \r\n ");fwrite($fp, $s);
 		return $data;
 	}
 	function sendTaChangedMail($data){
@@ -123,7 +116,7 @@ $testChange = 3;		// test for revert
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Coverage for Time Away";
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ."'s parameters for being away starting on $startDateString have changed. ";
-		$msg .= "\r\n <br> 9999 To accept or decline this altered coverage click on the below link.";
+		$msg .= "<p> To accept or decline this altered coverage click on the below link.</p>";
 		$message = '
 			<html>
 				<head>
@@ -149,19 +142,22 @@ $testChange = 3;		// test for revert
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
 		$merged = array_merge($assoc, $data);
+		$std = print_r($merged, true); fwrite($fp, $std);
 		$startDateString = $merged['startDate']->format("M-d-Y");
 		$endDateString = $merged['endDate']->format("M-d-Y");
-		$WTM_dateString = $merged['WTMdate']->format("M-d-Y");
-		$std = print_r($merged, true); fwrite($fp, "\r\n in sendAcc". $std);
+		$WTM_dateString = makeDateString($merged['WTMdate']);
+		$std = print_r($merged, true); fwrite($fp, "\r\n in sendAcc merged is ". $std);
 		//$mailAddress = $assoCovererEmail;								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = " Time Away for Dr". $merged['goAwayerLastName'];
 		$msg =    "Dr.".$merged['goAwayerLastName']." will be away from  $startDateString to $endDateString. ";
-		$msg .= "\r\n Dr. ".$merged['CovererLastName']." will be covering.";
+		$msg .= "<p>Dr. ".$merged['CovererLastName']." will be covering. </p>";
 		if (isset($merged['note']) && strlen($merged['note'])>  2)
-			$msg .="\r\n ". $merged['note'];
+			$msg .="<p> ". $merged['note']."</p>";	
+		if (isset($merged['WTMnote']) && strlen($merged['WTMnote'])>  2)
+			$msg .="<p>". $merged['WTMnote']."</p>";	
 		if ($merged['WTM_Change_Needed'] == '1'){
-			$msg .="\r\n The WTM date has been changed to $WTM_dateString";
+			$msg .="<p> The WTM date has been changed to ". $merged['WTMdate']."</p>";
 		}
 		$message = '
 			<html>
@@ -178,11 +174,13 @@ $testChange = 3;		// test for revert
 			$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
 			$headers .= 'Cc: flonberg@partners.org'. "\r\n";
 			$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
-		//	$sendMail->setHeaders($headers);	
 			$sendMail->send();	
-		$jData = json_encode($assoc);  echo $jData;
-		$ss = print_r($assoc, true); fwrite($fp, $ss);
-		$int = 0;
+	}
+	function makeDateString($date){
+		if (is_object($date))
+			return $date->format("Y-m-d");
+		else
+			return $date;	
 	}
 
 	function sendDeclineEmail($data){

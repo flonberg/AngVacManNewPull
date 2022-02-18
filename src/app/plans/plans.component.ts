@@ -359,7 +359,7 @@ private saveEdits(ev, detail?) {
     this. CovParams.vidx = this .vidxToSee                   
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
-  if (detail){
+  if (detail){  
     if (detail =='tAchanged')
       emailParam = 1;
     if (detail.includes('Accept'))                                      // Coverer accepted

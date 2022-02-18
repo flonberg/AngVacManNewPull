@@ -48,7 +48,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
 	fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
 	if (isset($data->coverageA) && $data->coverageA > 0)
-		sendAskForCoverage($lastVidx, $goAwayerUserKey, $data->coverageA,  $data->startDate, $data->endDate, $data);
+		sendAskForCoverage($lastVidx,  $data);
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 
 	exit();
@@ -85,7 +85,7 @@ function checkOverlap($data){
 		}
 		return false;				// there is NOT an overlap
 	}
-function sendAskForCoverage($vidx, $goAwayUserkey, $covererUserKey, $startDate, $endDate, $data)
+function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp;
 	fwrite($fp, "\r\n vidx is $vidx");
@@ -95,7 +95,9 @@ function sendAskForCoverage($vidx, $goAwayUserkey, $covererUserKey, $startDate, 
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$subj = "Coverage for Time Away";
 	$msg =    "Dr.".$data->CovererLastName.": <br> Dr.". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
-	$msg .= "\r\n <br> To accept or decline this coverage, and to select a WTM date click on the below link.";
+	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
+		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
+	$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
 	$message = '
        	<html>
        		<head>
@@ -111,6 +113,7 @@ function sendAskForCoverage($vidx, $goAwayUserkey, $covererUserKey, $startDate, 
 			</head>	
 		</html>
 			'; 
+		fwrite($fp, "\r\n message sent to sendMailClassLib \r\n". $message);	
 		$headers = 'MIME-Version: 1.0' . "\r\n";
        	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 		$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
