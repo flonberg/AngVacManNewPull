@@ -10,7 +10,8 @@ $handle = connectDB_FL();
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
 	while ($assoc = $dB->getAssoc()){
-		if ($assoc['UserKey'] <> $userkey)
+			$selStr2 = "SELECT UserID from users WHERE UserKey ='".$assoc['UserKey']."'";
+			$assoc['UserID'] = getSingle($selStr2, "UserID", $handle);
 			$row[$i++] = $assoc;
 	}
 	$jData = json_encode($row);

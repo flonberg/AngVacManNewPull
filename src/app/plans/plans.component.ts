@@ -75,7 +75,7 @@ export class PlansComponent implements OnInit {
   dayNum: number = 1;
   vidxToEdit: number = 0;                           // for debugging
   acknowlegeEdits: string = '-';
-  serviceMDs: {};
+  serviceMDs: any;
   MDservice: {};
   CovParams: CovParams;
   CovererView: boolean = false;
@@ -84,6 +84,8 @@ export class PlansComponent implements OnInit {
   stDt: string = '';
   changesSavedShow = false;
   loggedInUserKey = 0;
+  isUserAnMD = false;
+
 
 
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
@@ -186,14 +188,20 @@ export class PlansComponent implements OnInit {
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
-      console.log("188 serviceMDs is %o", this. serviceMDs)
+      for(let entry of this .serviceMDs){
+        if (this .userid == entry.UserID)
+          this .isUserAnMD = true;
+              }    
+console.log("198 isUserAnMD is %o", this. isUserAnMD)
+
           })
+
   }
+
   getMDService(){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
     this .http.get(url).subscribe(res =>{
       this. MDservice = res;
- console.log("192 MDService is %o", this .MDservice)     
           })
   }
 
@@ -471,12 +479,12 @@ selectedOption:string
    this .selectedOption = "1";
   let isUserGoAwayer = this. userid.includes(vacEdit['userid'])
   console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
-   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MM-d-yyyy')
-   this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MM-d-yyyy')
+   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MMM-d-yyyy')
+   this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MMM-d-yyyy')
    if (vacEdit.WTMdate.includes('1900')) 
     this .WTMDateConvent = '';  
     else 
-      this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'MM-d-yyyy')
+      this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'MMM-d-yyyy')
   console.log("458 WTMDateConvent is %o", this.WTMDateConvent)    
   this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
@@ -499,10 +507,9 @@ private validDate(dateString){
   */ 
  getDateClass(d: Date){
     let today = new Date()
-    today.setDate(today.getDate() - 1);
-    let dDate = d.getDate();
-    
-    let todayDate = today.getDate();
+
+ 
+
     if (d.getDate() === today.getDate()  && 
        d.getMonth() === today.getMonth()  &&
        d.getFullYear() === today.getFullYear()) 
@@ -516,6 +523,7 @@ private validDate(dateString){
    * @returns 
    */
   getClass(n){
+    n--;                                                // accomodate Service column
     if (n == this .dayOfMonth && this. monthInc == 0)
       return 'todayCell'
   }
@@ -788,7 +796,8 @@ safeJSONparse(jsonString) {
       valid = true;
   } catch (e) {}
   return (json);
-  
 }
-
+showConventDate(date){
+  return this.datePipe.transform(date, 'MMM-d-yyyy')
+}
 }

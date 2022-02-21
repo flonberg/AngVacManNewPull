@@ -18,6 +18,7 @@ $handle = connectDB_FL();
 //	echo "<br> 14 <br>"; echo "<pre>"; print_r($MDtAs); echo "</pre>"; 
 	echo $jData;
  exit();
+
 function getMDtAs(){
 	global $handle, $fp, $tableName;
 	$MDs = getMDs();
@@ -50,8 +51,8 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
 		$vacGraph[$i][$assoc['userid']]['reasonIdx'] = $assoc['reasonIdx'];
 		$vacGraph[$i][$assoc['userid']]['vidx'] = $assoc['vidx'];
-		$assoc['startDate']->modify("+ 1 day");
-		$assoc['endDate']->modify("+ 1 day");
+//		$assoc['startDate']->modify("+ 1 day");
+//		$assoc['endDate']->modify("+ 1 day");
 		$vacGraph[$i][$assoc['userid']]['startDate'] = $assoc['startDate']->format('Y-m-d');
 		$vacGraph[$i][$assoc['userid']]['endDate'] = $assoc['endDate']->format('Y-m-d');
 		$vacGraph[$i][$assoc['userid']]['WTMnote'] = $assoc['WTMnote'];
@@ -63,8 +64,8 @@ function getMDtAs(){
 			$vacGraph[$i][$assoc['userid']]['class']= 'green';
 		if ($assoc['WTMdate'])
 			$vacGraph[$i][$assoc['userid']]['WTMdate'] = formatDate($assoc['WTMdate']);
-		$vacGraph[$i][$assoc['userid']]['daysTillStartDate'] = getdays($firstDay, $vacGraph[$i][$assoc['userid']]['startDate'], $firstDay);
-		$vacGraph[$i][$assoc['userid']]['daysTillCalEnd'] = getdays( $vacGraph[$i][$assoc['userid']]['endDate'], $lastDay, $firstDay);
+		$vacGraph[$i][$assoc['userid']]['daysTillStartDate'] = getdays($firstDay, $vacGraph[$i][$assoc['userid']]['startDate'], $firstDay) + 1;	// +1 to accomodate Service Col 
+		$vacGraph[$i][$assoc['userid']]['daysTillCalEnd'] = getdays( $vacGraph[$i][$assoc['userid']]['endDate'], $lastDay, $firstDay) ;
 		// 1 day tA has StartDate = EndDate so have to add 1 to length
 		$vacGraph[$i][$assoc['userid']]['vacLength'] = getdays($vacGraph[$i][$assoc['userid']]['startDate'],$vacGraph[$i][$assoc['userid']]['endDate'], $firstDay) + 1  ;
 		$selStr = "SELECT UserID from users WHERE UserKey = '".$assoc['coverageA']."'";
