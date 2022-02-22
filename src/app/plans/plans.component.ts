@@ -23,6 +23,7 @@ interface tAparams {
   WTM_self:Number;
   userid: number;
   WTM_Change_Needed: number;
+  service: number;
 }
 interface CovParams {
   accepted: boolean,
@@ -132,7 +133,8 @@ export class PlansComponent implements OnInit {
         WTM_self: -1,
         vidx: 0,
         CovAccepted: 0,
-        WTM_Change_Needed: 0
+        WTM_Change_Needed: 0,
+        service: 0
       }
       this. activatedRoute.queryParams.subscribe(params =>{
         this .userid = params['userid']
@@ -192,7 +194,7 @@ export class PlansComponent implements OnInit {
         if (this .userid == entry.UserID)
           this .isUserAnMD = true;
               }    
-console.log("198 isUserAnMD is %o", this. isUserAnMD)
+console.log("198 serviceMDs is %o", this. serviceMDs)
 
           })
 

@@ -42,9 +42,14 @@ function getMDtAs(){
 	$i = 0;
 	$servArray = array('1'=>14,'2'=>13,'3'=>3,'4'=>5,'5'=>4,'6'=>13, '7'=>6,'8'=>2,'9'=>1);
 	$vacGraph = array();
+	$serviceGroup = array();																// use to keep track of number of tA's in each service
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['service'] = $MDs[$UserKeys[$assoc['userid']]]['service'];
+		if (!isset($serviceGroup[$MDs[$UserKeys[$assoc['userid']]]['service']][$assoc['userid']]))				// if there is NOT tA in this serviceGroup
+			$serviceGroup[$MDs[$UserKeys[$assoc['userid']]]['service']][$assoc['userid']][0] =$i;					// set num of tA's in this serviceGroup -> 1
+		else	
+			array_push($serviceGroup[$MDs[$UserKeys[$assoc['userid']]]['service']][$assoc['userid']], $i);						// increment it 							
 		$vacGraph[$i][$assoc['userid']]['serviceAlph'] = $servArray[$MDs[$UserKeys[$assoc['userid']]]['service']];
 		$vacGraph[$i][$assoc['userid']]['UserKey'] = $UserKeys[$assoc['userid']];
 		$vacGraph[$i][$assoc['userid']]['userid'] = $assoc['userid'];
@@ -75,14 +80,22 @@ function getMDtAs(){
 			$vacGraph[$i][$assoc['userid']]['covererageA_UserKey'] = $assoc['coverageA' ];
 			$vacGraph[$i][$assoc['userid']]['covererDetails'] = $MDs[$assoc['coverageA']];
 		}
-	
 		$i++;
-		fwrite($fp, "\r\n ".$vacGraph[$i][$assoc['userid']]['startDate']." daysTillStart is ". $vacGraph[$i][$assoc['userid']]['daysTillStartDate'] );
+	//	fwrite($fp, "\r\n ".$vacGraph[$i][$assoc['userid']]['startDate']." daysTillStart is ". $vacGraph[$i][$assoc['userid']]['daysTillStartDate'] );
+
 	}
-	$sss = print_r($vacGraph, true); fwrite($fp, $sss);
+//	$std = print_r($serviceGroup, true); fwrite($fp, "\r\n ServiceGroup is \r\n". $std);
+	foreach ($serviceGroup as $key => $val){
+		$c = count($val);
+		fwrite($fp, "\r\n key is $key count is $c ");
+		if ($c > 1){
+			fwrite($fp, "\r\n c is $c");
+			$std = print_r($val, true); fwrite($fp, "\r\n ServiceGroup is \r\n". $std);
+		}
+	}
+//	$sss = print_r($vacGraph, true); fwrite($fp, $sss);
 	$onOneLine = putOnOneLine2($vacGraph, $MDservice);
 	usort($onOneLine, 'sortByOrder');
-
 	return $onOneLine;
 }
 function formatDate($dt){
@@ -154,7 +167,7 @@ function putOnOneLine2($vacGraph, $MDservice){
 			array_push($ool[$userid],  $val[$userid]);
 		}
 	}
-	$sss = print_r($ool, true); fwrite($fp, $sss);
+//	$sss = print_r($ool, true); fwrite($fp, $sss);
 	return $ool;
 }
 

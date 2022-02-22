@@ -19,7 +19,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
         fwrite($fp, $s);                                     	// Write out the data to the log	
 	$ret = array("result"=>"success");
 	$tst3 =  checkOverlap($data);
-	if ($tst3){
+	if ($tst3 == 1){
 		$rArray = array("result"=>0);
 		$rData = json_encode($rArray);
 		echo $rData;
@@ -35,23 +35,39 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 		echo $jData;
 		exit();
 	}
-	$insStr = "INSERT INTO $tableName (userid, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
-				values('$data->userid', '".$data->startDate."','".$data->endDate."',".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."', getdate())";
+	checkServiceOverLap($data);	
+	$insStr = "INSERT INTO $tableName (userid, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, service, createWhen)
+				values('$data->userid', '".$data->startDate."','".$data->endDate."',".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'". $data->service."', getdate())";
 	
 	fwrite($fp, "\r\n $insStr");
 	$res = $IAP->safeSQL($insStr, $handle);
 	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";					// get the vidx of last inserted record
 	$lastVidx = getSingle($selStr, 'vidx', $handle);
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-	$selStr = "SELECT UserKey FROM users WHERE UserID = '". $data->userid."'";
+	$selStr = "SELECT UserKey FROM users WHERE UserID = '". $data->userid."'";					// get the UserKey of the GoAwayer
 	fwrite($fp, "\r\n $selStr \r\n ");
 	$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
 	fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
 	if (isset($data->coverageA) && $data->coverageA > 0)
 		sendAskForCoverage($lastVidx,  $data);
-	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 
+	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
+
+function checkServiceOverLap($data){
+	global $handle, $fp, $tableName; 
+	$selStr = "SELECT service,vidx, startDate, endDate FROM $tableName WHERE service = '".$data->service."' 
+			AND (
+				(startDate > '".$data->startDate."' AND startDate < '".$data->endDate."' OR  endDate > '".$data->startDate."' AND startDate < '".$data->endDate."') 
+			OR	(startDate < '".$data->startDate."' AND endDate > '".$data->endDate."' ) 
+																																									)";
+	fwrite($fp, "\r\n selStr is \r\n  $selStr \r\n");
+	$dB = new getDBData($selStr, $handle);
+	while ($assoc = $dB->getAssoc()){
+		fwrite($fp, "\r\n vidx found is ".$assoc['vidx']);
+	}
+
+}	
 
 function checkOverlap($data){
 		global $handle, $fp, $tableName; 
@@ -75,16 +91,16 @@ function checkOverlap($data){
 		while ($assoc = $dB->getAssoc()){
 			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
 			fwrite($fp, "\r\n  Comparing tA startDate = $newStartDateString to be GREATER than  $cmpStartDate and LESS than  $cmpEndDate");
-			$tst =  ($newStartDateTime >= $assoc['startDate'] && $newStartDateTime <= $assoc['endDate']); 					// DOESNT WORK 
-			$tst2 =  ($newEndDateTime >= $assoc['startDate'] && $newEndDateTime <= $assoc['endDate']); 					// DOESNT WORK 
-			
+			$tst =  ($newStartDateTime >= $assoc['startDate'] && $newStartDateTime <= $assoc['endDate']); 				
+			$tst2 =  ($newEndDateTime >= $assoc['startDate'] && $newEndDateTime <= $assoc['endDate']); 					
 			if ($tst || $tst2){
 				fwrite($fp, "\r\n New tA ENCLOSED an existing tA OverLap detected so NOT INSERT \r\n ");
-				return true;
+				return 1;
 			}
 		}
-		return false;				// there is NOT an overlap
+		return 0;				// there is NOT an overlap
 	}
+
 function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp;
@@ -126,15 +142,32 @@ function sendAskForCoverage($vidx, $data)
 		$sendMail->send();	
 		exit();
 }
+function getNeededParams1($data){
+	global $handle;
+	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$data->userid."'", "UserKey", $handle);			// get name of GoAwayer
+	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
+	//$data->goAwayerLastName = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."'", "LastName", $handle);			// get name of GoAwayer
+	//$data->CovererLastName=  getSingle("SELECT LastName FROM physicians WHERE UserKey = ".$data->coverageA, "LastName", $handle);			// get name of GoAwayer
+	//$data->CovererEmail =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data->coverageA, "Email", $handle);			// get name of GoAwayer
+	return $data;
+}
 function getNeededParams($data){
 	global $handle;
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$data->userid."'", "UserKey", $handle);			// get name of GoAwayer
 	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
-	$data->goAwayerLastName = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."'", "LastName", $handle);			// get name of GoAwayer
-	$data->CovererLastName=  getSingle("SELECT LastName FROM physicians WHERE UserKey = ".$data->coverageA, "LastName", $handle);			// get name of GoAwayer
-	$data->CovererEmail =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data->coverageA, "Email", $handle);			// get name of GoAwayer
-
-	return $data;
+	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey ='".$data->coverageA ."'"; 
+	$dB = new getDBData($selStr, $handle);
+	while ($assoc = $dB->getAssoc()){
+		if ($assoc['UserKey'] == $data->goAwayerUserKey){
+			$data->goAwayerLastName = $assoc['LastName'];
+			$data->service = $assoc['service'];
+		}
+		if ($assoc['UserKey'] == $data->coverageA){
+			$data->CovererLastName = $assoc['LastName'];
+			$data->CovererEmail = $assoc['Email'];
+		}	
+	}
+	return $data; 
 }
 
 function enterCovsInVacCov($regDuties, $dows, $userkey, $vidx)
