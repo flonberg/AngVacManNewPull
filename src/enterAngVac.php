@@ -46,7 +46,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	checkServiceOverLap($data);	
 
 	$insStr = "INSERT INTO $tableName (userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
-				values('$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate())";
+				values('$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	
 	fwrite($fp, "\r\n $insStr");
 	$res = $IAP->safeSQL($insStr, $handle);
@@ -62,6 +62,11 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
+
+	function getLastId() {
+		$result = mssql_fetch_assoc(mssql_query("select @@IDENTITY as id"));
+		return $result['id'];
+	}	
 
 function checkServiceOverLap($data){
 	global $handle, $fp, $tableName; 
