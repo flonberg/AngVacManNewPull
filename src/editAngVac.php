@@ -67,14 +67,14 @@ $testChange = 3;		// test for revert
 		$startDateString = $data['dBstartDate']->format('Y-m-d');
 		$mailAddress = $data->CovererEmail;								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$subj = "Coverage for Time Away";
-		$title = "Title Coverage for Time Away";
+		$subj = "Time Away Deleted";
+	
 
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." has canceled the Time Away starting on $startDateString for which you were the coverage";
 		$message = '
 			<html>
 				<head>
-					<title> Time Away Coverage </title>
+					<title> Time Away Deleted </title>
 						<body>
 						<p>'. $msg .'</p>
 						</body>
@@ -85,8 +85,8 @@ $testChange = 3;		// test for revert
 			   $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 			$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
 			$headers .= 'Cc: flonberg@partners.org'. "\r\n";	
-			$sendMail = new sendMailClassLib($mailAddress, $title,  $subj, $message);	
-			$sendMail->setHeaders($headers);	
+			$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
+		//	$sendMail->setHeaders($headers);	
 			$sendMail->send();	
 
 	}

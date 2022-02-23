@@ -9,7 +9,7 @@ $handle = connectDB_FL();
 ini_set("error_log", "./Alog/enterAngVacError.txt");
 
 $IAP = new InsertAndUpdates();
-$in = 2;
+$in = 0;
 do {
 $fp = fopen("./Alog/enterAngVacLog".$in.".txt", "w+");
 $in++;
@@ -20,7 +20,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
  $body = @file_get_contents('php://input');            // Get parameters from calling cURL POST;
 	$data = json_decode($body);
                                     	// Write out the data to the log
-	$s = print_r($data->startDate, true);                              	// Create pretty form of data
+	$s = print_r($data, true);                              	// Create pretty form of data
         fwrite($fp, $s);                                     	// Write out the data to the log	
 
 	$ret = array("result"=>"success");
@@ -44,10 +44,9 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	}
 
 	checkServiceOverLap($data);	
-	exit();
 
-	$insStr = "INSERT INTO $tableName (userid, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, service, createWhen)
-				values('$data->userid', '".$data->startDate."','".$data->endDate."',".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'". $data->service."', getdate())";
+	$insStr = "INSERT INTO $tableName (userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
+				values('$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate())";
 	
 	fwrite($fp, "\r\n $insStr");
 	$res = $IAP->safeSQL($insStr, $handle);
@@ -58,8 +57,8 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	fwrite($fp, "\r\n $selStr \r\n ");
 	$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
 	fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
-//	if (isset($data->coverageA) && $data->coverageA > 0)
-//		sendAskForCoverage($lastVidx,  $data);
+	if (isset($data->coverageA) && $data->coverageA > 0)
+		sendAskForCoverage($lastVidx,  $data);
 
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
@@ -73,17 +72,16 @@ function checkServiceOverLap($data){
 				)";
 	fwrite($fp, "\r\n 69  selStr is \r\n  $selStr \r\n");
 	$dB = new getDBData($selStr, $handle);
-	ob_start(); var_dump($dB);$data = ob_get_clean();fwrite($fp, "\r\n dB is ". $data);
 	$i = 0;		
 	$row = array();																				// index for the returned array of overlap tA. 
 	while ($assoc = $dB->getAssoc()){
 		fwrite($fp, "\r\n vidx founr is ". $assoc['vidx']);
 		$row[$i] = $assoc;																	// store the overlapping tA
-		fwrite($fp, "\r\n assoc found is "); $std = print_r($assoc, true); fwrite($fp, $std);
-		ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, $data);
-		$row[$i++] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
+	fwrite($fp, "\r\n assoc found is "); $std = print_r($assoc, true); fwrite($fp, $std);
+	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, $data);
+		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
 	}
-//	fwrite($fp, "\r\n vidx found is "); $std = print_r($row, true); fwrite($fp, $std);
+	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
 
 }	
 
@@ -152,7 +150,7 @@ function sendAskForCoverage($vidx, $data)
        	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 		$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
         $headers .= 'Cc: flonberg@partners.org'. "\r\n";
-		$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
+		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		$sendMail->setHeaders($headers);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
