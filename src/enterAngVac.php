@@ -9,7 +9,12 @@ $handle = connectDB_FL();
 ini_set("error_log", "./Alog/enterAngVacError.txt");
 
 $IAP = new InsertAndUpdates();
-$fp = fopen("./Alog/enterAngVacLog2.txt", "w+");
+$in = 2;
+do {
+$fp = fopen("./Alog/enterAngVacLog".$in.".txt", "w+");
+$in++;
+}
+while ($fp ===FALSE);
 $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
 	$tableName = 'MDtimeAway';
  $body = @file_get_contents('php://input');            // Get parameters from calling cURL POST;
@@ -17,6 +22,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
                                     	// Write out the data to the log
 	$s = print_r($data->startDate, true);                              	// Create pretty form of data
         fwrite($fp, $s);                                     	// Write out the data to the log	
+
 	$ret = array("result"=>"success");
 	$tst3 =  checkOverlap($data);
 	if ($tst3 == 1){
@@ -27,6 +33,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 		exit();
 	}
 	$data = getNeededParams($data);
+
 	$s = print_r($data, true);      fwrite($fp, $s); 
 	if (!isset($data->coverageA)){
 		$retArray = array("test"=>"coverageA");
@@ -35,7 +42,10 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 		echo $jData;
 		exit();
 	}
+
 	checkServiceOverLap($data);	
+	exit();
+
 	$insStr = "INSERT INTO $tableName (userid, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, service, createWhen)
 				values('$data->userid', '".$data->startDate."','".$data->endDate."',".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'". $data->service."', getdate())";
 	
@@ -48,24 +58,32 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	fwrite($fp, "\r\n $selStr \r\n ");
 	$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
 	fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
-	if (isset($data->coverageA) && $data->coverageA > 0)
-		sendAskForCoverage($lastVidx,  $data);
+//	if (isset($data->coverageA) && $data->coverageA > 0)
+//		sendAskForCoverage($lastVidx,  $data);
 
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
 
 function checkServiceOverLap($data){
 	global $handle, $fp, $tableName; 
-	$selStr = "SELECT service,vidx, startDate, endDate FROM $tableName WHERE service = '".$data->service."' 
+	$selStr = "SELECT service,vidx, startDate, endDate, userkey, userid FROM $tableName WHERE service = '".$data->service."' AND reasonIdx < 9
 			AND (
-				(startDate > '".$data->startDate."' AND startDate < '".$data->endDate."' OR  endDate > '".$data->startDate."' AND startDate < '".$data->endDate."') 
+				(startDate >= '".$data->startDate."' AND startDate <= '".$data->endDate."' OR  endDate >= '".$data->startDate."' AND startDate <= '".$data->endDate."') 
 			OR	(startDate < '".$data->startDate."' AND endDate > '".$data->endDate."' ) 
-																																									)";
-	fwrite($fp, "\r\n selStr is \r\n  $selStr \r\n");
+				)";
+	fwrite($fp, "\r\n 69  selStr is \r\n  $selStr \r\n");
 	$dB = new getDBData($selStr, $handle);
+	ob_start(); var_dump($dB);$data = ob_get_clean();fwrite($fp, "\r\n dB is ". $data);
+	$i = 0;		
+	$row = array();																				// index for the returned array of overlap tA. 
 	while ($assoc = $dB->getAssoc()){
-		fwrite($fp, "\r\n vidx found is ".$assoc['vidx']);
+		fwrite($fp, "\r\n vidx founr is ". $assoc['vidx']);
+		$row[$i] = $assoc;																	// store the overlapping tA
+		fwrite($fp, "\r\n assoc found is "); $std = print_r($assoc, true); fwrite($fp, $std);
+		ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, $data);
+		$row[$i++] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
 	}
+//	fwrite($fp, "\r\n vidx found is "); $std = print_r($row, true); fwrite($fp, $std);
 
 }	
 
