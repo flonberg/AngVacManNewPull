@@ -38,6 +38,13 @@ td.green {
 		font-size:smaller;
 		cursor:pointer;	
 }
+td.greenOverlap {
+	background-color:#75ad75;
+	font-size:smaller;
+	cursor:pointer;	
+	border:solid;
+	color: red;
+}
 td.orange {
 	background-color:orange;
 	font-size:smaller;

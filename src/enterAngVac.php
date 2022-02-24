@@ -45,7 +45,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 
 	$theOverlap = checkServiceOverLap($data);	
 
-	$insStr = "INSERT INTO $tableName (overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
+	$insStr = "INSERT INTO $tableName (overlapVidx, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values($theOverlap, '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	
 	fwrite($fp, "\r\n $insStr");
@@ -62,11 +62,12 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
-
+/*
 	function getLastId() {
 		$result = mssql_fetch_assoc(mssql_query("select @@IDENTITY as id"));
 		return $result['id'];
 	}	
+*/
 
 function checkServiceOverLap($data){
 	global $handle, $fp, $tableName; 
@@ -87,10 +88,11 @@ function checkServiceOverLap($data){
 	fwrite($fp, "\r\n assoc found is "); $std = print_r($assoc, true); fwrite($fp, $std);
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, $data);
 		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
+		return $assoc['vidx'];
 	}
 	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
 	fwrite($fp, "\r\n 92 overlap is $overlap \r\n");
-	return $overlap;
+	return 0;
 
 }	
 
@@ -135,7 +137,7 @@ function sendAskForCoverage($vidx, $data)
 	$mailAddress = $data->CovererEmail;								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$subj = "Coverage for Time Away";
-	$msg =    "Dr.".$data->CovererLastName.": <br> Dr.". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
+	$msg =    "Dr.".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
 	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
 		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
 	$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
