@@ -561,6 +561,13 @@ private validDate(dateString){
       return 'todayCell'
   }
 
+  getNameClass(d){
+    console.log("565 in getNameClass %o", d);
+    if (d['overlap'] == 1)
+      return "orangeOverlap";
+    return d['class'];
+  }
+
   getAcceptanceClass(n){
     console.log("501 n is %o", n);
     if (n == 1)

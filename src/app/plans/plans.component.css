@@ -43,6 +43,13 @@ td.orange {
 	font-size:smaller;
 	cursor:pointer;	
 }
+td.orangeOverlap {
+	background-color:orange;
+	font-size:smaller;
+	cursor:pointer;	
+	border:solid;
+	color: red;
+}
 td.unApproved {
 	background-color:white;
 	font-size:smaller;
