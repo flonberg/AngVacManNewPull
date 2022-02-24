@@ -43,10 +43,10 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 		exit();
 	}
 
-	checkServiceOverLap($data);	
+	$theOverlap = checkServiceOverLap($data);	
 
-	$insStr = "INSERT INTO $tableName (userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
-				values('$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
+	$insStr = "INSERT INTO $tableName (overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
+				values($theOverlap, '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	
 	fwrite($fp, "\r\n $insStr");
 	$res = $IAP->safeSQL($insStr, $handle);
@@ -70,6 +70,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 
 function checkServiceOverLap($data){
 	global $handle, $fp, $tableName; 
+	$overlap = 0;
 	$selStr = "SELECT service,vidx, startDate, endDate, userkey, userid FROM $tableName WHERE service = '".$data->service."' AND reasonIdx < 9
 			AND (
 				(startDate >= '".$data->startDate."' AND startDate <= '".$data->endDate."' OR  endDate >= '".$data->startDate."' AND startDate <= '".$data->endDate."') 
@@ -80,6 +81,7 @@ function checkServiceOverLap($data){
 	$i = 0;		
 	$row = array();																				// index for the returned array of overlap tA. 
 	while ($assoc = $dB->getAssoc()){
+		$overlap = 1;
 		fwrite($fp, "\r\n vidx founr is ". $assoc['vidx']);
 		$row[$i] = $assoc;																	// store the overlapping tA
 	fwrite($fp, "\r\n assoc found is "); $std = print_r($assoc, true); fwrite($fp, $std);
@@ -87,6 +89,8 @@ function checkServiceOverLap($data){
 		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
 	}
 	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
+	fwrite($fp, "\r\n 92 overlap is $overlap \r\n");
+	return $overlap;
 
 }	
 

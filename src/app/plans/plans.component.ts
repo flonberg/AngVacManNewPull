@@ -152,7 +152,7 @@ export class PlansComponent implements OnInit {
         
       })
     }    
-    unsorted() { }
+    unsorted() { }                                                      // user by alphabetization of the data by service 
     
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
@@ -202,8 +202,23 @@ export class PlansComponent implements OnInit {
         byServArr[serv][currInd+1] = this .vacData[i]
       }  
     }
-    console.log("201 byServArr is %o", byServArr)
-  } 
+   console.log("201 byServArr is %o", byServArr)
+ /*   for(let i=0; i< byServArr.length; i++){
+      if (byServArr[i]){
+      let len2 = byServArr[i].length ;
+      if (len2 < 2)
+        continue;
+      console.log("208 len2 is %o", len2);
+      if (byServArr[i] && byServArr[i].length > 1){
+        //   console.log("207 test if %o", byServArr[i])
+        //   for (var item of byServArr[i]){
+        //       console.log("210 item is %o", item )
+        //     }
+            }
+          }
+        }
+        */
+    }
   private getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{

@@ -21,7 +21,7 @@
   </td>
 </tr>
 
-<tr *ngFor = "let item of vacData | keyvalue: unsorted" > {{ zeroDayNum() }}
+<tr *ngFor = "let item of vacData | keyvalue: unsorted" > {{ zeroDayNum() }}  <!-- the 'unsorted does the alphabetization of the serivces'-->
   <td   *ngFor='let loop3 of counter(item.value[0].daysTillStartDate ) ;let ip= index' [className] = 'getClass( item.value[9][0][ip])' > {{ showService(loop3, item.value[0]['service']) }} </td>
   <td [attr.colspan] = 'item.value[0].vacLength' [className]= "item.value[0]['class'] "  (click) = "showEditFunc(item.value[0])"   >   {{ item.value[0]['LastName'] }}  </td>
 

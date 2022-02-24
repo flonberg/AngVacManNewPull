@@ -42,8 +42,10 @@ function getMDtAs(){
 	$i = 0;
 	$servArray = array('1'=>14,'2'=>13,'3'=>3,'4'=>5,'5'=>4,'6'=>13, '7'=>6,'8'=>2,'9'=>1);
 	$vacGraph = array();
-	$serviceGroup = array();																// use to keep track of number of tA's in each service
+	$serviceGroup = array();	
+	$index = 0;															// use to keep track of number of tA's in each service
 	while ($assoc = $dB->getAssoc()){
+		$vacGraph[$i][$assoc['userid']]['index'] = $i;
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['service'] = $MDs[$UserKeys[$assoc['userid']]]['service'];
 		if (!isset($serviceGroup[$MDs[$UserKeys[$assoc['userid']]]['service']][$assoc['userid']]))				// if there is NOT tA in this serviceGroup
@@ -53,6 +55,7 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['serviceAlph'] = $servArray[$MDs[$UserKeys[$assoc['userid']]]['service']];
 		$vacGraph[$i][$assoc['userid']]['UserKey'] = $UserKeys[$assoc['userid']];
 		$vacGraph[$i][$assoc['userid']]['userid'] = $assoc['userid'];
+		$vacGraph[$i][$assoc['userid']]['overlap'] = $assoc['overlap'];
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
 		$vacGraph[$i][$assoc['userid']]['reasonIdx'] = $assoc['reasonIdx'];
 		$vacGraph[$i][$assoc['userid']]['vidx'] = $assoc['vidx'];
