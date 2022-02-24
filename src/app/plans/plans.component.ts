@@ -102,6 +102,7 @@ export class PlansComponent implements OnInit {
       this .getTheData();
       this .getServiceMDs(this .userid)
       this. getMDService();
+
     })
    }
 
@@ -172,10 +173,11 @@ export class PlansComponent implements OnInit {
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
    */  
-  public getTheData(){
+  private getTheData(){
     console.log("68 url is %o", this .getVacURL)
     this .http.get(this .getVacURL).subscribe(res =>{
       this .vacData = res['tAs'];
+      this .sortByService();
       this .coverers = res['coverers']
         console.log("165 vacData is %o", this. vacData)
         console.log("166 coverers is %o", this. coverers)
@@ -185,8 +187,24 @@ export class PlansComponent implements OnInit {
     //    this .vacData[tRow][10] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
       }  
     })
-  }   
-  getServiceMDs(userid){
+  }  
+  private sortByService(){
+    let byServArr = Array();
+    for(let i=0; i< this .vacData.length; i++){
+    //  console.log(this .vacData[i][0]['service']  ); //use i instead of 0
+      let serv = this .vacData[i][0]['service'] ;
+      if (!byServArr[serv]){
+        byServArr[serv] = Array();
+        byServArr[serv][0] = this .vacData[i]
+      }     
+      else {
+        let currInd = byServArr[serv].length;
+        byServArr[serv][currInd+1] = this .vacData[i]
+      }  
+    }
+    console.log("201 byServArr is %o", byServArr)
+  } 
+  private getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
@@ -195,12 +213,10 @@ export class PlansComponent implements OnInit {
           this .isUserAnMD = true;
               }    
 console.log("198 serviceMDs is %o", this. serviceMDs)
-
           })
-
   }
 
-  getMDService(){
+ private getMDService(){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
     this .http.get(url).subscribe(res =>{
       this. MDservice = res;
