@@ -387,12 +387,14 @@ private deleteTa(ev){
   this .tAparams.reasonIdx = 99;
   this .tAparams. userid = this. vacEdit. userid;
   this .stDt = ""; 
+console.log("390 in deleteTa tAparams is %o", this .tAparams)  
   this .saveEdits(ev);
-  location.reload();
+//  location.reload();
 
 }
 private saveEdits(ev, detail?) {
   this .tAparams.vidx = +this .vidxToEdit;
+console.log("396 in saveEdits tAparams is %o", this .tAparams)  
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
   var emailParam = 0;                                             // determines IF and WHICH email 2b sent
   if (detail == 'CovAccept'){
