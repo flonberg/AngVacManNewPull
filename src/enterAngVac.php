@@ -62,14 +62,17 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	if ($countOverlap > 0){																						// if there is a service overlap
 		$updateStr = "UPDATE TOP(1) MDtimeAway SET overlap = '1', overlapVidx = '".$lastVidx  ."' WHERE vidx = '".$overlapVidx."'";
 		fwrite($fp, "\r\n updateStr is \r\n ". $updateStr);
-		$res = sqlsrv_query($handle, $updateStr);
+		$iAU = new InsertAndUpdates();
+		$iAU->safeSql( $updateStr, $handle);
 		ob_start(); var_dump($res);$data = ob_get_clean();fwrite($fp, $data);
 	}
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-	$selStr = "SELECT UserKey FROM users WHERE UserID = '". $data->userid."'";					// get the UserKey of the GoAwayer
-	fwrite($fp, "\r\n $selStr \r\n ");
-	$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
-	fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
+	if (isset($data) && is_object($data)){
+		$selStr = "SELECT UserKey FROM users WHERE UserID = '". $data->userid."'";					// get the UserKey of the GoAwayer
+		fwrite($fp, "\r\n $selStr \r\n ");
+		$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
+		fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
+	}
 //	if (isset($data->coverageA) && $data->coverageA > 0)
 //		sendAskForCoverage($lastVidx,  $data);
 
