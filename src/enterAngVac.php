@@ -45,9 +45,11 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$overlap = '0';
 	$theOverlap = checkServiceOverLap($data);												// the vidx of the overlapping tA
 	$overlapVidx = '0';
-	if (count($theOverlap) > 0){
+	$countOverlap = count($theOverlap);
+	fwrite($fp, "\r\n countOverlap is $countOverlap");
+	if ($countOverlap > 0){
 		$overlap = '1';
-		$overlapVidx = 	$theOverlap[0]['vidx'];		
+		$overlapVidx = 	$theOverlap[0]['vidx'];	
 		}																													// set the overlap datum 
 
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
@@ -57,6 +59,12 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$res = $IAP->safeSQL($insStr, $handle);
 	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";					// get the vidx of last inserted record
 	$lastVidx = getSingle($selStr, 'vidx', $handle);
+	if ($countOverlap > 0){																						// if there is a service overlap
+		$updateStr = "UPDATE TOP(1) MDtimeAway SET overlap = '1', overlapVidx = '".$lastVidx  ."' WHERE vidx = '".$overlapVidx."'";
+		fwrite($fp, "\r\n updateStr is \r\n ". $updateStr);
+		$res = sqlsrv_query($handle, $updateStr);
+		ob_start(); var_dump($res);$data = ob_get_clean();fwrite($fp, $data);
+	}
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	$selStr = "SELECT UserKey FROM users WHERE UserID = '". $data->userid."'";					// get the UserKey of the GoAwayer
 	fwrite($fp, "\r\n $selStr \r\n ");
@@ -89,15 +97,8 @@ function checkServiceOverLap($data){
 	fwrite($fp, "\r\n 69  selStr is \r\n  $selStr \r\n");
 	$dB = new getDBData($selStr, $handle);
 	while ($assoc = $dB->getAssoc()){
-		fwrite("fp", "\r\n assoc is \r\n");
-		ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, $data);
-		$overlap = 1;
-		fwrite($fp, "\r\n vidx founr is ". $assoc['vidx']);
 		$row[$i] = $assoc;																	// store the overlapping tA
-	fwrite($fp, "\r\n assoc found is "); $std = print_r($assoc, true); fwrite($fp, $std);
-	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, $data);
 		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
-		//return $assoc['vidx'];
 	}
 	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
 	return $row;
