@@ -5,14 +5,13 @@ $handle = connectDB_FL();
 ini_set("error_log", "./Alog/editAngVacError.txt");
 $IAP = new InsertAndUpdates();
 
-$testChange = 3;		// test for revert
 	$fp = fopen("./Alog/editAngVacLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
 	$data = getNeededParams($data);															// get additional param needed
+	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
 	
-
 	if (isset($data['accepted']) && $data['accepted'] == 0){								// Coverer has DECLINED coverage
 		sendDeclineEmail($data);
 		fwrite($fp, "\r\n Send	ing Decline email");
@@ -50,7 +49,12 @@ $testChange = 3;		// test for revert
 	$upDtStr .= " WHERE vidx = ".$data['vidx'];
 	fwrite($fp, " 59  ". $upDtStr );
 	$IAP->safeSQL( $upDtStr, $handle);
-	if (isset($data['reasonIdx']) && $data['reasonIdx']=='99'){
+	if (isset($data['reasonIdx']) && $data['reasonIdx']=='99'){		// This is DELETE request
+		if (isset($data['overlapVidx']) && $data['overlapVidx'] > 0){		// there is a Overlap tA
+			$updateStr = "UPDATE TOP(1) MDtimeAway SET overlap = 0, overlapVidx = 0 WHERE vidx = '".$data['overlapVidx']."'";
+			$IAP->safeSQL($updateStr, $handle);
+
+		}
 		sendDeleteTaEmail($data);
 		exit();
 	}	
@@ -69,7 +73,6 @@ $testChange = 3;		// test for revert
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Time Away Deleted";
 	
-
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." has canceled the Time Away starting on $startDateString for which you were the coverage";
 		$message = '
 			<html>
@@ -92,17 +95,19 @@ $testChange = 3;		// test for revert
 	}
 	function getNeededParams($data){
 		global $handle, $fp;
-		$selStr = "SELECT userid, WTM_Change_Needed, WTM_self, startDate, endDate, coverageA FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
+		$selStr = "SELECT userid, overlap, overlapVidx, WTM_Change_Needed, WTM_self, startDate, endDate, coverageA FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
 		fwrite($fp, "\r\n $selStr \r\n");
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
 		$data['userid'] = $assoc['userid'];
-		$data['dBstartDate'] = $assoc['startDate'];
+		$data['dBstartDate'] = $assoc['startDate'];							//  used to inform the Coverer of the StartDate of the changed tA. 
 		$data['goAwayerUserKey'] =  getSingle("SELECT UserKey FROM users WHERE UserID ='". $assoc['userid']."'",  "UserKey", $handle);		
 		$data['CovererUserKey'] =  $assoc['coverageA'];		// get name of GoAwayer
 		$data['CovererUserId'] =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $assoc['coverageA'],  "UserID", $handle);		
 		$data['CovererLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['coverageA']  ."'", "LastName", $handle);			// get name of GoAwayer
 		$data['goAwayerLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['goAwayerUserKey']  ."'", "LastName", $handle);			// get name of GoAwayer
+		$data['overlap'] = $assoc['overlap'];
+		$data['overlapVidx'] = $assoc['overlapVidx'];
 		return $data;
 	}
 	function sendTaChangedMail($data){

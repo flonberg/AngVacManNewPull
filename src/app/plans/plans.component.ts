@@ -388,7 +388,7 @@ private deleteTa(ev){
   this .tAparams. userid = this. vacEdit. userid;
   this .stDt = ""; 
 console.log("390 in deleteTa tAparams is %o", this .tAparams)  
-  this .saveEdits(ev);
+  this .saveEdits(1);
 //  location.reload();
 
 }
@@ -414,6 +414,8 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
   var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php?email='+emailParam;  // set endPoint
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
+      if (ev == 1)
+        location.reload();
   })
   this .changesSavedShow = true;
   this .showAcceptance = false; 
