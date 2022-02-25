@@ -44,11 +44,14 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	}
 	$overlap = '0';
 	$theOverlap = checkServiceOverLap($data);												// the vidx of the overlapping tA
-	if ($theOverlap > 0)
-		$overlap = '1';																		// set the overlap datum 
+	$overlapVidx = '0';
+	if (count($theOverlap) > 0){
+		$overlap = '1';
+		$overlapVidx = 	$theOverlap[0]['vidx'];		
+		}																													// set the overlap datum 
 
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
-				values($theOverlap, $overlap,  '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
+				values(".$overlapVidx.", $overlap,  '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	
 	fwrite($fp, "\r\n $insStr");
 	$res = $IAP->safeSQL($insStr, $handle);
@@ -77,10 +80,12 @@ function checkServiceOverLap($data){
 	global $handle, $fp, $tableName; 
 	$overlap = 0;	$i = 0;		
 	$row = array();		
-	//$selStr = "SELECT * FROM $tableName WHERE service = '".$data->service."' AND reasonIdx < 9 AND (startDate >= '".$data->startDate."' AND startDate <= '".$data->endDate."' OR  endDate >= '".$data->startDate."' AND startDate <= '".$data->endDate."')";
-	$selStr = "SELECT * FROM MDtimeAway WHERE service = '".$data->service."' AND reasonIdx < 9 AND (( startDate >= '".$data->startDate."'OR  endDate >= '".$data->startDate."')
-		OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'      )				
-		)";
+
+	$selStr = "SELECT vidx, userid, startDate, endDate  FROM MDtimeAway WHERE service = '".$data->service."' AND reasonIdx < 9 AND (
+		( startDate >= '".$data->startDate."' AND  startDate <= '".$data->endDate."')
+		OR	( endDate >= '".$data->startDate."' AND  endDate <= '".$data->endDate."')
+		OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'  )
+			)";
 	fwrite($fp, "\r\n 69  selStr is \r\n  $selStr \r\n");
 	$dB = new getDBData($selStr, $handle);
 	while ($assoc = $dB->getAssoc()){
@@ -92,12 +97,10 @@ function checkServiceOverLap($data){
 	fwrite($fp, "\r\n assoc found is "); $std = print_r($assoc, true); fwrite($fp, $std);
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, $data);
 		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
-		return $assoc['vidx'];
+		//return $assoc['vidx'];
 	}
 	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
-	fwrite($fp, "\r\n 92 overlap is $overlap \r\n");
-	return 0;
-
+	return $row;
 }	
 
 function checkOverlap($data){
