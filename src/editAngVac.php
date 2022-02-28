@@ -89,9 +89,7 @@ $IAP = new InsertAndUpdates();
 			$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
 			$headers .= 'Cc: flonberg@partners.org'. "\r\n";	
 			$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		//	$sendMail->setHeaders($headers);	
 			$sendMail->send();	
-
 	}
 	function getNeededParams($data){
 		global $handle, $fp;

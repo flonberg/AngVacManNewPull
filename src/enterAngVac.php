@@ -47,10 +47,11 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$overlapVidx = '0';
 	$countOverlap = count($theOverlap);
 	fwrite($fp, "\r\n countOverlap is $countOverlap");
-	if ($countOverlap > 0){
-		$overlap = '1';
-		$overlapVidx = 	$theOverlap[0]['vidx'];	
-		}																													// set the overlap datum 
+	if ($countOverlap > 0){																	// there IS an overlap
+		$overlap = '1';																		// set overlap in 2b Entered tA
+		$overlapVidx = 	$theOverlap[0]['vidx'];												// set overlapping vidx in 2B entered tA
+		sendServiceOverlapEmail($theOverlap[0], $data->startDate, $data->endDate);
+		}																					// set the overlap datum 
 
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values(".$overlapVidx.", $overlap,  '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
@@ -180,6 +181,20 @@ function sendAskForCoverage($vidx, $data)
 		$sendMail->send();	
 		exit();
 }
+function sendServiceOverlapEmail($oData, $newStartDate, $newEndDate){
+	global $handle, $fp;
+	fwrite($fp, "\r\n overlap vids is \r\n");
+	ob_start(); var_dump($oData);$data = ob_get_clean();fwrite($fp, $data);
+	fwrite($fp, "\r\n newStartDate is  is \r\n");
+	ob_start(); var_dump($newStartDate);$data = ob_get_clean();fwrite($fp, $data);
+	$nSD = new DateTime($newStartDate);
+	$tst = $oData['startDate'] == $nSD;
+	fwrite($fp, "\r\n comparing first date \r\n");
+	ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
+
+}
+
+
 function getNeededParams1($data){
 	global $handle;
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$data->userid."'", "UserKey", $handle);			// get name of GoAwayer
