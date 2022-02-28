@@ -50,7 +50,8 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	if ($countOverlap > 0){																	// there IS an overlap
 		$overlap = '1';																		// set overlap in 2b Entered tA
 		$overlapVidx = 	$theOverlap[0]['vidx'];												// set overlapping vidx in 2B entered tA
-		sendServiceOverlapEmail($theOverlap[0], $data->startDate, $data->endDate);
+		sendServiceOverlapEmail($theOverlap[0], $data);
+	//	sendServiceOverlapEmail($theOverlap[0], $data->startDate, $data->endDate);
 		}																					// set the overlap datum 
 
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
@@ -187,37 +188,36 @@ function sendAskForCoverage($vidx, $data)
 }
 /**
  * $oData is the tA which is found to be overlapping. newStartDate and newEndDate or the dates of tA  2B inserted. 
+ * 
  */
-function sendServiceOverlapEmail($oData, $newStartDate, $newEndDate){
+function sendServiceOverlapEmail($oData, $newTa){
 	global $handle, $fp;
-	$newStartDateDate = new DateTime(($newStartDate));
-	$newEndDateDate = new DateTime(($newEndDate));
-	$overLapDays = array();
-	fwrite($fp, "\r\n overlap vids is \r\n");
-	ob_start(); var_dump($oData);$data = ob_get_clean();fwrite($fp, $data);
-	fwrite($fp, "\r\n newStartDate is  is \r\n");
-	ob_start(); var_dump($newStartDate);$data = ob_get_clean();fwrite($fp, $data);
-	$nSD = new DateTime($newStartDate);											// nSD is earlies date of newtA
-	fwrite($fp, "\r\n newStartDate is  is \r\n");
-	ob_start(); var_dump($nSD);$data = ob_get_clean();fwrite($fp, "\r\n nSD is \r\n ".$data);
-	$i = 0;
+	$newStartDateDate = new DateTime(($newTa->startDate));
+	$newEndDateDate = new DateTime(($newTa->endDate));
+	$overLapDays = array();																		// make array to hold overlapDays
+	$i = 0;																						// counter
 	do {
-
 		fwrite($fp, "\r\n comparing ". $newStartDateDate->format("Y-m-d'") ." to between ". $oData['startDate']->format("Y-m-d") ." and ". $oData['endDate']->format("Y-m-d")  ."\r\n");
-		$tst =  $newStartDateDate >=   $oData['startDate']  && $newStartDateDate <= $oData['endDate'];											// compare it to the startDate of overlapping tA
+		$tst =  $newStartDateDate >=   $oData['startDate']  && $newStartDateDate <= $oData['endDate'];								// compare it to the startDate of overlapping tA
 		ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
 		if ($tst){
 			$overLapDays[$i] = $newStartDateDate->format("Y-m-d'") ; 
 			ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
 			}
 			$newStartDateDate->modify("+ 1 day");
-		fwrite($fp, "\r\n modifies dare is ". $nSD->format('Y-m-d'));
-		if ($i++ > 6)
+		if ($i++ > 16)																			// safety 
 			break;
 		}
-		while ( $newStartDateDate <= $newEndDateDate );
+		while ( $newStartDateDate <= $newEndDateDate );											// 
 		ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
-	
+		//  get data on overlap tA 
+		$selStr = "SELECT userid, startDate, endDate, userkey, physicians.LastName 			
+        	FROM MDtimeAway 
+        	INNER JOIN physicians ON MDtimeAway.userkey = physicians.UserKey
+        	WHERE MDtimeAway.vidx = '".$oData['vidx']."'";
+		$dB = new getDBData($selStr, $handle);
+		$assoc = $dB->getAssoc();
+		ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 
 }
 
