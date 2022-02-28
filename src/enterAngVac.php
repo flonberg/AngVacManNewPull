@@ -20,8 +20,8 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
  $body = @file_get_contents('php://input');            // Get parameters from calling cURL POST;
 	$data = json_decode($body);
                                     	// Write out the data to the log
-	$s = print_r($data, true);                              	// Create pretty form of data
-        fwrite($fp, $s);                                     	// Write out the data to the log	
+//	$s = print_r($data, true);                              	// Create pretty form of data
+  //      fwrite($fp, $s);                                     	// Write out the data to the log	
 
 	$ret = array("result"=>"success");
 	$tst3 =  checkOverlap($data);
@@ -34,7 +34,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	}
 	$data = getNeededParams($data);
 
-	$s = print_r($data, true);      fwrite($fp, $s); 
+	//$s = print_r($data, true);      fwrite($fp, $s); 
 	if (!isset($data->coverageA)){
 		$retArray = array("test"=>"coverageA");
 		fwrite($fp, "\r\n  32 ffff \r\n");
@@ -65,7 +65,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 		fwrite($fp, "\r\n updateStr is \r\n ". $updateStr);
 		$iAU = new InsertAndUpdates();
 		$iAU->safeSql( $updateStr, $handle);
-		ob_start(); var_dump($res);$data = ob_get_clean();fwrite($fp, $data);
+	//	ob_start(); var_dump($res);$data = ob_get_clean();fwrite($fp, $data);
 	}
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	if (isset($data) && is_object($data)){
@@ -104,7 +104,7 @@ function checkServiceOverLap($data){
 		$row[$i] = $assoc;																	// store the overlapping tA
 		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
 	}
-	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
+//	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
 	return $row;
 }	
 
@@ -126,7 +126,8 @@ function checkOverlap($data){
 		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate > '$todayString'  AND   userid='".$data->userid."'";
 		fwrite($fp, "\r\n $selStr ");
 		$dB = new getDBData( $selStr, $handle);
-		ob_start(); var_dump($dB);$data = ob_get_clean();fwrite($fp, $data);
+	//	ob_start(); var_dump($dB);$data = ob_get_clean();fwrite($fp, $data);
+		$i = 0;
 		while ($assoc = $dB->getAssoc()){
 			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
 			fwrite($fp, "\r\n  Comparing tA startDate = $newStartDateString to be GREATER than  $cmpStartDate and LESS than  $cmpEndDate");
@@ -136,6 +137,9 @@ function checkOverlap($data){
 				fwrite($fp, "\r\n New tA ENCLOSED an existing tA OverLap detected so NOT INSERT \r\n ");
 				return 1;
 			}
+			if ($i++ > 10 )
+				break;
+			//		ob_start(); var_dump($newStartDate);$data = ob_get_clean();fwrite($fp, $data);
 		}
 		return 0;				// there is NOT an overlap
 	}
@@ -181,16 +185,29 @@ function sendAskForCoverage($vidx, $data)
 		$sendMail->send();	
 		exit();
 }
+/**
+ * $oData is the tA which is found to be overlapping. newStartDate and newEndDate or the dates of tA  2B inserted. 
+ */
 function sendServiceOverlapEmail($oData, $newStartDate, $newEndDate){
 	global $handle, $fp;
 	fwrite($fp, "\r\n overlap vids is \r\n");
 	ob_start(); var_dump($oData);$data = ob_get_clean();fwrite($fp, $data);
 	fwrite($fp, "\r\n newStartDate is  is \r\n");
 	ob_start(); var_dump($newStartDate);$data = ob_get_clean();fwrite($fp, $data);
-	$nSD = new DateTime($newStartDate);
-	$tst = $oData['startDate'] == $nSD;
-	fwrite($fp, "\r\n comparing first date \r\n");
-	ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
+	$nSD = new DateTime($newStartDate);											// nSD is earlies date of newtA
+	fwrite($fp, "\r\n newStartDate is  is \r\n");
+	ob_start(); var_dump($nSD);$data = ob_get_clean();fwrite($fp, "\r\n nSD is \r\n ".$data);
+	$i = 0;
+	do {
+		$tst = $oData['startDate'] == $nSD;											// compare it to the startDate of overlapping tA
+		fwrite($fp, "\r\n comparing ". $oData['startDate']->date ." tp ". $nSD->format('Y-m-d') ."\r\n");
+		ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
+		$nSD->modify("+ 1 day");
+		fwrite($fp, "\r\n modifies dare is ". $nSD->format('Y-m-d'));
+		if ($i++ > 6)
+			break;
+		}
+		while ($i < 6);
 
 }
 
@@ -227,7 +244,7 @@ function enterCovsInVacCov($regDuties, $dows, $userkey, $vidx)
 {
 	global $handle, $fp, $dosimetrist, $IAP;
 	$now = date("Y-m-d h:i:s");
-   								fwrite($fp, PHP_EOL );fwrite($fp, $now);  fwrite($fp, PHP_EOL ); fwrite($fp, "userkey is $userkey " );
+   		fwrite($fp, PHP_EOL );fwrite($fp, $now);  fwrite($fp, PHP_EOL ); fwrite($fp, "userkey is $userkey " );
 								$dump = print_r($_GET, true);
    								fwrite($fp, PHP_EOL );fwrite($fp, $now);  fwrite($fp, PHP_EOL ); fwrite($fp, "GET is $dump " );
 									///////////   this works for both NEW and EDITED  timeAways  \\\\\\\\\\\\\
