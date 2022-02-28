@@ -190,6 +190,9 @@ function sendAskForCoverage($vidx, $data)
  */
 function sendServiceOverlapEmail($oData, $newStartDate, $newEndDate){
 	global $handle, $fp;
+	$newStartDateDate = new DateTime(($newStartDate));
+	$newEndDateDate = new DateTime(($newEndDate));
+	$overLapDays = array();
 	fwrite($fp, "\r\n overlap vids is \r\n");
 	ob_start(); var_dump($oData);$data = ob_get_clean();fwrite($fp, $data);
 	fwrite($fp, "\r\n newStartDate is  is \r\n");
@@ -199,15 +202,22 @@ function sendServiceOverlapEmail($oData, $newStartDate, $newEndDate){
 	ob_start(); var_dump($nSD);$data = ob_get_clean();fwrite($fp, "\r\n nSD is \r\n ".$data);
 	$i = 0;
 	do {
-		$tst = $oData['startDate'] == $nSD;											// compare it to the startDate of overlapping tA
-		fwrite($fp, "\r\n comparing ". $oData['startDate']->date ." tp ". $nSD->format('Y-m-d') ."\r\n");
+
+		fwrite($fp, "\r\n comparing ". $newStartDateDate->format("Y-m-d'") ." to between ". $oData['startDate']->format("Y-m-d") ." and ". $oData['endDate']->format("Y-m-d")  ."\r\n");
+		$tst =  $newStartDateDate >=   $oData['startDate']  && $newStartDateDate <= $oData['endDate'];											// compare it to the startDate of overlapping tA
 		ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
-		$nSD->modify("+ 1 day");
+		if ($tst){
+			$overLapDays[$i] = $newStartDateDate->format("Y-m-d'") ; 
+			ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
+			}
+			$newStartDateDate->modify("+ 1 day");
 		fwrite($fp, "\r\n modifies dare is ". $nSD->format('Y-m-d'));
 		if ($i++ > 6)
 			break;
 		}
-		while ($i < 6);
+		while ( $newStartDateDate <= $newEndDateDate );
+		ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
+	
 
 }
 
