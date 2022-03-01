@@ -19,96 +19,79 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$tableName = 'MDtimeAway';
  $body = @file_get_contents('php://input');            // Get parameters from calling cURL POST;
 	$data = json_decode($body);
-                                    	// Write out the data to the log
-//	$s = print_r($data, true);                              	// Create pretty form of data
-  //      fwrite($fp, $s);                                     	// Write out the data to the log	
+	$s = print_r($data, true);   fwrite($fp, $s);                             	// Create pretty form of data	
 
-	$ret = array("result"=>"success");
-	$tst3 =  checkOverlap($data);
+	$ret = array("result"=>"success");											// default response
+	$tst3 =  checkOverlap($data);												// check SELF overlap
+	// Check SELF OVERLAP
 	if ($tst3 == 1){
-		$rArray = array("result"=>0);
-		$rData = json_encode($rArray);
-		echo $rData;
-		fwrite($fp, "\r\n overlap ". $rData ." \r\n");
-		exit();
+		$rArray = array("result"=>0);											// signal for Display Warning Message						
+		$rData = json_encode($rArray);  echo $rData;							// send back responst
+		fwrite($fp, "\r\n overlap ". $rData ." \r\n");							// log response
+		exit();																	// DO NOTHING ELSE
 	}
-	$data = getNeededParams($data);
-
-	//$s = print_r($data, true);      fwrite($fp, $s); 
-	if (!isset($data->coverageA)){
-		$retArray = array("test"=>"coverageA");
-		fwrite($fp, "\r\n  32 ffff \r\n");
-		$jData = json_encode($retArray);
-		echo $jData;
-		exit();
+	// Check is Coverage is Nominated
+	if (!isset($data->coverageA)){												// if NO Coverage
+		$retArray = array("test"=>"coverageA");									// compose response message array
+		$jData = json_encode($retArray); echo $jData;							// retrun response
+		exit();																	// DO NOTHING ELSE
 	}
-	$overlap = '0';
-	$theOverlap = checkServiceOverLap($data);												// the vidx of the overlapping tA
-	$overlapVidx = '0';
-	$countOverlap = count($theOverlap);
-	fwrite($fp, "\r\n countOverlap is $countOverlap");
-	if ($countOverlap > 0){																	// there IS an overlap
-		$overlap = '1';																		// set overlap in 2b Entered tA
-		$overlapVidx = 	$theOverlap[0]['vidx'];												// set overlapping vidx in 2B entered tA
-		sendServiceOverlapEmail($theOverlap[0], $data);
-	//	sendServiceOverlapEmail($theOverlap[0], $data->startDate, $data->endDate);
-		}																					// set the overlap datum 
-
+	$data = getNeededParams($data);												// get Aux Params for Emails
+	$overlap = '0';$overlapVidx = '0';											// default values
+	$theOverlap = checkServiceOverLap($data);									// the vidx of the overlapping tA
+	
+	$countOverlap = count($theOverlap);											// number of overlaps
+	if ($countOverlap > 0){														// there IS an overlap
+		$overlap = '1';															// set overlap in 2b Entered tA
+		$overlapVidx = 	$theOverlap[0]['vidx'];									// set overlapping vidx in 2B entered tA
+		sendServiceOverlapEmail($theOverlap[0], $data);							// send Email to People who need to know about overlap
+		$updateStr = "UPDATE TOP(1) MDtimeAway SET overlap = '1', overlapVidx = '".$lastVidx  ."' WHERE vidx = '".$overlapVidx."'";	// Update the Existing Overlapping tA
+		fwrite($fp, "\r\n updateStr for existing overlapping tA  is \r\n ". $updateStr);
+		$IAP->safeSql( $updateStr, $handle);
+	}																				
+	// INSERT the new tA
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values(".$overlapVidx.", $overlap,  '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
-	
 	fwrite($fp, "\r\n $insStr");
 	$res = $IAP->safeSQL($insStr, $handle);
-	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";					// get the vidx of last inserted record
+	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
 	$lastVidx = getSingle($selStr, 'vidx', $handle);
-	if ($countOverlap > 0){																						// if there is a service overlap
-		$updateStr = "UPDATE TOP(1) MDtimeAway SET overlap = '1', overlapVidx = '".$lastVidx  ."' WHERE vidx = '".$overlapVidx."'";
-		fwrite($fp, "\r\n updateStr is \r\n ". $updateStr);
-		$iAU = new InsertAndUpdates();
-		$iAU->safeSql( $updateStr, $handle);
-	//	ob_start(); var_dump($res);$data = ob_get_clean();fwrite($fp, $data);
-	}
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-	if (isset($data) && is_object($data)){
+
+	/*if (isset($data) && is_object($data)){
 		$selStr = "SELECT UserKey FROM users WHERE UserID = '". $data->userid."'";					// get the UserKey of the GoAwayer
 		fwrite($fp, "\r\n $selStr \r\n ");
 		$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
 		fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
 	}
+	*/
 //	if (isset($data->coverageA) && $data->coverageA > 0)
 //		sendAskForCoverage($lastVidx,  $data);
-
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
-/*
-	function getLastId() {
-		$result = mssql_fetch_assoc(mssql_query("select @@IDENTITY as id"));
-		return $result['id'];
-	}	
-*/
+
 /**
  * Checks for an existing tA in the same service as the  2 B entered tA which overlaps. 
  */
 function checkServiceOverLap($data){
 	global $handle, $fp, $tableName; 
-	$overlap = 0;	$i = 0;		
-	$row = array();		
-
+	$overlap = 0;	$i = 0;		$row = array();								// set up		
 	$selStr = "SELECT vidx, userid, startDate, endDate  FROM MDtimeAway WHERE service = '".$data->service."' AND reasonIdx < 9 AND (
 		( startDate >= '".$data->startDate."' AND  startDate <= '".$data->endDate."')
 		OR	( endDate >= '".$data->startDate."' AND  endDate <= '".$data->endDate."')
 		OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'  )
 			)";
-	fwrite($fp, "\r\n 69  selStr is \r\n  $selStr \r\n");
+	fwrite($fp, "\r\n 84  selStr is \r\n  $selStr \r\n");
 	$dB = new getDBData($selStr, $handle);
 	while ($assoc = $dB->getAssoc()){
 		$row[$i] = $assoc;																	// store the overlapping tA
 		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
 	}
-//	fwrite($fp, "\r\n tAs found are "); $std = print_r($row, true); fwrite($fp, $std);
 	return $row;
 }	
-
+/**
+ * Check for overlap of existing tA for the given goAwayer
+ */
 function checkOverlap($data){
 		global $handle, $fp, $tableName; 
 		$tString = $data->endDate;
@@ -117,19 +100,18 @@ function checkOverlap($data){
 			if (!isset($data->$val)  && strlen($data->$val < 1)){
 				fwrite($fp, "\r\n $key  -- $val datum missing");
 				return false;
-			//	return true;
 			}
 		}
 		$newStartDateTime = new DateTime($data->startDate);		$newEndDateTime = new DateTime($data->endDate);
 		$newStartDateString = $data->startDate;  $newEndDateString = $data->endDate;
 		$today=date_create(); $todayString =  date_format($today,"Y-m-d ");		
 		$today = new DateTime(); $todayString = $today->format('Y-m-d');
-		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate > '$todayString'  AND   userid='".$data->userid."'";
+		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate >+ '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
 		fwrite($fp, "\r\n $selStr ");
 		$dB = new getDBData( $selStr, $handle);
 	//	ob_start(); var_dump($dB);$data = ob_get_clean();fwrite($fp, $data);
 		$i = 0;
-		while ($assoc = $dB->getAssoc()){
+		while ($assoc = $dB->getAssoc()){													// check each found tA for overlap
 			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
 			fwrite($fp, "\r\n  Comparing tA startDate = $newStartDateString to be GREATER than  $cmpStartDate and LESS than  $cmpEndDate");
 			$tst =  ($newStartDateTime >= $assoc['startDate'] && $newStartDateTime <= $assoc['endDate']); 				
@@ -138,8 +120,8 @@ function checkOverlap($data){
 				fwrite($fp, "\r\n New tA ENCLOSED an existing tA OverLap detected so NOT INSERT \r\n ");
 				return 1;
 			}
-			if ($i++ > 10 )
-				break;
+		//	if ($i++ > 10 )
+		//		break;
 			//		ob_start(); var_dump($newStartDate);$data = ob_get_clean();fwrite($fp, $data);
 		}
 		return 0;				// there is NOT an overlap
@@ -187,19 +169,18 @@ function sendAskForCoverage($vidx, $data)
 		exit();
 }
 /**
+ * Finds the specific days of the overlap and sends email announcing them 
  * $oData is the tA which is found to be overlapping. newStartDate and newEndDate or the dates of tA  2B inserted. 
- * 
  */
 function sendServiceOverlapEmail($oData, $newTa){
 	global $handle, $fp;
-	$newStartDateDate = new DateTime(($newTa->startDate));
+	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
 	$newEndDateDate = new DateTime(($newTa->endDate));
 	$overLapDays = array();																		// make array to hold overlapDays
 	$i = 0;																						// counter
 	do {
-		fwrite($fp, "\r\n comparing ". $newStartDateDate->format("Y-m-d'") ." to between ". $oData['startDate']->format("Y-m-d") ." and ". $oData['endDate']->format("Y-m-d")  ."\r\n");
-		$tst =  $newStartDateDate >=   $oData['startDate']  && $newStartDateDate <= $oData['endDate'];								// compare it to the startDate of overlapping tA
-		ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
+		//fwrite($fp, "\r\n comparing ". $newStartDateDate->format("Y-m-d'") ." to between ". $oData['startDate']->format("Y-m-d") ." and ". $oData['endDate']->format("Y-m-d")  ."\r\n");
+		$tst =  $newStartDateDate >=   $oData['startDate']  && $newStartDateDate <= $oData['endDate'];		// Is NewStartDate in Inside extist tA
 		if ($tst){
 			$overLapDays[$i] = $newStartDateDate->format("Y-m-d'") ; 
 			ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
@@ -208,17 +189,16 @@ function sendServiceOverlapEmail($oData, $newTa){
 		if ($i++ > 16)																			// safety 
 			break;
 		}
-		while ( $newStartDateDate <= $newEndDateDate );											// 
-		ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
-		//  get data on overlap tA 
+			while ( $newStartDateDate <= $newEndDateDate );	
+		$std = print_r($overLapDays, true); fwrite($fp, "\r\n aux data is \r\n". $std);			// 
+		// get the date for the OverLapped tA
 		$selStr = "SELECT userid, startDate, endDate, userkey, physicians.LastName 			
         	FROM MDtimeAway 
         	INNER JOIN physicians ON MDtimeAway.userkey = physicians.UserKey
         	WHERE MDtimeAway.vidx = '".$oData['vidx']."'";
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
-		ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
-
+		$std = print_r($assoc, true); fwrite($fp, "\r\n aux data is \r\n". $std);
 }
 
 
