@@ -26,7 +26,7 @@ $IAP = new InsertAndUpdates();
 	}
 	if (isset( $data['endDate'] ) &&   strlen($data['endDate']) > 2  ){
 		$upDtStr .= "endDate = '". $data['endDate']."',";
-		$upDtStr .= "CovAccepted = '0',";
+	//	$upDtStr .= "CovAccepted = '0',";
 		sendTaChangedMail($data);
 	}
 	if (isset( $data['reasonIdx'] ) &&   $data['reasonIdx'] >= 1)

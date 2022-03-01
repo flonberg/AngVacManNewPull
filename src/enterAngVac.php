@@ -57,16 +57,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
 	$lastVidx = getSingle($selStr, 'vidx', $handle);
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-
-	/*if (isset($data) && is_object($data)){
-		$selStr = "SELECT UserKey FROM users WHERE UserID = '". $data->userid."'";					// get the UserKey of the GoAwayer
-		fwrite($fp, "\r\n $selStr \r\n ");
-		$goAwayerUserKey = getSingle($selStr, 'UserKey', $handle);
-		fwrite($fp, "\r\n goAwayerUserKey is $goAwayerUserKey \r\n ");
-	}
-	*/
-//	if (isset($data->coverageA) && $data->coverageA > 0)
-//		sendAskForCoverage($lastVidx,  $data);
+//	sendAskForCoverage($lastVidx, $data);
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -156,12 +147,7 @@ function sendAskForCoverage($vidx, $data)
 		</html>
 			'; 
 		fwrite($fp, "\r\n message sent to sendMailClassLib \r\n". $message);	
-		$headers = 'MIME-Version: 1.0' . "\r\n";
-       	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-		$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
-        $headers .= 'Cc: flonberg@partners.org'. "\r\n";
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		$sendMail->setHeaders($headers);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
 		echo $jData;
@@ -184,7 +170,7 @@ function sendServiceOverlapEmail($oData, $newTa){
 	//	ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
 		if ($tst){
 		//	$overLapDays[$i] = $newStartDateDate->format("Y-m-d'") ; 
-			array_push($overLapDays, $newStartDateDate->format("Y-m-d'") );
+			array_push($overLapDays, $newStartDateDate->format("Y-m-d") );
 			ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
 			}
 			$newStartDateDate->modify("+ 1 day");
@@ -202,19 +188,27 @@ function sendServiceOverlapEmail($oData, $newTa){
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
 		$std = print_r($assoc, true); fwrite($fp, "\r\n aux data is \r\n". $std);
+		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+		$subj = "Coverage for Time Away";
+		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;														// The Coverer is the WTM Coverer
+		$message = '
+			   <html>
+				   <head>
+						<title> Two Physicians in Same Service Away </title>
+						<body>
+						<p>
+						'. $msg .'
+						</p>
+					</body>
+				</head>	
+			</html>
+				'; 
+			fwrite($fp, "\r\n message sent to sendMailClassLib \r\n". $message);	
+			$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
+			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
 
-
-function getNeededParams1($data){
-	global $handle;
-	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$data->userid."'", "UserKey", $handle);			// get name of GoAwayer
-	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
-	//$data->goAwayerLastName = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."'", "LastName", $handle);			// get name of GoAwayer
-	//$data->CovererLastName=  getSingle("SELECT LastName FROM physicians WHERE UserKey = ".$data->coverageA, "LastName", $handle);			// get name of GoAwayer
-	//$data->CovererEmail =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data->coverageA, "Email", $handle);			// get name of GoAwayer
-	return $data;
-}
 function getNeededParams($data){
 	global $handle;
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$data->userid."'", "UserKey", $handle);			// get name of GoAwayer

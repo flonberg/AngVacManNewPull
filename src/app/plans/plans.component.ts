@@ -7,6 +7,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { throwError } from 'rxjs';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 import { ActivatedRoute } from '@angular/router';
+
 interface tAparams {
   startDate? : string,
   endDate?: string,
@@ -45,6 +46,7 @@ interface calParams {
   styleUrls: ['./plans.component.css'],
  
 })
+
 export class PlansComponent implements OnInit {
   userid: string;
   vidxToSee: number;                               // used by AcceptCoverage control
@@ -86,6 +88,7 @@ export class PlansComponent implements OnInit {
   changesSavedShow = false;
   loggedInUserKey = 0;
   isUserAnMD = false;
+
 
 
 
@@ -163,7 +166,7 @@ export class PlansComponent implements OnInit {
           this .isLoggedInUserCoverer = true;
         }
         if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
-          this .WTMDateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'MM-d-yyyy')
+          this .WTMDateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'M-d-yyyy')
         if (this .toSeeParams['CovAccepted'] == 1)
           this .covAccepted = true;  
         this. WTMnote = this .toSeeParams['WTMnote']  
@@ -516,12 +519,12 @@ selectedOption:string
    this .selectedOption = "1";
   let isUserGoAwayer = this. userid.includes(vacEdit['userid'])
   console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
-   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'MMM-d-yyyy')
-   this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'MMM-d-yyyy')
+   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'M-d-yyyy')
+   this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'M-d-yyyy')
    if (vacEdit.WTMdate.includes('1900')) 
     this .WTMDateConvent = '';  
     else 
-      this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'MMM-d-yyyy')
+      this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'M-d-yyyy')
   console.log("458 WTMDateConvent is %o", this.WTMDateConvent)    
   this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
@@ -844,6 +847,6 @@ safeJSONparse(jsonString) {
   return (json);
 }
 showConventDate(date){
-  return this.datePipe.transform(date, 'MMM-d-yyyy')
+  return this.datePipe.transform(date, 'M-dd-yyyy')
 }
 }
