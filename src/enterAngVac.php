@@ -181,8 +181,10 @@ function sendServiceOverlapEmail($oData, $newTa){
 	do {
 		//fwrite($fp, "\r\n comparing ". $newStartDateDate->format("Y-m-d'") ." to between ". $oData['startDate']->format("Y-m-d") ." and ". $oData['endDate']->format("Y-m-d")  ."\r\n");
 		$tst =  $newStartDateDate >=   $oData['startDate']  && $newStartDateDate <= $oData['endDate'];		// Is NewStartDate in Inside extist tA
+	//	ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
 		if ($tst){
-			$overLapDays[$i] = $newStartDateDate->format("Y-m-d'") ; 
+		//	$overLapDays[$i] = $newStartDateDate->format("Y-m-d'") ; 
+			array_push($overLapDays, $newStartDateDate->format("Y-m-d'") );
 			ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
 			}
 			$newStartDateDate->modify("+ 1 day");
@@ -190,8 +192,9 @@ function sendServiceOverlapEmail($oData, $newTa){
 			break;
 		}
 			while ( $newStartDateDate <= $newEndDateDate );	
-		$std = print_r($overLapDays, true); fwrite($fp, "\r\n aux data is \r\n". $std);			// 
-		// get the date for the OverLapped tA
+		$std = print_r($overLapDays, true); fwrite($fp, "\r\n aux data is \r\n". $std);										// 
+		$count = count($overLapDays); fwrite($fp, "\r\n count is $count");
+		$overLapPhrase = "From ". $overLapDays[0] ." to ". $overLapDays[$count-1];  fwrite($fp, "\r\n overLapPhrease is  $overLapPhrase");
 		$selStr = "SELECT userid, startDate, endDate, userkey, physicians.LastName 			
         	FROM MDtimeAway 
         	INNER JOIN physicians ON MDtimeAway.userkey = physicians.UserKey
@@ -199,6 +202,7 @@ function sendServiceOverlapEmail($oData, $newTa){
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
 		$std = print_r($assoc, true); fwrite($fp, "\r\n aux data is \r\n". $std);
+	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
 
 
