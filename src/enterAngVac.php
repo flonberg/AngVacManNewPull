@@ -158,26 +158,27 @@ function sendAskForCoverage($vidx, $data)
  * Finds the specific days of the overlap and sends email announcing them 
  * $oData is the tA which is found to be overlapping. newStartDate and newEndDate or the dates of tA  2B inserted. 
  */
-function sendServiceOverlapEmail($oData, $newTa){
+function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY which has DateTimes
 	global $handle, $fp;
+
 	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
 	$newEndDateDate = new DateTime(($newTa->endDate));
 	$overLapDays = array();																		// make array to hold overlapDays
+	
 	$i = 0;																						// counter
-	do {
-		//fwrite($fp, "\r\n comparing ". $newStartDateDate->format("Y-m-d'") ." to between ". $oData['startDate']->format("Y-m-d") ." and ". $oData['endDate']->format("Y-m-d")  ."\r\n");
-		$tst =  $newStartDateDate >=   $oData['startDate']  && $newStartDateDate <= $oData['endDate'];		// Is NewStartDate in Inside extist tA
-	//	ob_start(); var_dump($tst);$data = ob_get_clean();fwrite($fp, $data);
-		if ($tst){
-		//	$overLapDays[$i] = $newStartDateDate->format("Y-m-d'") ; 
-			array_push($overLapDays, $newStartDateDate->format("Y-m-d") );
-			ob_start(); var_dump($overLapDays);$data = ob_get_clean();fwrite($fp, "\r\n overLapDays is \r\n". $data);
+		$tst =  $newStartDateDate <= $oData['startDate']  ;											// Is NewStartDate BEFORE extist tA
+	//	if ( $newStartDateDate <= $oData['startDate'] )											// if NewTa is BEFORE or EQUAL
+			{
+			do {
+				fwrite($fp,"\r\n 173 nSS is ".$newStartDateDate->format("Y-m-d")  );
+				if ( $newStartDateDate >= $oData['startDate'] && $newStartDateDate <= $oData['endDate'])		// day is IN OldTa
+					array_push($overLapDays, $newStartDateDate->format("Y-m-d") );
+					$newStartDateDate->modify("+ 1 day");
+					if ($i++ > 16)	break;																		// safety 
+				}
+					while ( $newStartDateDate <= $newEndDateDate );	
 			}
-			$newStartDateDate->modify("+ 1 day");
-		if ($i++ > 16)																			// safety 
-			break;
-		}
-			while ( $newStartDateDate <= $newEndDateDate );	
+	
 		$std = print_r($overLapDays, true); fwrite($fp, "\r\n aux data is \r\n". $std);										// 
 		$count = count($overLapDays); fwrite($fp, "\r\n count is $count");
 		$overLapPhrase = "From ". $overLapDays[0] ." to ". $overLapDays[$count-1];  fwrite($fp, "\r\n overLapPhrease is  $overLapPhrase");
@@ -208,6 +209,7 @@ function sendServiceOverlapEmail($oData, $newTa){
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
+
 
 function getNeededParams($data){
 	global $handle;
