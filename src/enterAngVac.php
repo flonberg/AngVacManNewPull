@@ -19,7 +19,7 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$tableName = 'MDtimeAway';
  $body = @file_get_contents('php://input');            // Get parameters from calling cURL POST;
 	$data = json_decode($body);
-	$s = print_r($data, true);   fwrite($fp, $s);                             	// Create pretty form of data	
+	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputDate is \r\n". $s);                             	// Create pretty form of data	
 
 	$ret = array("result"=>"success");											// default response
 	$tst3 =  checkOverlap($data);												// check SELF overlap
@@ -100,7 +100,6 @@ function checkOverlap($data){
 		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate >+ '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
 		fwrite($fp, "\r\n $selStr ");
 		$dB = new getDBData( $selStr, $handle);
-	//	ob_start(); var_dump($dB);$data = ob_get_clean();fwrite($fp, $data);
 		$i = 0;
 		while ($assoc = $dB->getAssoc()){													// check each found tA for overlap
 			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
@@ -111,9 +110,6 @@ function checkOverlap($data){
 				fwrite($fp, "\r\n New tA ENCLOSED an existing tA OverLap detected so NOT INSERT \r\n ");
 				return 1;
 			}
-		//	if ($i++ > 10 )
-		//		break;
-			//		ob_start(); var_dump($newStartDate);$data = ob_get_clean();fwrite($fp, $data);
 		}
 		return 0;				// there is NOT an overlap
 	}
@@ -161,54 +157,51 @@ function sendAskForCoverage($vidx, $data)
 function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY which has DateTimes
 	global $handle, $fp;
 
+
 	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
 	$newEndDateDate = new DateTime(($newTa->endDate));
 	$overLapDays = array();																		// make array to hold overlapDays
-	
 	$i = 0;																						// counter
-		$tst =  $newStartDateDate <= $oData['startDate']  ;											// Is NewStartDate BEFORE extist tA
-	//	if ( $newStartDateDate <= $oData['startDate'] )											// if NewTa is BEFORE or EQUAL
-			{
-			do {
-				fwrite($fp,"\r\n 173 nSS is ".$newStartDateDate->format("Y-m-d")  );
-				if ( $newStartDateDate >= $oData['startDate'] && $newStartDateDate <= $oData['endDate'])		// day is IN OldTa
-					array_push($overLapDays, $newStartDateDate->format("Y-m-d") );
-					$newStartDateDate->modify("+ 1 day");
-					if ($i++ > 16)	break;																		// safety 
-				}
-					while ( $newStartDateDate <= $newEndDateDate );	
+		// Find Overlap Days
+		do {
+			if ( $newStartDateDate >= $oData['startDate'] && $newStartDateDate <= $oData['endDate'])		// day is IN OldTa
+				array_push($overLapDays, $newStartDateDate->format("Y-m-d") );				// push it into array
+			$newStartDateDate->modify("+ 1 day");											// go forward 1 day
+			if ($i++ > 36)	break;															// safety 
+			if ($newStartDateDate > $oData['endDate'])										// if beyond OldTaEndDate
+				break;
 			}
-	
-		$std = print_r($overLapDays, true); fwrite($fp, "\r\n aux data is \r\n". $std);										// 
-		$count = count($overLapDays); fwrite($fp, "\r\n count is $count");
+				while ( $newStartDateDate <= $newEndDateDate );								// until our of NewTa
+		$std = print_r($overLapDays, true); fwrite($fp, "\r\n 179 overlapDays is \r\n". $std);										// 
+		$count = count($overLapDays); 
 		$overLapPhrase = "From ". $overLapDays[0] ." to ". $overLapDays[$count-1];  fwrite($fp, "\r\n overLapPhrease is  $overLapPhrase");
-		$selStr = "SELECT userid, startDate, endDate, userkey, physicians.LastName 			
+			// get the data for the Email
+		$selStr = "SELECT userid, startDate, endDate, userkey, physicians.service, physicians.LastName 			
         	FROM MDtimeAway 
         	INNER JOIN physicians ON MDtimeAway.userkey = physicians.UserKey
         	WHERE MDtimeAway.vidx = '".$oData['vidx']."'";
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
-		$std = print_r($assoc, true); fwrite($fp, "\r\n aux data is \r\n". $std);
+		$serviceName = getSingle("SELECT service FROM mdservice WHERE idx = '".$assoc['service']."'", 'service', $handle);
+
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$subj = "Coverage for Time Away";
+		$subj = "Two Physicians in $serviceName Away";
 		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;														// The Coverer is the WTM Coverer
 		$message = '
 			   <html>
 				   <head>
-						<title> Two Physicians in Same Service Away </title>
 						<body>
-						<p>
-						'. $msg .'
-						</p>
+						<H3> Two Physicians in the '.$serviceName.' service will be away. </H3>
+						<p>	'. $msg .'</p>
 					</body>
 				</head>	
-			</html>
-				'; 
-			fwrite($fp, "\r\n message sent to sendMailClassLib \r\n". $message);	
+			</html>'; 
 			$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
+
+
 
 
 function getNeededParams($data){
@@ -249,25 +242,19 @@ function enterCovsInVacCov($regDuties, $dows, $userkey, $vidx)
 					$insStr = "INSERT INTO vacCov2 ( covDate, vidx, dutyId, enteredWhen, goAwayerUserKey) values ( '".$dVal['wholeDate']."',$vidx, ".$val['serviceid'].",'$now', $userkey)";
 	   				fwrite($fp, PHP_EOL );fwrite($fp, $now);fwrite($fp, $insStr );
 					//sqlsrv_query( $handle, $insStr);
-					$IAP->lfsafeSQL( $insStr, $handle);
+					$IAP->safeSQL( $insStr, $handle);
 				}
 			}
 			}
 		}
 }
-/*
-function safeSQL($insStr, $handle){
-	global $fp; 
-	try { 
-		$res = sqlsrv_query($handle, $insStr);
-	} catch(Exception $e) {
-		error_log( "Exception is ". $e);
-	}
-	if ($res === FALSE){
-		fwrite($fp, 'MSSQL error: for '. $insStr );
-	}
-	else 
-		fwrite($fp, "\r\n $insStr");
+
+function getAdmins(){
+	global $handle;
+	$selStr = "SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin";
+	$dB = new getDBData($selStr, $handle);
+	while ($assoc = $dB->getAssoc())
+		$row[$assoc['adminUserKey']] = $assoc;
+	return $row;	
 }
-*/
 
