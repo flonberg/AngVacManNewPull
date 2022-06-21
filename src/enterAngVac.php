@@ -1,7 +1,4 @@
-	
 <?php
-
-
 require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
 header("Content-Type: application/json; charset=UTF-8");
 //header("Access-Control-Allow-Origin: *");	
@@ -9,22 +6,25 @@ $handle = connectDB_FL();
 ini_set("error_log", "./Alog/enterAngVacError.txt");
 
 $IAP = new InsertAndUpdates();
+$admins = getAdmins();
+$today = date('Y-m-d');
 $in = 0;
-do {
-$fp = fopen("./Alog/enterAngVacLog".$in.".txt", "w+");
-$in++;
-}
-while ($fp ===FALSE);
-$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
-	$tableName = 'MDtimeAway';
- $body = @file_get_contents('php://input');            // Get parameters from calling cURL POST;
-	$data = json_decode($body);
-	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputDate is \r\n". $s);                             	// Create pretty form of data	
-
+do {																			// put index in case of permission failure
+	$fp = fopen("./Alog/enterAngVacLog".$today."_".$in.".txt", "a+");			
+	$in++;
+	}
+	while ($fp ===FALSE);
+	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
+	$tableName = 'MDtimeAway';													// where the data is
+ 	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
+	$data = json_decode($body);													// get the params from the REST call
+	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputData is \r\n". $s);  // Create pretty form of data to log
 	$ret = array("result"=>"success");											// default response
-	$tst3 =  checkOverlap($data);												// check SELF overlap
-	// Check SELF OVERLAP
-	if ($tst3 == 1){
+	//	$tst3 =  checkOverlap($data);												// check SELF overlap
+	/**
+	 * Check for overlap with same GoAwayer
+	 */
+	if (checkOverlap($data) == 1){
 		$rArray = array("result"=>0);											// signal for Display Warning Message						
 		$rData = json_encode($rArray);  echo $rData;							// send back responst
 		fwrite($fp, "\r\n overlap ". $rData ." \r\n");							// log response
@@ -39,7 +39,9 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 	$data = getNeededParams($data);												// get Aux Params for Emails
 	$overlap = '0';$overlapVidx = '0';											// default values
 	$theOverlap = checkServiceOverLap($data);									// the vidx of the overlapping tA
-	
+	/**
+	 * Check for overlaps with MDs in SAME SERVICE
+	 */
 	$countOverlap = count($theOverlap);											// number of overlaps
 	if ($countOverlap > 0){														// there IS an overlap
 		$overlap = '1';															// set overlap in 2b Entered tA
@@ -49,7 +51,9 @@ $today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($f
 		fwrite($fp, "\r\n updateStr for existing overlapping tA  is \r\n ". $updateStr);
 		$IAP->safeSql( $updateStr, $handle);
 	}																				
-	// INSERT the new tA
+/**
+ * INSERT the new timeAway
+ */
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values(".$overlapVidx.", $overlap,  '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	fwrite($fp, "\r\n $insStr");
@@ -183,10 +187,16 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
 		$serviceName = getSingle("SELECT service FROM mdservice WHERE idx = '".$assoc['service']."'", 'service', $handle);
-
+		$goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$oData['userid']."'", "UserKey", $handle);
+		fwrite($fp, "\r\n goAwayerUserKey is ". $goAwayerUserKey);
+		$dB2 = new getDBData("SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin WHERE physicianUserKey = ".$goAwayerUserKey, $handle);	
+		$admins = $dB2->getAssoc();
+		$ppr4 = print_r($admins, true); fwrite($fp, "\r\n ppr4 is ". $ppr4);
+		$mailAddress = $admins['adminEmail'];
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Two Physicians in $serviceName Away";
-		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;														// The Coverer is the WTM Coverer
+		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;					// The Coverer is the WTM Coverer
+		$msg .= "prod mail address is ". $admins['adminEmail']; 
 		$message = '
 			   <html>
 				   <head>
@@ -251,10 +261,11 @@ function enterCovsInVacCov($regDuties, $dows, $userkey, $vidx)
 
 function getAdmins(){
 	global $handle;
-	$selStr = "SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin";
+	$selStr = "SELECT adminEmail, adminUserKey, physicianUserKey WHERE active = 1 FROM physicianAdmin";
 	$dB = new getDBData($selStr, $handle);
+	$i = 0;
 	while ($assoc = $dB->getAssoc())
-		$row[$assoc['adminUserKey']] = $assoc;
+		$row[$i++] = $assoc;
 	return $row;	
 }
 

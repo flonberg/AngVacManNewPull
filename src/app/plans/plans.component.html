@@ -31,7 +31,6 @@
    <td [attr.colspan] = 'item.value[1].vacLength'  [className]= "getNameClass(item.value[1])"  (click) = "showEditFunc(item.value[1])"      >   {{ item.value[1]['LastName'] }}  </td>
   </ng-container> 
 
-
   <ng-container  *ngIf = '!item.value[1] && item.value[9][1]'  > 
     <td *ngFor = "let lp of counter( item.value[0]['daysTillCalEnd']); let ip=index"    [className] = 'getClass( item.value[9][1][lp])'  > 
       <div *ngIf= 'item.value[9][1]' > 
@@ -39,7 +38,6 @@
   </td>  
    <td></td>    <!--   make up for the 'Service' col -->
   </ng-container>
-
   
   <ng-container *ngIf = 'item.value[2]'> 
     <td *ngFor= 'let loop5 of counter(  daysBetween(item.value[1], item.value[2])); let ip = index'  [className] = 'getClass( item.value[9][2][ip])'  > </td>
@@ -75,7 +73,7 @@
 <div *ngIf = "isUserAnMD && !CovererView " > 
   <div class='raised' *ngIf = 'serviceMDs'>
     <table class='centerSmall'>
-        <caption> Enter a Time Away {{ showError }} </caption>
+        <caption> Enter a Time Away  </caption>
         <tr>
       <td>
         <div class='center'>
@@ -333,9 +331,6 @@
             </td>
         </tr>
     </table>
-
-
   </div>
 </div>
-
 <br><br>
