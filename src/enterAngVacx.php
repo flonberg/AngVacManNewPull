@@ -1,5 +1,5 @@
 <?php
-require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
+require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL2.php';
 header("Content-Type: application/json; charset=UTF-8");
 //header("Access-Control-Allow-Origin: *");	
 $handle = connectDB_FL();
@@ -20,13 +20,14 @@ do {																			// put index in case of permission failure
 	$data = json_decode($body);													// get the params from the REST call
 	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputData is \r\n". $s);  // Create pretty form of data to log
 	$ret = array("result"=>"success");											// default response
+	//	$tst3 =  checkOverlap($data);												// check SELF overlap
 	/**
 	 * Check for overlap with same GoAwayer
 	 */
 	if (checkOverlap($data) == 1){
 		$rArray = array("result"=>0);											// signal for Display Warning Message						
 		$rData = json_encode($rArray);  echo $rData;							// send back responst
-		fwrite($fp, "\r\n 3030 overlap ". $rData ." \r\n");							// log response
+		fwrite($fp, "\r\n overlap ". $rData ." \r\n");							// log response
 		exit();																	// DO NOTHING ELSE
 	}
 	// Check is Coverage is Nominated
@@ -60,7 +61,7 @@ do {																			// put index in case of permission failure
 	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
 	$lastVidx = getSingle($selStr, 'vidx', $handle);
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-	sendAskForCoverage($lastVidx, $data);
+//	sendAskForCoverage($lastVidx, $data);
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -88,36 +89,19 @@ function checkServiceOverLap($data){
  */
 function checkOverlap($data){
 		global $handle, $fp, $tableName; 
-		$ppr = print_r($data, true); fwrite($fp, "\r\n  9191 Checking selfOverlap for ". $ppr);
 		$tString = $data->endDate;
 		$necParams = array('userid', 'startDate', 'endDate');
-	/*	foreach ($necParams as $key => $val){
+		foreach ($necParams as $key => $val){
 			if (!isset($data->$val)  && strlen($data->$val < 1)){
 				fwrite($fp, "\r\n $key  -- $val datum missing");
 				return false;
 			}
-		}	
-	*/
-		$selStr = "SELECT vidx, userid, startDate, endDate  FROM MDtimeAway WHERE userid = '".$data->userid."' AND reasonIdx < 9 AND (
-			( startDate >= '".$data->startDate."' AND  startDate <= '".$data->endDate."')
-			OR	( endDate >= '".$data->startDate."' AND  endDate <= '".$data->endDate."')
-			OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'  )
-				)";
-			
-		fwrite($fp, "\r\n 105  selStr is \r\n  $selStr \r\n");
-		$dB3 = new getDBData($selStr, $handle);
-		$assoc = $dB3->getAssoc();
-			ob_start(); var_dump($assoc);$data2 = ob_get_clean();fwrite($fp, "\r\n 108 assoc is \r\n". $data2);
-		if (isset($assoc))
-			return 1;
-		else 
-			return 0; 		
-
+		}
 		$newStartDateTime = new DateTime($data->startDate);		$newEndDateTime = new DateTime($data->endDate);
 		$newStartDateString = $data->startDate;  $newEndDateString = $data->endDate;
 		$today=date_create(); $todayString =  date_format($today,"Y-m-d ");		
 		$today = new DateTime(); $todayString = $today->format('Y-m-d');
-		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate >= '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
+		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate >+ '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
 		fwrite($fp, "\r\n $selStr ");
 		$dB = new getDBData( $selStr, $handle);
 		$i = 0;
@@ -137,7 +121,7 @@ function checkOverlap($data){
 function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp;
-	fwrite($fp, "\r\n vidx is $vidx");
+	fwrite($fp, "\r\n 124 in sendAskForCoverage vidx is $vidx");
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx;	// No 8 2021
 	fwrite($fp, "\r\n ". $link);
 	$mailAddress = $data->CovererEmail;								
@@ -176,6 +160,7 @@ function sendAskForCoverage($vidx, $data)
  */
 function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY which has DateTimes
 	global $handle, $fp;
+
 
 	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
 	$newEndDateDate = new DateTime(($newTa->endDate));
@@ -276,10 +261,11 @@ function enterCovsInVacCov($regDuties, $dows, $userkey, $vidx)
 
 function getAdmins(){
 	global $handle;
-	$selStr = "SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin";
+	$selStr = "SELECT adminEmail, adminUserKey, physicianUserKey WHERE active = 1 FROM physicianAdmin";
 	$dB = new getDBData($selStr, $handle);
+	$i = 0;
 	while ($assoc = $dB->getAssoc())
-		$row[$assoc['adminUserKey']] = $assoc;
+		$row[$i++] = $assoc;
 	return $row;	
 }
 

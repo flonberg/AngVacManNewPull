@@ -32,7 +32,7 @@
   </ng-container> 
 
   <ng-container  *ngIf = '!item.value[1] && item.value[9][1]'  > 
-    <td *ngFor = "let lp of counter( item.value[0]['daysTillCalEnd']); let ip=index"    [className] = 'getClass( item.value[9][1][lp])'  > 
+    <td *ngFor = "let lp of counter( item.value[0]['daysTillCalEnd']); let ip=index"    [className] = 'getClass( item.value[9][1][lp])' >  
       <div *ngIf= 'item.value[9][1]' > 
       </div>
   </td>  

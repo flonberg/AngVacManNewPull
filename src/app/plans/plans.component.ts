@@ -266,6 +266,7 @@ private howManyMonthForward(date){
 }                         
   /**
    * Main loop for filling out the Calendar Row for a TimeAway, fills in all the day boxes
+   * The creates the dayArray which is used to trigger the TODAY yellow box. 
    * @param vacRow 
    * @returns 
    */
