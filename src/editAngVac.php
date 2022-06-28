@@ -105,6 +105,9 @@ $IAP = new InsertAndUpdates();
 		$data['goAwayerLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['goAwayerUserKey']  ."'", "LastName", $handle);			// get name of GoAwayer
 		$data['overlap'] = $assoc['overlap'];
 		$data['overlapVidx'] = $assoc['overlapVidx'];
+		$dB2 = new getDBData("SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin WHERE physicianUserKey = ".$data['goAwayerUserKey'], $handle);	
+		$admins = $dB2->getAssoc();
+		$data['adminEmail'] = $admins['adminEmail'];
 		return $data;
 	}
 	function sendTaChangedMail($data){
@@ -116,6 +119,7 @@ $IAP = new InsertAndUpdates();
 		fwrite($fp, "\r\n ". $link);
 		$mailAddress = $data->CovererEmail;								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+		//$mailAddress .= ",". $data->CovererEmail;	
 		$subj = "Coverage for Time Away";
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ."'s parameters for being away starting on $startDateString have changed. ";
 		$msg .= "<p> To accept or decline this altered coverage click on the below link.</p>";
@@ -150,6 +154,7 @@ $IAP = new InsertAndUpdates();
 		$WTM_dateString = makeDateString($merged['WTMdate']);
 		$std = print_r($merged, true); fwrite($fp, "\r\n in sendAcc merged is ". $std);
 		//$mailAddress = $assoCovererEmail;								
+		$mailAddress = "SLBATCHIS@partners.org";					////// who else?   \\\\\\\\\\\
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = " Time Away for Dr". $merged['goAwayerLastName'];
 		$msg =    "Dr.".$merged['goAwayerLastName']." will be away from  $startDateString to $endDateString. ";
@@ -202,3 +207,26 @@ $IAP = new InsertAndUpdates();
 		$sendMail->send();
 	
 	}	
+/**
+ * Check for overlap of existing tA for the given goAwayer, used in enterAngVac.php so should be idential 
+ */
+function checkOverlap($data){
+	global $handle, $fp, $tableName; 
+	$ppr = print_r($data, true); fwrite($fp, "\r\n  9191 Checking selfOverlap for ". $ppr);
+	$tString = $data->endDate;
+	$necParams = array('userid', 'startDate', 'endDate');
+	$selStr = "SELECT vidx, userid, startDate, endDate  FROM MDtimeAway WHERE userid = '".$data->userid."' AND reasonIdx < 9 AND (
+		( startDate >= '".$data->startDate."' AND  startDate <= '".$data->endDate."')
+		OR	( endDate >= '".$data->startDate."' AND  endDate <= '".$data->endDate."')
+		OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'  )
+			)";
+		
+	fwrite($fp, "\r\n 105  selStr is \r\n  $selStr \r\n");
+	$dB3 = new getDBData($selStr, $handle);
+	$assoc = $dB3->getAssoc();
+		ob_start(); var_dump($assoc);$data2 = ob_get_clean();fwrite($fp, "\r\n 108 assoc is \r\n". $data2);
+	if (isset($assoc))
+		return 1;
+	else 
+		return 0; 		
+}	

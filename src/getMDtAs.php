@@ -40,7 +40,7 @@ function getMDtAs(){
 	fwrite($fp, "\r\n selStr is \r\n $selStr ");
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
-	$servArray = array('1'=>14,'2'=>13,'3'=>3,'4'=>5,'5'=>4,'6'=>13, '7'=>6,'8'=>2,'9'=>1);
+	$servArray = array('1'=>15,'2'=>13,'3'=>3,'4'=>5,'5'=>4,'6'=>14, '7'=>6,'8'=>2,'9'=>1);	// use for showing Service in alphabetical order. 
 	$vacGraph = array();
 	$serviceGroup = array();	
 	$index = 0;															// use to keep track of number of tA's in each service
@@ -113,8 +113,6 @@ function formatDate($dt){
 function sortByOrder($a, $b) {
     return $a[0]['serviceAlph'] > $b[0]['serviceAlph'];
 }
-
-
 
 function getMDs(){
 	global $handle;

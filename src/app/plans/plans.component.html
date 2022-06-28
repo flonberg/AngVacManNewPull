@@ -266,7 +266,7 @@
         <th *ngIf = "vacEdit.WTMnote && vacEdit.WTMnote.length > 2">WTM Note </th>
       </tr>
       <tr>
-        <td> Dr.{{ vacEdit.covererDetails.LastName }} </td>
+        <td> Dr. {{ vacEdit.covererDetails.LastName }} </td>
         <td *ngIf = " vacEdit.WTM_self == 0"> Dr. {{ vacEdit.covererDetails.LastName }}</td>
         <td   *ngIf = "vacEdit.WTM_self == 1"> Dr. {{ vacEdit.LastName }}</td>
    
@@ -333,4 +333,5 @@
     </table>
   </div>
 </div>
+<button (click)="goToLink()">Users Manual </button>
 <br><br>
