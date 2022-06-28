@@ -64,7 +64,7 @@ do {																			// put index in case of permission failure
 	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
 	$lastVidx = getSingle($selStr, 'vidx', $handle);
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-	sendAskForCoverage($lastVidx, $data);
+//	sendAskForCoverage($lastVidx, $data);
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -191,20 +191,19 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 		$assoc = $dB->getAssoc();
 		$serviceName = getSingle("SELECT service FROM mdservice WHERE idx = '".$assoc['service']."'", 'service', $handle);
 		$goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$oData['userid']."'", "UserKey", $handle);
-		$overLapperUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$newTa['userid']."'", "UserKey", $handle);
+		$overlappererUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$newTa->userid."'", "UserKey", $handle);
 		fwrite($fp, "\r\n goAwayerUserKey is ". $goAwayerUserKey);
-		$dB2 = new getDBData("SELECT adminEmail, adminUserKey, physicianUserKey FROcM physicianAdmin WHERE physicianUserKey = ".$goAwayerUserKey." OR physicianUserKey = ".$overLapperUserKey, $handle);	
-		$i = 0;
-		while ($aaoc = $dB2->getAssoc()){
-			$adminEmail[$i++] = $assoc['adminEmail'];
-		};
-		$ppr4 = print_r($adminEmail, true); fwrite($fp, "\r\n ppr4 is ". $ppr4);
-		$mailAddressProd = $adminEmail[0]['adminEmail'];
-		$mailAddressProd .= ", ".$adminEmail[1]['adminEmail'];
+	//	$dB2 = new getDBData("SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin WHERE physicianUserKey = ".$goAwayerUserKey, $handle);	
+		$selStr = "SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin WHERE (physicianUserKey = ".$goAwayerUserKey ." OR physicianUserKey = ".$overlappererUserKey.")";	
+		fwrite($fp, "\r\n SelStr for OverLapper User Keys is  \r\n".$selStr);
+		$dB2 = new getDBData($selStr, $handle);	
+		$admins = $dB2->getAssoc();
+		$ppr4 = print_r($admins, true); fwrite($fp, "\r\n ppr4 is ". $ppr4);
+		$mailAddress = $admins['adminEmail'];
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Two Physicians in $serviceName Away";
 		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;					// The Coverer is the WTM Coverer
-		$msg .= "prod mail address is ". $mailAddressProd; 
+		$msg .= "prod mail address is ". $admins['adminEmail']; 
 		$message = '
 			   <html>
 				   <head>

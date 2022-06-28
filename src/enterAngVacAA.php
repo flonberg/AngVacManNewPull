@@ -1,9 +1,11 @@
 <?php
-require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
-
+//require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
+require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL2.php';
 header("Content-Type: application/json; charset=UTF-8");
 //header("Access-Control-Allow-Origin: *");	
-$handle = connectDB_FL();
+//$handle = connectDB_FL();
+$connDB = new connDB();
+$handle = $connDB->handle242;
 ini_set("error_log", "./Alog/enterAngVacError.txt");
 
 $IAP = new InsertAndUpdates();
@@ -21,13 +23,14 @@ do {																			// put index in case of permission failure
 	$data = json_decode($body);													// get the params from the REST call
 	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputData is \r\n". $s);  // Create pretty form of data to log
 	$ret = array("result"=>"success");											// default response
+	//	$tst3 =  checkOverlap($data);												// check SELF overlap
 	/**
 	 * Check for overlap with same GoAwayer
 	 */
 	if (checkOverlap($data) == 1){
 		$rArray = array("result"=>0);											// signal for Display Warning Message						
 		$rData = json_encode($rArray);  echo $rData;							// send back responst
-		fwrite($fp, "\r\n 3030 overlap ". $rData ." \r\n");							// log response
+		fwrite($fp, "\r\n overlap ". $rData ." \r\n");							// log response
 		exit();																	// DO NOTHING ELSE
 	}
 	// Check is Coverage is Nominated
@@ -38,7 +41,7 @@ do {																			// put index in case of permission failure
 	}
 	$data = getNeededParams($data);												// get Aux Params for Emails
 	$overlap = '0';$overlapVidx = '0';											// default values
-	$theOverlap = checkServiceOverLapLib($data);									// the vidx of the overlapping tA
+	$theOverlap = checkServiceOverLap($data);									// the vidx of the overlapping tA
 	/**
 	 * Check for overlaps with MDs in SAME SERVICE
 	 */
@@ -85,27 +88,37 @@ function checkServiceOverLap($data){
 	return $row;
 }	
 /**
- * Check for overlap of existing tA for the given goAwayer, used in editAngVac.php so should be idential 
+ * Check for overlap of existing tA for the given goAwayer
  */
 function checkOverlap($data){
 		global $handle, $fp, $tableName; 
-		$ppr = print_r($data, true); fwrite($fp, "\r\n  9191 Checking selfOverlap for ". $ppr);
 		$tString = $data->endDate;
 		$necParams = array('userid', 'startDate', 'endDate');
-		$selStr = "SELECT vidx, userid, startDate, endDate  FROM MDtimeAway WHERE userid = '".$data->userid."' AND reasonIdx < 9 AND (
-			( startDate >= '".$data->startDate."' AND  startDate <= '".$data->endDate."')
-			OR	( endDate >= '".$data->startDate."' AND  endDate <= '".$data->endDate."')
-			OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'  )
-				)";
-			
-		fwrite($fp, "\r\n 105  selStr is \r\n  $selStr \r\n");
-		$dB3 = new getDBData($selStr, $handle);
-		$assoc = $dB3->getAssoc();
-			ob_start(); var_dump($assoc);$data2 = ob_get_clean();fwrite($fp, "\r\n 108 assoc is \r\n". $data2);
-		if (isset($assoc))
-			return 1;
-		else 
-			return 0; 		
+		foreach ($necParams as $key => $val){
+			if (!isset($data->$val)  && strlen($data->$val < 1)){
+				fwrite($fp, "\r\n $key  -- $val datum missing");
+				return false;
+			}
+		}
+		$newStartDateTime = new DateTime($data->startDate);		$newEndDateTime = new DateTime($data->endDate);
+		$newStartDateString = $data->startDate;  $newEndDateString = $data->endDate;
+		$today=date_create(); $todayString =  date_format($today,"Y-m-d ");		
+		$today = new DateTime(); $todayString = $today->format('Y-m-d');
+		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate >+ '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
+		fwrite($fp, "\r\n $selStr ");
+		$dB = new getDBData( $selStr, $handle);
+		$i = 0;
+		while ($assoc = $dB->getAssoc()){													// check each found tA for overlap
+			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
+			fwrite($fp, "\r\n  Comparing tA startDate = $newStartDateString to be GREATER than  $cmpStartDate and LESS than  $cmpEndDate");
+			$tst =  ($newStartDateTime >= $assoc['startDate'] && $newStartDateTime <= $assoc['endDate']); 				
+			$tst2 =  ($newEndDateTime >= $assoc['startDate'] && $newEndDateTime <= $assoc['endDate']); 					
+			if ($tst || $tst2){
+				fwrite($fp, "\r\n New tA ENCLOSED an existing tA OverLap detected so NOT INSERT \r\n ");
+				return 1;
+			}
+		}
+		return 0;				// there is NOT an overlap
 	}
 
 function sendAskForCoverage($vidx, $data)
@@ -151,6 +164,7 @@ function sendAskForCoverage($vidx, $data)
 function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY which has DateTimes
 	global $handle, $fp;
 
+
 	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
 	$newEndDateDate = new DateTime(($newTa->endDate));
 	$overLapDays = array();																		// make array to hold overlapDays
@@ -177,16 +191,20 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 		$assoc = $dB->getAssoc();
 		$serviceName = getSingle("SELECT service FROM mdservice WHERE idx = '".$assoc['service']."'", 'service', $handle);
 		$goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$oData['userid']."'", "UserKey", $handle);
+		$overLapperUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$newTa['userid']."'", "UserKey", $handle);
 		fwrite($fp, "\r\n goAwayerUserKey is ". $goAwayerUserKey);
-		$dB2 = new getDBData("SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin WHERE physicianUserKey = ".$goAwayerUserKey, $handle);	
-		$admins = $dB2->getAssoc();
-		$ppr4 = print_r($admins, true); fwrite($fp, "\r\n ppr4 is ". $ppr4);
-
+		$dB2 = new getDBData("SELECT adminEmail, adminUserKey, physicianUserKey FROcM physicianAdmin WHERE physicianUserKey = ".$goAwayerUserKey." OR physicianUserKey = ".$overLapperUserKey, $handle);	
+		$i = 0;
+		while ($aaoc = $dB2->getAssoc()){
+			$adminEmail[$i++] = $assoc['adminEmail'];
+		};
+		$ppr4 = print_r($adminEmail, true); fwrite($fp, "\r\n ppr4 is ". $ppr4);
+		$mailAddressProd = $adminEmail[0]['adminEmail'];
+		$mailAddressProd .= ", ".$adminEmail[1]['adminEmail'];
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-	//	$mailAddress .= ", ". $admins['adminEmail'];
 		$subj = "Two Physicians in $serviceName Away";
 		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;					// The Coverer is the WTM Coverer
-		$msg .= " \r\n prod mail address is ". $admins['adminEmail'] ."\r\n "; 
+		$msg .= "prod mail address is ". $mailAddressProd; 
 		$message = '
 			   <html>
 				   <head>
