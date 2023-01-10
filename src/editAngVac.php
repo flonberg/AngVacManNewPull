@@ -5,7 +5,7 @@ $handle = connectDB_FL();
 ini_set("error_log", "./Alog/editAngVacError.txt");
 $IAP = new InsertAndUpdates();
 
-	$fp = fopen("./Alog/editAngVacLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
+	$fp = fopen("./Alog/editAngVacLog.txt", "a+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
@@ -46,7 +46,7 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "WTMnote = '". $data['WTMnote']."',";
 	$upDtStr = substr($upDtStr, 0, -1);
 	$upDtStr .= " WHERE vidx = ".$data['vidx'];
-	fwrite($fp, " 59  ". $upDtStr );
+	fwrite($fp, "\r\n  59  ". $upDtStr );
 	$IAP->safeSQL( $upDtStr, $handle);
 	if (isset($data['reasonIdx']) && $data['reasonIdx']=='99'){		// This is DELETE request
 		if (isset($data['overlapVidx']) && $data['overlapVidx'] > 0){		// there is a Overlap tA
@@ -192,11 +192,11 @@ $IAP = new InsertAndUpdates();
 
 	function sendDeclineEmail($data){
 		global $handle;
-		$toAddress =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data['goAwayerUserKeyey'], "Email", $handle);	
+		$toAddress =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data['goAwayerUserKey'], "Email", $handle);	
 		$toAddress = "flonberg@partners.org";					////// changed on 6-24-2016   \\\\\\\\\\\
 		$subj = "Coverage for Time Away";
-		if (is_object($data['startDate']))
-			$startDateString = $data['startDate']->format("Y-m-d");
+		if (is_object($data['dBstartDate']))
+			$startDateString = $data['dBstartDate']->format("Y-m-d");
 		$msg = "Dr. ". $data['CovererLastName'] ." has declined coverage for your time-away starting on ". $startDateString;
 		$headers = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";

@@ -4,6 +4,10 @@ require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL2.php';
 header("Content-Type: application/json; charset=UTF-8");
 //header("Access-Control-Allow-Origin: *");	
 //$handle = connectDB_FL();
+if (strpos(getcwd(), 'dev') !== FALSE)
+	$level = 'dev';
+else 
+	$level = 'prod';	
 $connDB = new connDB();
 $handle = $connDB->handle242;
 ini_set("error_log", "./Alog/enterAngVacError.txt");
@@ -64,7 +68,7 @@ do {																			// put index in case of permission failure
 	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
 	$lastVidx = getSingle($selStr, 'vidx', $handle);
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-//	sendAskForCoverage($lastVidx, $data);
+	sendAskForCoverage($lastVidx, $data);
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -123,7 +127,7 @@ function checkOverlap($data){
 
 function sendAskForCoverage($vidx, $data)
 {
-	global $handle, $fp;
+	global $handle, $fp, $level;
 	fwrite($fp, "\r\n vidx is $vidx");
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx;	// No 8 2021
 	fwrite($fp, "\r\n ". $link);
@@ -162,7 +166,7 @@ function sendAskForCoverage($vidx, $data)
  * $oData is the tA which is found to be overlapping. newStartDate and newEndDate or the dates of tA  2B inserted. 
  */
 function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY which has DateTimes
-	global $handle, $fp;
+	global $handle, $fp, $level;
 
 
 	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
@@ -197,13 +201,20 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 		$selStr = "SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin WHERE (physicianUserKey = ".$goAwayerUserKey ." OR physicianUserKey = ".$overlappererUserKey.")";	
 		fwrite($fp, "\r\n SelStr for OverLapper User Keys is  \r\n".$selStr);
 		$dB2 = new getDBData($selStr, $handle);	
-		$admins = $dB2->getAssoc();
-		$ppr4 = print_r($admins, true); fwrite($fp, "\r\n ppr4 is ". $ppr4);
-		$mailAddress = $admins['adminEmail'];
-		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+		$i = 0; $prodMailAddress = ""; $sentUserKey = 0;									// definde default values
+		$prodMailAddress = 'KOH2@mgh.harvard.edu';											// Kevin Oh always gets Service Overlap email
+		while ($admins = $dB2->getAssoc()){													// Add the Admins
+				if ($admins['adminUserKey'] != $sentUserKey  )								// it is different		
+					$prodMailAddress .= ", ". $admins['adminEmail'];						// add the second address
+			}
+	
+		$ppr4 = print_r($prodMailAddress, true); fwrite($fp, "\r\n Prod Overlap Mail Address is ". $ppr4);
+		$mailAddress = "flonberg@partners.org";												////// for testing   \\\\\\\\\\\
+		if ($level == 'prod')
+			$mailAddress = $prodMailAddress;
 		$subj = "Two Physicians in $serviceName Away";
 		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;					// The Coverer is the WTM Coverer
-		$msg .= "prod mail address is ". $admins['adminEmail']; 
+		$msg .= "\r\n prod mail address is ". $prodMailAddress; 
 		$message = '
 			   <html>
 				   <head>
