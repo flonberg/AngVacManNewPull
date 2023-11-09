@@ -1,16 +1,18 @@
 <?php
-//require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
-require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL2.php';
+require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
+require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
 header("Content-Type: application/json; charset=UTF-8");
+ini_set("error_log", "./Alog/enterAngVacError.txt");
 //header("Access-Control-Allow-Origin: *");	
-//$handle = connectDB_FL();
+//$handle = connectDB_FL()	;
 if (strpos(getcwd(), 'dev') !== FALSE)
 	$level = 'dev';
 else 
 	$level = 'prod';	
-$connDB = new connDB();
-$handle = $connDB->handle242;
-ini_set("error_log", "./Alog/enterAngVacError.txt");
+///$connDB = new connDB();
+//$handle = $connDB->handle242;
+$handle = connectDB_FL();
+$handleBB = connectBB();
 
 $IAP = new InsertAndUpdates();
 $admins = getAdmins();
@@ -23,6 +25,7 @@ do {																			// put index in case of permission failure
 	while ($fp ===FALSE);
 	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
 	$tableName = 'MDtimeAway';													// where the data is
+//		$tableName = 'MDtimeAway2BB';
  	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
 	$data = json_decode($body);													// get the params from the REST call
 	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputData is \r\n". $s);  // Create pretty form of data to log
@@ -61,8 +64,14 @@ do {																			// put index in case of permission failure
 /**
  * INSERT the new timeAway
  */
+	$userid = isset($data->useridStr) ? $data->useridStr : $data->userid;
+	if (!isset($userid)){
+		fwrite($fp, "\r\n No userid \r\n");
+		exit();
+	}
+	$tableName = 
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
-				values(".$overlapVidx.", $overlap,  '$data->userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
+				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	fwrite($fp, "\r\n $insStr");
 	$res = $IAP->safeSQL($insStr, $handle);
 	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
@@ -76,7 +85,7 @@ do {																			// put index in case of permission failure
  * Checks for an existing tA in the same service as the  2 B entered tA which overlaps. 
  */
 function checkServiceOverLap($data){
-	global $handle, $fp, $tableName; 
+	global $handle, $handleBB, $fp, $tableName; 
 	$overlap = 0;	$i = 0;		$row = array();								// set up		
 	$selStr = "SELECT vidx, userid, startDate, endDate  FROM MDtimeAway WHERE service = '".$data->service."' AND reasonIdx < 9 AND (
 		( startDate >= '".$data->startDate."' AND  startDate <= '".$data->endDate."')
@@ -84,7 +93,7 @@ function checkServiceOverLap($data){
 		OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'  )
 			)";
 	fwrite($fp, "\r\n 84  selStr is \r\n  $selStr \r\n");
-	$dB = new getDBData($selStr, $handle);
+	$dB = new getDBData($selStr, $handleBB);
 	while ($assoc = $dB->getAssoc()){
 		$row[$i] = $assoc;																	// store the overlapping tA
 		$row[$i++]['overlapName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['userkey']."'", "LastName", $handle);	// get LastName of Overlapping tA
@@ -95,7 +104,7 @@ function checkServiceOverLap($data){
  * Check for overlap of existing tA for the given goAwayer
  */
 function checkOverlap($data){
-		global $handle, $fp, $tableName; 
+		global $handle,$handleBB, $fp, $tableName; 
 		$tString = $data->endDate;
 		$necParams = array('userid', 'startDate', 'endDate');
 		foreach ($necParams as $key => $val){
@@ -110,7 +119,7 @@ function checkOverlap($data){
 		$today = new DateTime(); $todayString = $today->format('Y-m-d');
 		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate >+ '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
 		fwrite($fp, "\r\n $selStr ");
-		$dB = new getDBData( $selStr, $handle);
+		$dB = new getDBData( $selStr, $handleBB);
 		$i = 0;
 		while ($assoc = $dB->getAssoc()){													// check each found tA for overlap
 			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
@@ -167,8 +176,6 @@ function sendAskForCoverage($vidx, $data)
  */
 function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY which has DateTimes
 	global $handle, $fp, $level;
-
-
 	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
 	$newEndDateDate = new DateTime(($newTa->endDate));
 	$overLapDays = array();																		// make array to hold overlapDays
@@ -228,15 +235,19 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
-
+function sendAdmins($newTa){
+	
+}
 
 
 
 function getNeededParams($data){
-	global $handle;
-	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$data->userid."'", "UserKey", $handle);			// get name of GoAwayer
+	global $handle, $fp;
+	$userid = isset($data->useridStr) ? $data->useridStr : $data->userid;
+	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$userid."'", "UserKey", $handle);			// get name of GoAwayer
 	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
 	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey ='".$data->coverageA ."'"; 
+	fwrite($fp, "\r\n getNeededParams selStr \r\n $selStr");
 	$dB = new getDBData($selStr, $handle);
 	while ($assoc = $dB->getAssoc()){
 		if ($assoc['UserKey'] == $data->goAwayerUserKey){
@@ -285,4 +296,5 @@ function getAdmins(){
 		$row[$assoc['adminUserKey']] = $assoc;
 	return $row;	
 }
+
 

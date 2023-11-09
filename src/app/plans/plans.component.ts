@@ -221,14 +221,12 @@ export class PlansComponent implements OnInit {
 
     }
   private getServiceMDs(userid){
+       // this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dev/getMDtAs.php?adv='+ this.monthInc;
     if ( this .checkWorkingDir() == 'dev')
-     // this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dev/getMDtAs.php?adv='+ this.monthInc;
       var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dev/getMDsByService.php?userid='+ userid
-      else  
+    else  
         var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/prod/getMDsByService.php?userid='+ userid
-    //  this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/prod/getMDtAs.php?adv='+ this.monthInc;
 
-   // let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
       for(let entry of this .serviceMDs){
@@ -240,7 +238,11 @@ console.log("198 serviceMDs is %o", this. serviceMDs)
   }
 
  private getMDService(){
-    let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
+  let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
+  if ( this .checkWorkingDir() == 'dev')
+      url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dev/getMDService.php';
+  else  
+      url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/prod/getMDService.php';
     this .http.get(url).subscribe(res =>{
       this. MDservice = res;
           })
@@ -420,9 +422,9 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
   console.log("341 tAparams is  %o  detail is %o  jData is %o ", this .tAparams, detail, jData)
   console.log("367 detail is %o emalparam is %o", detail, emailParam)
                       // form the data to pass to php script
- // var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/editAngVac.php?email='+emailParam;  // set endPoint
- // url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/dev/editAngVac.php?email='+emailParam;  // set endPoint for dev
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/'+this. wkDev+'/editAngVac.php?email='+emailParam;  // set endPoint for dev
+ // var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/'+this. wkDev+'/editAngVac.php?email='+emailParam;  // set endPoint for dev
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editAngVac.php?email='+emailParam;  // set endPoint for dev
+
   console.log('420 url is %o', url);
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
@@ -762,7 +764,7 @@ checkTAparams(){
     return false;
   } 
   if (this .tAparams. WTMchange == 1){
-    if (this .tAparams.WTM_self < 0){
+    if (+this .tAparams.WTM_self < 0){
       this. errorTxt = "Please select Self or Covering MD";
       this .showError = 5;
       return false
@@ -825,8 +827,6 @@ submitTA(){                                                                  // 
   this .faultMessage = "t";
   if (this .checkTAparams()){
       var jData = JSON.stringify(this .tAparams)
-    //  var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/enterAngVac.php';
-    //  url = 'https://whiteboard.partners.org/esb/FLwbe/dev/vacation/enterAngVac.php';
       var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/'+this. wkDev+'/enterAngVac.php';
       this .http.post(url, jData).subscribe(ret=>{
           this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
