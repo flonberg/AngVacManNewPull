@@ -5,7 +5,9 @@ require_once('workdays.inc');
 require_once('dosimetristList.php');
 include('isHollidayLib.php');
 $handle = connectDB_FL();
+$handleBB = connectBB();
 	$tableName = 'MDtimeAway';
+	$tableName = 'MDtimeAway2BB';
 	$fp = fopen("./Alog/getMDtAsLog.txt", "w+");
 	$todayString =  date('Y-m-d H:i:s');
 	fwrite($fp, "\r\n $todayString");
@@ -20,7 +22,7 @@ $handle = connectDB_FL();
  exit();
 
 function getMDtAs(){
-	global $handle, $fp, $tableName;
+	global $handle, $handleBB, $fp, $tableName;
 	$MDs = getMDs();
 	$MDservice = getMDservice();
 	$UserKeys = getAllUserIds($handle);
@@ -38,7 +40,7 @@ function getMDtAs(){
 	$endDateString = $endDate->format("Y-m-d");
 	$selStr = "SELECT * FROM $tableName WHERE endDate >= '".$firstDay."' AND startDate < '".$endDateString."' AND reasonIdx < 9 ORDER BY startDate";
 	fwrite($fp, "\r\n selStr is \r\n $selStr ");
-	$dB = new getDBData($selStr, $handle);
+	$dB = new getDBData($selStr, $handleBB);
 	$i = 0;
 	$servArray = array('1'=>15,'2'=>13,'3'=>3,'4'=>5,'5'=>4,'6'=>14, '7'=>6,'8'=>2,'9'=>1);	// use for showing Service in alphabetical order. 
 	$vacGraph = array();

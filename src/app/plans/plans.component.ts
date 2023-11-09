@@ -92,6 +92,7 @@ export class PlansComponent implements OnInit {
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
+  console.log("95959 userid is %o", params)    
       this .vidxToSee = params['vidxToSee']          // used by Coverer to Accept Coverage and Select WTM date
       if (params['vidxToSee']){
         this .getTheVidxToSee();
@@ -161,7 +162,6 @@ export class PlansComponent implements OnInit {
         return 'prod'  
       console.log("116116  loc is %o ", loc)
     }
-
     unsorted() { }                                                      // user by alphabetization of the data by service 
     
   private getTheVidxToSee(){
@@ -213,21 +213,7 @@ export class PlansComponent implements OnInit {
       }  
     }
    console.log("201 byServArr is %o", byServArr)
- /*   for(let i=0; i< byServArr.length; i++){
-      if (byServArr[i]){
-      let len2 = byServArr[i].length ;
-      if (len2 < 2)
-        continue;
-      console.log("208 len2 is %o", len2);
-      if (byServArr[i] && byServArr[i].length > 1){
-        //   console.log("207 test if %o", byServArr[i])
-        //   for (var item of byServArr[i]){
-        //       console.log("210 item is %o", item )
-        //     }
-            }
-          }
-        }
-        */
+
     }
   private getServiceMDs(userid){
     let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
