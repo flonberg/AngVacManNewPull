@@ -828,6 +828,8 @@ submitTA(){                                                                  // 
   if (this .checkTAparams()){
       var jData = JSON.stringify(this .tAparams)
       var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/'+this. wkDev+'/enterAngVac.php';
+      var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/enterAngVac.php';
+  console.log("832832 url is %o", url);    
       this .http.post(url, jData).subscribe(ret=>{
           this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
             this .overlap = this. postRes['result'] == 0 ? true : false;    // turn on Warning message. 

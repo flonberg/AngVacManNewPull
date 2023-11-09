@@ -19,8 +19,9 @@ $admins = getAdmins();
 $today = date('Y-m-d');
 $in = 0;
 do {																			// put index in case of permission failure
-	$fp = fopen("./Alog/enterAngVacLog".$today."_".$in.".txt", "a+");			
-	$in++;
+	$fp = fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
+	if ($in++ > 5)
+		break;
 	}
 	while ($fp ===FALSE);
 	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
