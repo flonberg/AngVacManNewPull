@@ -90,6 +90,11 @@ export class PlansComponent implements OnInit {
   isUserAnMD = false;
   wkDev = "dev";
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
+    if ( this .checkWorkingDir() == 'dev')
+      this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dev/getMDtAs.php?adv='+ this.monthInc;
+    else  
+      this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/prod/getMDtAs.php?adv='+ this.monthInc;
+  
     this. activatedRoute.queryParams.subscribe(params =>{
       this .userid = params['userid']
   console.log("95959 userid is %o", params)    
@@ -216,7 +221,14 @@ export class PlansComponent implements OnInit {
 
     }
   private getServiceMDs(userid){
-    let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
+    if ( this .checkWorkingDir() == 'dev')
+     // this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dev/getMDtAs.php?adv='+ this.monthInc;
+      var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dev/getMDsByService.php?userid='+ userid
+      else  
+        var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/prod/getMDsByService.php?userid='+ userid
+    //  this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/prod/getMDtAs.php?adv='+ this.monthInc;
+
+   // let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
       for(let entry of this .serviceMDs){
