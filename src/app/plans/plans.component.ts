@@ -95,6 +95,7 @@ export class PlansComponent implements OnInit {
     if ( this .checkWorkingDir() == 'prod')
       this .wkDev = 'prod';
     this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this.wkDev+'/getMDtAs.php?adv='+ this.monthInc;  
+  console.log("9898 url is %o", this.getVacURL)  
     this. activatedRoute.queryParams.subscribe(params =>{
       this .queryParams = params
       this .userid = params['userid']
@@ -113,7 +114,7 @@ export class PlansComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this .wkDev = this . checkWorkingDir()                // get the Working Directory to switch dev/proc
+   // this .wkDev = this . checkWorkingDir()                // get the Working Directory to switch dev/proc
     console.log("110110 wkDev is %o", this .wkDev)
     this .dayOfMonth = new Date().getDate();
     this .reasonIdx = "1";
@@ -160,13 +161,13 @@ export class PlansComponent implements OnInit {
     }   
     checkWorkingDir(){
       var loc = window.location.pathname;
-      if (loc.length < 2)
-        return 'dev'
-      if (loc.includes('dev'))  
-        return 'dev'
-      if (loc.includes('prod'))
-        return 'prod'  
       console.log("116116  loc is %o ", loc)
+      let test = loc.length
+      if (loc.length < 5)
+        return 'dev'
+      else
+        return 'prod'
+  
     }
     unsorted() { }                                                      // user by alphabetization of the data by service 
     

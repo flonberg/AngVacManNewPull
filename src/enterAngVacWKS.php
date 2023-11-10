@@ -2,7 +2,7 @@
 require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
 require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
 header("Content-Type: application/json; charset=UTF-8");
-ini_set("error_log", "./log/enterAngVacError.txt");
+ini_set("error_log", "./Alog/enterAngVacError.txt");
 //header("Access-Control-Allow-Origin: *");	
 //$handle = connectDB_FL()	;
 if (strpos(getcwd(), 'dev') !== FALSE)
@@ -236,25 +236,8 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
-function sendAdmins($newTa, $goAwayerUserKey){
-	global $fp, $handleBB, $handle;
-	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $goAwayerUserKey;
-	$dB = new getDBData($selStr, $handleBB);
-	$assoc = $dB->getAssoc();
-	$selStr = "SELECT FirstName, LastName, Email, UserKey FROM other WHERE UserKey IN (";
-	foreach ($assoc as $key=>$val){
-		if ($val > 0)
-			$selStr .= " $val,";
-	}
-	$selStr = substr($selStr, 0, -1);
-	$selStr .= ")";
-	fwrite($fp, "selsrt 9999  8888is \r\n $selStr \r\n");
-	$dB = new getDBData($selStr, $handle);
-
-	$i = 0;
-	while ($assoc = $dB->getAssoc())
-		$row[$i++] = $assoc;
-	$dstr = print_r($row, true); fwrite($fp, $dstr);
+function sendAdmins($newTa){
+	
 }
 
 
@@ -314,6 +297,5 @@ function getAdmins(){
 		$row[$assoc['adminUserKey']] = $assoc;
 	return $row;	
 }
-
 
 

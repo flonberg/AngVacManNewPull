@@ -2,7 +2,9 @@
 require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
 require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
 header("Content-Type: application/json; charset=UTF-8");
-ini_set("error_log", "./log/enterAngVacError.txt");
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
+ini_set("error_log", "./Alog/enterAngVacError.txt");
 //header("Access-Control-Allow-Origin: *");	
 //$handle = connectDB_FL()	;
 if (strpos(getcwd(), 'dev') !== FALSE)
@@ -17,14 +19,7 @@ $handleBB = connectBB();
 $IAP = new InsertAndUpdates();
 $admins = getAdmins();
 $today = date('Y-m-d');
-$in = 0;
-do {																			// put index in case of permission failure
-	$fp = fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
-	if ($in++ > 5)
-		break;
-	}
-	while ($fp ===FALSE);
-	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
+	$fp = openLogFile();
 	$tableName = 'MDtimeAway';													// where the data is
 //		$tableName = 'MDtimeAway2BB';
  	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
@@ -32,9 +27,7 @@ do {																			// put index in case of permission failure
 	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputData is \r\n". $s);  // Create pretty form of data to log
 	$ret = array("result"=>"success");											// default response
 	//	$tst3 =  checkOverlap($data);												// check SELF overlap
-	/**
-	 * Check for overlap with same GoAwayer
-	 */
+
 	if (checkOverlap($data) == 1){
 		$rArray = array("result"=>0);											// signal for Display Warning Message						
 		$rData = json_encode($rArray);  echo $rData;							// send back responst
@@ -74,12 +67,15 @@ do {																			// put index in case of permission failure
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	fwrite($fp, "\r\n $insStr");
-	$res = $IAP->safeSQL($insStr, $handle);
-	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
-	$lastVidx = getSingle($selStr, 'vidx', $handle);
+	//$resource = $IAP->safeSQL($insStr, $handle);
+	$resource=sqlsrv_query($handle, $insStr);
+	sqlsrv_next_result($resource); 
+	sqlsrv_fetch($resource); 
+	$lastVidx = sqlsrv_get_field($resource, 0); 
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	sendAskForCoverage($lastVidx, $data);
-	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
+	//sendAdmins($lastVidx,$data->goAwayerUserKey );
+	$res = array("insVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
 
 /**
@@ -139,7 +135,7 @@ function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp, $level;
 	fwrite($fp, "\r\n vidx is $vidx");
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx;	// No 8 2021
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&role=acceptor";	// No 8 2021
 	fwrite($fp, "\r\n ". $link);
 	$mailAddress = $data->CovererEmail;								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
@@ -167,9 +163,25 @@ function sendAskForCoverage($vidx, $data)
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
-		echo $jData;
-		$sendMail->send();	
-		exit();
+	//	echo $jData;
+//		$sendMail->send();	
+	//	exit();
+}
+function openLogFile(){
+	$today = date('Y-m-d');
+	$in = 0;
+	do {																			// put index in case of permission failure
+		$fp = fopen("./log/enterAngVacLog".$today."_".$in.".txt", "a+");			
+		if ($in++ > 5)
+			break;
+		}
+		while ($fp ===FALSE);
+		$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
+		if ($_GET['debug'] == 1){
+			var_dump($fp);
+			exit();
+		}
+		return $fp;
 }
 /**
  * Finds the specific days of the overlap and sends email announcing them 
@@ -250,14 +262,12 @@ function sendAdmins($newTa, $goAwayerUserKey){
 	$selStr .= ")";
 	fwrite($fp, "selsrt 9999  8888is \r\n $selStr \r\n");
 	$dB = new getDBData($selStr, $handle);
-
 	$i = 0;
 	while ($assoc = $dB->getAssoc())
 		$row[$i++] = $assoc;
 	$dstr = print_r($row, true); fwrite($fp, $dstr);
-}
-
-
+	
+	}
 
 function getNeededParams($data){
 	global $handle, $fp;
@@ -314,6 +324,5 @@ function getAdmins(){
 		$row[$assoc['adminUserKey']] = $assoc;
 	return $row;	
 }
-
 
 
