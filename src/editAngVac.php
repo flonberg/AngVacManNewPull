@@ -156,8 +156,8 @@ $IAP = new InsertAndUpdates();
 		//$mailAddress = $assoCovererEmail;								
 		$mailAddress = "SLBATCHIS@partners.org";					////// who else?   \\\\\\\\\\\
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$subj = " Time Away for Dr". $merged['goAwayerLastName'];
-		$msg =    "Dr.".$merged['goAwayerLastName']." will be away from  $startDateString to $endDateString. ";
+		$subj = " Time Away for Dr. ". $merged['goAwayerLastName'];
+		$msg =    "Dr. ".$merged['goAwayerLastName']." will be away from  $startDateString to $endDateString. ";
 		$msg .= "<p>Dr. ".$merged['CovererLastName']." will be covering. </p>";
 		if (isset($merged['note']) && strlen($merged['note'])>  2)
 			$msg .="<p> ". $merged['note']."</p>";	

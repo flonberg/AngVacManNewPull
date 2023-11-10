@@ -17,14 +17,7 @@ $handleBB = connectBB();
 $IAP = new InsertAndUpdates();
 $admins = getAdmins();
 $today = date('Y-m-d');
-$in = 0;
-do {																			// put index in case of permission failure
-	$fp = fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
-	if ($in++ > 5)
-		break;
-	}
-	while ($fp ===FALSE);
-	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
+	$fp = openLogFile();
 	$tableName = 'MDtimeAway';													// where the data is
 //		$tableName = 'MDtimeAway2BB';
  	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
@@ -74,12 +67,15 @@ do {																			// put index in case of permission failure
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	fwrite($fp, "\r\n $insStr");
-	$res = $IAP->safeSQL($insStr, $handle);
-	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
-	$lastVidx = getSingle($selStr, 'vidx', $handle);
+	//$resource = $IAP->safeSQL($insStr, $handle);
+	$resource=sqlsrv_query($handle, $insStr);
+	sqlsrv_next_result($resource); 
+	sqlsrv_fetch($resource); 
+	$lastVidx = sqlsrv_get_field($resource, 0); 
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	sendAskForCoverage($lastVidx, $data);
-	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
+	sendAdmins($lastVidx,$data->goAwayerUserKey );
+	$res = array("insVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
 
 /**
@@ -139,7 +135,7 @@ function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp, $level;
 	fwrite($fp, "\r\n vidx is $vidx");
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx;	// No 8 2021
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&role=acceptor";	// No 8 2021
 	fwrite($fp, "\r\n ". $link);
 	$mailAddress = $data->CovererEmail;								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
@@ -167,9 +163,25 @@ function sendAskForCoverage($vidx, $data)
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
-		echo $jData;
-		$sendMail->send();	
-		exit();
+	//	echo $jData;
+//		$sendMail->send();	
+	//	exit();
+}
+function openLogFile(){
+	$today = date('Y-m-d');
+	$in = 0;
+	do {																			// put index in case of permission failure
+		$fp = fopen("./log/enterAngVacLog".$today."_".$in.".txt", "a+");			
+		if ($in++ > 5)
+			break;
+		}
+		while ($fp ===FALSE);
+		$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
+		if ($_GET['debug'] == 1){
+			var_dump($fp);
+			exit();
+		}
+		return $fp;
 }
 /**
  * Finds the specific days of the overlap and sends email announcing them 
@@ -236,11 +248,25 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
-function sendAdmins($newTa){
-	
-}
-
-
+function sendAdmins($newTa, $goAwayerUserKey){
+	global $fp, $handleBB, $handle;
+	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $goAwayerUserKey;
+	fwrite($fp, "selsrt is \r\n $selStr \r\n");
+	$dB = new getDBData($selStr, $handleBB);
+	$assoc = $dB->getAssoc();
+	$selStr = "SELECT FirstName, LastName, Email, UserKey FROM other WHERE UserKey IN (";
+	foreach ($assoc as $key=>$val){
+		if ($val > 0)
+			$selStr .= " $val,";
+	}
+	$selStr = substr($selStr, 0, -1);
+	$selStr .= ")";
+	$dB = new getDBData($selStr, $handle);
+	$i = 0;
+	while ($assoc = $dB->getAssoc())
+		$row[$i++] = $assoc;
+	$dstr = print_r($row, true); fwrite($fp, $dstr);
+	}
 
 function getNeededParams($data){
 	global $handle, $fp;
