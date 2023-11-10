@@ -74,11 +74,13 @@ do {																			// put index in case of permission failure
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
 	fwrite($fp, "\r\n $insStr");
-	$res = $IAP->safeSQL($insStr, $handle);
-	$selStr = "SELECT vidx FROM $tableName WHERE vidx = SCOPE_IDENTITY()";		// get the vidx of last inserted record
-	$lastVidx = getSingle($selStr, 'vidx', $handle);
+	$resource=sqlsrv_query($handle, $insStr);
+	sqlsrv_next_result($resource); 
+	sqlsrv_fetch($resource); 
+	$lastVidx = sqlsrv_get_field($resource, 0); 
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	sendAskForCoverage($lastVidx, $data);
+	sendAdmins($lastVidx, $data);
 	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -169,7 +171,6 @@ function sendAskForCoverage($vidx, $data)
 		$jData = json_encode($rData);
 		echo $jData;
 		$sendMail->send();	
-		exit();
 }
 /**
  * Finds the specific days of the overlap and sends email announcing them 
@@ -236,12 +237,16 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
-function sendAdmins($newTa, $goAwayerUserKey){
+function sendAdmins($vidx, $newTa){
+
 	global $fp, $handleBB, $handle;
-	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $goAwayerUserKey;
+	$dstr = print_r($newTa, true); fwrite($fp, "\r\n newTa is \r\n ");fwrite($fp, $dstr);	
+	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
+fwrite($fp, "\r\n\ 7777444 $selStr");	
 	$dB = new getDBData($selStr, $handleBB);
 	$assoc = $dB->getAssoc();
-	$selStr = "SELECT FirstName, LastName, Email, UserKey FROM other WHERE UserKey IN (";
+	//SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID FROM other LEFT JOIN users on other.UserKey = users.UserKey WHERE other.UserKey IN ( 25, 361, 814, 928, 928) 
+	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
 	foreach ($assoc as $key=>$val){
 		if ($val > 0)
 			$selStr .= " $val,";
@@ -252,8 +257,15 @@ function sendAdmins($newTa, $goAwayerUserKey){
 	$dB = new getDBData($selStr, $handle);
 
 	$i = 0;
-	while ($assoc = $dB->getAssoc())
+	while ($assoc = $dB->getAssoc()){
 		$row[$i++] = $assoc;
+		$mailAddress = $assoc['Email'];
+		$mailAddress = 'flonberg@mgh.harvard.edu';
+		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
+		$msg = "Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate;
+		$msg .= "<p> To see details of this Time click on the below link. </p>";
+	
+	}
 	$dstr = print_r($row, true); fwrite($fp, $dstr);
 }
 

@@ -251,6 +251,7 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 function sendAdmins($newTa, $goAwayerUserKey){
 	global $fp, $handleBB, $handle;
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $goAwayerUserKey;
+fwrite($fp, "\r\n  44444 $selStr \r\n");	
 	$dB = new getDBData($selStr, $handleBB);
 	$assoc = $dB->getAssoc();
 	$selStr = "SELECT FirstName, LastName, Email, UserKey FROM other WHERE UserKey IN (";

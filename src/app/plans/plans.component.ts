@@ -826,6 +826,7 @@ submitTA(){                                                                  // 
   console.log("832832 url is %o", url);    
       this .http.post(url, jData).subscribe(ret=>{
           this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
+          if (this.postRes)
             this .overlap = this. postRes['result'] == 0 ? true : false;    // turn on Warning message. 
             {
               let faultArray = this. safeJSONparse(this. postRes);
