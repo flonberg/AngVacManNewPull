@@ -261,7 +261,6 @@
       </tr>
     </table> 
     <table class = 'toFit' >
-      <caption> VidxShown {{ vacEdit.vidx }} </caption>
       <tr>
         <th> Covering Physician</th> <th  *ngIf = 'vacEdit.WTM_Change_Needed == 1' >WTM Coverer</th><th  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > WTM-Date</th> 
         <th *ngIf = "vacEdit.WTMnote && vacEdit.WTMnote.length > 2">WTM Note </th>
@@ -286,6 +285,7 @@
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please select a WTM date and supply any additional parameters such as WTM location.</p>
     <table *ngIf = vidxToSee class='toFit'>
           <tr>
+
             <td> 
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Start Date </mat-label>
@@ -298,6 +298,7 @@
                 <input matInput placeholder="Ex. Pizza" [value]="toSeeParams['endDateConvent']"  readonly >
               </mat-form-field>
              </td> 
+   
             <td >   
                 <mat-radio-group>
                   <mat-radio-button class="example-margin" value="accept" (click) = "editCovParams('CovAccepted', 1)" >Accept</mat-radio-button>
