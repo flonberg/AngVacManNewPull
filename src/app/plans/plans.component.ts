@@ -520,12 +520,19 @@ selectedOption:string
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
+  console.log("513513 vacEdit %o", vacEdit)
   this .tAparams ={} as tAparams;
    this .selectedOption = "1";
   let isUserGoAwayer = this. userid.includes(vacEdit['userid'])
   console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
-   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'M-d-yyyy')
-   this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'M-d-yyyy')
+  if (typeof vacEdit.endDate === 'object')
+   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'M-dd-yyyy')
+  else 
+    this .startDateConvent = vacEdit.startDate
+  if (typeof vacEdit.endDate === 'object')
+    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'M-dd-yyyy')
+  else 
+    this .endDateConvent = vacEdit.endDate
    if (vacEdit.WTMdate.includes('1900')) 
     this .WTMDateConvent = '';  
     else 
