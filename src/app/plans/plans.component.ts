@@ -105,8 +105,6 @@ export class PlansComponent implements OnInit {
         this .getTheVidxToSee();
         this .showAcceptance = true;
         this .CovererView = true; 
-     
-
       }
    //   this .getVacURL += '&userid=suit'
       this .getTheData();
@@ -179,6 +177,7 @@ export class PlansComponent implements OnInit {
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
+        this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
         console.log("818181 %o", this .toSeeParams)
         if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
           this .isLoggedInUserCoverer = true;
@@ -520,13 +519,15 @@ public daysBeforeCalcStart(vac){
   return 0;
 }
 selectedOption:string
-
+goAwayerLastName2: string = ''
 /**
  * Used when user clicks on her tA, to show the edit controls. 
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
   console.log("513513 vacEdit %o --- this.userid %o", vacEdit, this .userid)
+  console.log("530530 %o", this. toSeeParams)
+ // this. goAwayerLastName2 = vacEdit.goAwayerLastName
   this .tAparams ={} as tAparams;
    this .selectedOption = "1";
   let isUserGoAwayer = false

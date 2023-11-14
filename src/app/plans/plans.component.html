@@ -252,7 +252,7 @@
   <!--   THIRD PARTY   view-->
   <div class='raised' *ngIf = 'showReadOnly ' >
     <table class='toFit' *ngIf = showReadOnly>
-      <caption> Time Away for Dr. {{ vacEdit.LastName }}  </caption>
+      <caption *ngIf = "vacEdit.goAwayerLastName"> Time Away for Dr. {{ vacEdit.goAwayerLastName}}  </caption>
       <tr >
           <th> Start- Date</th><th> End Date</th> <th> Reason   </th> <th> Note </th>
       </tr> 
@@ -278,7 +278,7 @@
 <!--       Div for Acceptor       -->
 
    <div *ngIf = 'isLoggedInUserCoverer && showAcceptance' class='raised'>
-    <span> Time Away for Dr. {{ vacEdit.goAwayerLastName }} </span>
+    <span > Time Away for Dr. {{ vacEdit.goAwayerLastName }} </span>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 0 ||   toSeeParams['WTM_self'] == 1"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </p>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away.</p>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > You are also being asked to cover Dr. {{ toSeeParams['goAwayerLastName']  }}'s WTM.  .</p>
