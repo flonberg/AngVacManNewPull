@@ -72,16 +72,18 @@ do {																			// put index in case of permission failure
 	}
 	$tableName = 
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
-				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT SCOPE_IDENTITY()";
+				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
+				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT @@IDENTITY as id";
 	fwrite($fp, "\r\n $insStr");
-	$resource=sqlsrv_query($handle, $insStr);
-	sqlsrv_next_result($resource); 
-	sqlsrv_fetch($resource); 
-	$lastVidx = sqlsrv_get_field($resource, 0); 
+	$stmt=sqlsrv_query($handle, $insStr);
+	$next_result = sqlsrv_next_result($stmt); 
+	ob_start(); var_dump($next_result);$data1 = ob_get_clean();fwrite($fp, "\r\n next_result \r\n ". $data1);
+	$row = sqlsrv_fetch_array($stmt);
+	$lastVidx = $row['id'];
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	sendAskForCoverage($lastVidx, $data);
 	sendStaff($lastVidx, $data);
-	$res = array("result"=>"Success"); $jD = json_encode($res); echo $jD;
+	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
 
 /**

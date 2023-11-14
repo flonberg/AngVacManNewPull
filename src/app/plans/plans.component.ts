@@ -851,6 +851,7 @@ submitTA(){                                                                  // 
    else {
      console.log("756 cheTAparams is return false");
    }   
+   console.log("854854 ret from enterAngVac is %o", this.safeJSONparse(this .postRes))
  }
 safeJSONparse(jsonString) {
   var valid = false;
