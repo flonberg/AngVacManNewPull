@@ -148,7 +148,7 @@ function sendAskForCoverage($vidx, $data)
 	$mailAddress = $data->CovererEmail;								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$subj = "Coverage for Time Away";
-	$msg =    "Dr.".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
+	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
 	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
 		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
 	$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
@@ -283,7 +283,7 @@ function sendStaff($vidx, $newTa){
 			'; 
 		fwrite($fp, $msg);	
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-	//	$sendMail->send();		
+		$sendMail->send();		
 	}
 	$dstr = print_r($row, true); fwrite($fp, $dstr);
 }

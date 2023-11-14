@@ -105,11 +105,14 @@ export class PlansComponent implements OnInit {
         this .getTheVidxToSee();
         this .showAcceptance = true;
         this .CovererView = true; 
+     
+
       }
    //   this .getVacURL += '&userid=suit'
       this .getTheData();
       this .getServiceMDs(this .userid)
       this. getMDService();
+  
     })
    }
 
@@ -172,7 +175,8 @@ export class PlansComponent implements OnInit {
     unsorted() { }                                                      // user by alphabetization of the data by service 
     
   private getTheVidxToSee(){
-    let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
+   // let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
+    let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
         console.log("818181 %o", this .toSeeParams)
@@ -184,6 +188,8 @@ export class PlansComponent implements OnInit {
         if (this .toSeeParams['CovAccepted'] == 1)
           this .covAccepted = true;  
         this. WTMnote = this .toSeeParams['WTMnote']  
+        this .showEditFunc(this .toSeeParams)
+  
     })
 
   }
@@ -520,31 +526,34 @@ selectedOption:string
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
-  console.log("513513 vacEdit %o", vacEdit)
+
+  console.log("513513 vacEdit %o --- this.userid %o", vacEdit, this .userid)
   this .tAparams ={} as tAparams;
    this .selectedOption = "1";
-  let isUserGoAwayer = this. userid.includes(vacEdit['userid'])
+  let isUserGoAwayer = false
+  if (this.userid && this. userid.includes(vacEdit['userid']))
+    isUserGoAwayer = true
   console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
-  if (typeof vacEdit.endDate === 'object')
-   this .startDateConvent = this.datePipe.transform(vacEdit.startDate, 'M-dd-yyyy')
-  else 
     this .startDateConvent = vacEdit.startDate
-  if (typeof vacEdit.endDate === 'object')
-    this .endDateConvent = this.datePipe.transform(vacEdit.endDate, 'M-dd-yyyy')
-  else 
     this .endDateConvent = vacEdit.endDate
-   if (vacEdit.WTMdate.includes('1900')) 
-    this .WTMDateConvent = '';  
-    else 
-      this .WTMDateConvent = this.datePipe.transform(vacEdit.WTMdate, 'M-d-yyyy')
   console.log("458 WTMDateConvent is %o", this.WTMDateConvent)    
   this .tAparams.vidx  = vacEdit.vidx;
    this .vidxToEdit = vacEdit.vidx;                   // for debugging
   // this .tAparams.note  = vacEdit.note;
    this .selectedOption = String(vacEdit.reasonIdx)
    this .vacEdit = vacEdit; 
-   this. showEdit =  this. userid.includes(vacEdit['userid']) 
-   this. showReadOnly =  !this. userid.includes(vacEdit['userid']) 
+   this. showReadOnly = true
+   if (this.userid &&  !this. userid.includes(vacEdit['userid']) ){
+    this .showReadOnly = true
+    this .showEdit = false
+  }
+  else if (this.userid && this. userid.includes(vacEdit['userid']) ){
+    this .showEdit = true
+    this .showReadOnly = false
+  }
+  else 
+    this .showReadOnly = true
+ return 
  } 
 private validDate(dateString){
   if (dateString.includes('1900'))

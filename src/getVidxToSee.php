@@ -12,9 +12,9 @@ $handle = connectDB_FL();
 	$selStr = "SELECT * FROM $tableName WHERE vidx = ".$_GET['vidxToSee'];
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
-	$assoc['startDateConvent'] = formatDate($assoc['startDate']);
-	$assoc['endDateConvent'] = formatDate($assoc['endDate']);
-	$assoc['startDateConvent'] = formatDate($assoc['startDate']);
+	$assoc['startDate'] = formatDate($assoc['startDate']);
+	$assoc['endDate'] = formatDate($assoc['endDate']);
+	//$assoc['startDateConvent'] = formatDate($assoc['startDate']);
 	$assoc['WTMnote'] = $assoc['WTMnote'];
 	if ($assoc['WTMdate'])
 		$assoc['WTMDateConvent'] = formatDate($assoc['WTMdate']);
@@ -25,7 +25,8 @@ $handle = connectDB_FL();
 	$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['goAwayerUserKey']."'";
 	$assoc['goAwayerLastName'] = getSingle($selStr, 'LastName', $handle);
 	$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['coverageA']."'";
-		$assoc['CovererLastName'] = getSingle($selStr, 'LastName', $handle);
+	$assoc['CovererLastName'] = getSingle($selStr, 'LastName', $handle);
+	$assoc['covererDetails']['LastName'] =$assoc['CovererLastName'] ;
 	if (intval($assoc['loggedInUserKey']) == intval($assoc['CoverageA']))
 		$assoc['IsUserCoverer'] = true;
 	$ss = print_r($assoc, true); fwrite($fp, $ss);
@@ -35,7 +36,7 @@ $handle = connectDB_FL();
 
 	function formatDate($dt){
 		try  {
-			return $dt->format('m-d-Y');
+			return $dt->format('Y-m-d');
 		}
 		catch(Exception $e){
 		//	echo $e->getMessage();
