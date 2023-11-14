@@ -526,7 +526,6 @@ selectedOption:string
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
-
   console.log("513513 vacEdit %o --- this.userid %o", vacEdit, this .userid)
   this .tAparams ={} as tAparams;
    this .selectedOption = "1";
