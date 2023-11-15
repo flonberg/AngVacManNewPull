@@ -186,8 +186,7 @@ export class PlansComponent implements OnInit {
           this .WTMDateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'M-d-yyyy')
         if (this .toSeeParams['CovAccepted'] == 1)
           this .covAccepted = true;  
-        this. WTMnote = this .toSeeParams['WTMnote']  
-  console.log("190190 toSeeParams %o", this .toSeeParams)      
+        this. WTMnote = this .toSeeParams['WTMnote']    
         this .showEditFunc(this .toSeeParams)
     })
   }
@@ -521,6 +520,8 @@ goAwayerLastName2: string = ''
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
+this .toSeeParams = vacEdit
+  console.log("190190 toSeeParams %o", this .toSeeParams)    
   this .tAparams ={} as tAparams;
    this .selectedOption = "1";
   let isUserGoAwayer = false
