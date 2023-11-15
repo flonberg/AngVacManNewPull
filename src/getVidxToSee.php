@@ -36,7 +36,7 @@ $handle = connectDB_FL();
 
 	function formatDate($dt){
 		try  {
-			return $dt->format('Y-m-d');
+			return $dt->format('d-m-Y');
 		}
 		catch(Exception $e){
 		//	echo $e->getMessage();

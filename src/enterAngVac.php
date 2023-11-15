@@ -143,7 +143,8 @@ function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp, $level;
 	fwrite($fp, "\r\n vidx is $vidx");
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx;	// No 8 2021
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	fwrite($fp, "\r\n ". $link);
 	$mailAddress = $data->CovererEmail;								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
@@ -257,7 +258,7 @@ function sendStaff($vidx, $newTa){
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
-
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?vidxToSee=".$vidx;	
 	while ($assoc = $dB->getAssoc()){
 		$row[$i] = $assoc;
 	//	$mailAddress = $assoc['Email'];

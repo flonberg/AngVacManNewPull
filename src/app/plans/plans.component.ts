@@ -90,6 +90,7 @@ export class PlansComponent implements OnInit {
   isUserAnMD = false;
   wkDev = "dev";
   queryParams:{}
+  showAcceptor: boolean = false;
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
 
     if ( this .checkWorkingDir() == 'prod')
@@ -98,19 +99,21 @@ export class PlansComponent implements OnInit {
   console.log("9898 url is %o", this.getVacURL)  
     this. activatedRoute.queryParams.subscribe(params =>{
       this .queryParams = params
+      if (this.queryParams['acceptor'] == '1'){
+        this .showAcceptance = true
+        this .showReadOnly = false
+        this .showEdit = false
+      }
       this .userid = params['userid']
   console.log("95959 userid is %o", this.queryParams)    
       this .vidxToSee = params['vidxToSee']          // used by Coverer to Accept Coverage and Select WTM date
       if (params['vidxToSee']){
         this .getTheVidxToSee();
-        this .showAcceptance = true;
         this .CovererView = true; 
       }
-   //   this .getVacURL += '&userid=suit'
       this .getTheData();
       this .getServiceMDs(this .userid)
       this. getMDService();
-  
     })
    }
 
@@ -147,9 +150,10 @@ export class PlansComponent implements OnInit {
         service: 0
       }
       this. activatedRoute.queryParams.subscribe(params =>{
+        this .queryParams = params
         this .userid = params['userid']
         this .tAparams.userid = params['userid']
-        console.log("125 this.userid is  %o", this .userid)
+        console.log("125 queryParams is  %o", this.queryParams)
         if (this .userid){
           let url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this.wkDev+'/getLoggedInUserKey.php?userid='+ this .userid
           this .http.get(url).subscribe(res =>{
@@ -168,29 +172,23 @@ export class PlansComponent implements OnInit {
         return 'dev'
       else
         return 'prod'
-  
     }
     unsorted() { }                                                      // user by alphabetization of the data by service 
     
   private getTheVidxToSee(){
-   // let url  = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
         this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
-        console.log("818181 %o", this .toSeeParams)
-        if (+this .toSeeParams['loggedInUserKey'] ==this .toSeeParams['coverageA']){
+        if (+this .toSeeParams['loggedInUserKey'] == this .toSeeParams['coverageA'])
           this .isLoggedInUserCoverer = true;
-        }
         if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
           this .WTMDateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'M-d-yyyy')
         if (this .toSeeParams['CovAccepted'] == 1)
           this .covAccepted = true;  
         this. WTMnote = this .toSeeParams['WTMnote']  
         this .showEditFunc(this .toSeeParams)
-  
     })
-
   }
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
@@ -496,13 +494,10 @@ console.log("376 name is %o", name)
       console.log("Invalid choice"); 
       break;              
    }
-
   }
   this .changesSavedShow = false;
   console.log("419  in editTaParams tAparams is %o name is %o", this. tAparams, name)    
   this .tAparams.vidx = this .vidxToSee  
-
-
 }
 /**
  * Calculate the number of days from firstDayOnCalendar to start of tA
@@ -525,25 +520,19 @@ goAwayerLastName2: string = ''
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
-  console.log("513513 vacEdit %o --- this.userid %o", vacEdit, this .userid)
-  console.log("530530 %o", this. toSeeParams)
- // this. goAwayerLastName2 = vacEdit.goAwayerLastName
   this .tAparams ={} as tAparams;
    this .selectedOption = "1";
   let isUserGoAwayer = false
   if (this.userid && this. userid.includes(vacEdit['userid']))
     isUserGoAwayer = true
-  console.log("276 vacEdit %o  --- %o --- %o", vacEdit, this. userid, isUserGoAwayer) 
-    this .startDateConvent = vacEdit.startDate
-    this .endDateConvent = vacEdit.endDate
-  console.log("458 WTMDateConvent is %o", this.WTMDateConvent)    
+  this .startDateConvent = vacEdit.startDate
+  this .endDateConvent = vacEdit.endDate  
   this .tAparams.vidx  = vacEdit.vidx;
-   this .vidxToEdit = vacEdit.vidx;                   // for debugging
-  // this .tAparams.note  = vacEdit.note;
-   this .selectedOption = String(vacEdit.reasonIdx)
-   this .vacEdit = vacEdit; 
-   this. showReadOnly = true
-   if (this.userid &&  !this. userid.includes(vacEdit['userid']) ){
+  this .vidxToEdit = vacEdit.vidx;                   // for debugging
+  this .selectedOption = String(vacEdit.reasonIdx)
+  this .vacEdit = vacEdit; 
+  this. showReadOnly = true
+  if (this.userid &&  !this. userid.includes(vacEdit['userid']) ){
     this .showReadOnly = true
     this .showEdit = false
   }
@@ -553,14 +542,12 @@ goAwayerLastName2: string = ''
   }
   else 
     this .showReadOnly = true
+  if (this .showAcceptance){
+    this .showReadOnly = false
+    this .showAcceptor = true
+  }
  return 
  } 
-private validDate(dateString){
-  if (dateString.includes('1900'))
-    return '';
-  else  
-    return dateString;
-}
  /**
   * Determines if a day on Calendar Top is a Weekend or Today
   * @param d 
@@ -568,9 +555,6 @@ private validDate(dateString){
   */ 
  getDateClass(d: Date){
     let today = new Date()
-
- 
-
     if (d.getDate() === today.getDate()  && 
        d.getMonth() === today.getMonth()  &&
        d.getFullYear() === today.getFullYear()) 
