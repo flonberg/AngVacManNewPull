@@ -172,7 +172,7 @@
         </td>
         <td class='h50' >
           <div class='center'>
-            <mat-form-field appearance="fill"  class='h50'  >
+            <mat-form-field appearance="fill" *ngIf = showEdit  class='h50'  >
               <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="editDate('endDate', $event)" placeholder=" {{ endDateConvent}}">
               <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
               <mat-datepicker #picker2></mat-datepicker>
@@ -181,7 +181,7 @@
         </td>
         <td class='h50' >
             <div class='center'> 
-              <mat-form-field appearance="fill">
+              <mat-form-field appearance="fill"  *ngIf = showEdit  class='h50' >
                 <mat-select (selectionChange)="editTaParams( 'reasonIdx', $event)"  [value]="selectedOption">
                   <mat-option value="1">Personal Vacation</mat-option>
                   <mat-option value="4">Other </mat-option>
@@ -235,7 +235,7 @@
       </td> 
       <td  *ngIf = "vacEdit.WTM_self == 1 && vacEdit.WTM_Change_Needed == 1">
         <mat-form-field appearance="fill" class='h50'  >
-          <mat-label>{{ validDate(vacEdit.WTMdate) }}</mat-label>
+          <mat-label>{{ vacEdit.WTMdate}}</mat-label>
           <input matInput [(ngModel)]="startDate" [matDatepicker]="picker22" (dateChange)="WTMparam($event, 'WTMdate')" 
             placeholder=" {{ vacEdit.WTMdate }} " [readonly] =  "vacEdit.WTM_self == 0"   >
           <mat-datepicker-toggle matSuffix [for]="picker22" *ngIf =   "vacEdit.WTM_self == 1"    ></mat-datepicker-toggle>

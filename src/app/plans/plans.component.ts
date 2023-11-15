@@ -529,6 +529,7 @@ this .toSeeParams = vacEdit
     isUserGoAwayer = true
   this .startDateConvent = vacEdit.startDate
   this .endDateConvent = vacEdit.endDate  
+  this .WTMDateConvent = vacEdit.WTMdate
   this .tAparams.vidx  = vacEdit.vidx;
   this .vidxToEdit = vacEdit.vidx;                   // for debugging
   this .selectedOption = String(vacEdit.reasonIdx)
