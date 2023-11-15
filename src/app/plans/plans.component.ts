@@ -187,6 +187,7 @@ export class PlansComponent implements OnInit {
         if (this .toSeeParams['CovAccepted'] == 1)
           this .covAccepted = true;  
         this. WTMnote = this .toSeeParams['WTMnote']  
+  console.log("190190 toSeeParams %o", this .toSeeParams)      
         this .showEditFunc(this .toSeeParams)
     })
   }

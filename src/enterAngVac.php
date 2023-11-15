@@ -143,7 +143,7 @@ function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp, $level;
 	fwrite($fp, "\r\n vidx is $vidx");
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
+	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	fwrite($fp, "\r\n ". $link);
 	$mailAddress = $data->CovererEmail;								
@@ -258,9 +258,10 @@ function sendStaff($vidx, $newTa){
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?vidxToSee=".$vidx;	
+
 	while ($assoc = $dB->getAssoc()){
 		$row[$i] = $assoc;
+		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	
 	//	$mailAddress = $assoc['Email'];
 		$mailAddress = 'flonberg@mgh.harvard.edu';
 		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;

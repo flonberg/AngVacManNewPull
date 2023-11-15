@@ -247,17 +247,17 @@
     </tr>
    </table>
   </div>
-  
+
 
   <!--   THIRD PARTY   view-->
   <div class='raised' *ngIf = 'showReadOnly ' >
     <table class='toFit' *ngIf = showReadOnly>
-      <caption *ngIf = "vacEdit.goAwayerLastName"> Time Away for Dr. {{ vacEdit.goAwayerLastName}}  </caption>
+      <caption *ngIf = "vacEdit.goAwayerLastName"> Time-Away for Dr. {{ vacEdit.goAwayerLastName}}  </caption>
       <tr >
           <th> Start- Date</th><th> End Date</th> <th> Reason   </th> <th> Note </th>
       </tr> 
       <tr>
-          <td>  {{ vacEdit.startDate }} </td> <td>  {{ vacEdit.endDate }} </td> <td>{{ reasonArr[reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
+          <td>  {{ toSeeParams.startDate }} </td> <td>  {{ toSeeParams.endDate }} </td> <td>{{ reasonArr[toSeeParams.reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
       </tr>
     </table> 
     <table class = 'toFit' >
