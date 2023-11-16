@@ -3,6 +3,11 @@ require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
 require_once('workdays.inc');
 require_once('dosimetristList.php');
 include('isHollidayLib.php');
+ini_set("error_log", "./log/getVidxError.txt");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
 $handle = connectDB_FL();
 	$tableName = 'MDtimeAway';
 	$fp = fopen("./Alog/getVidxToSeeLog.txt", "w+");
@@ -17,7 +22,8 @@ $handle = connectDB_FL();
 	//$assoc['startDateConvent'] = formatDate($assoc['startDate']);
 	$assoc['WTMnote'] = $assoc['WTMnote'];
 	if ($assoc['WTMdate'])
-		$assoc['WTMDateConvent'] = formatDate($assoc['WTMdate']);
+		$assoc['WTM_Date'] = formatDate($assoc['WTMdate']);
+	$dstr = print_r($assoc, true); fwrite($fp, $dstr);
 	$selStr = "SELECT UserKey from users WHERE UserID = '".$_GET['userid']."'";
 	$assoc['loggedInUserKey'] = getSingle($selStr, 'UserKey', $handle);
 	$selStr = "SELECT UserKey from users WHERE UserID = '".$assoc['userid']."'";
@@ -27,18 +33,19 @@ $handle = connectDB_FL();
 	$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['coverageA']."'";
 	$assoc['CovererLastName'] = getSingle($selStr, 'LastName', $handle);
 	$assoc['covererDetails']['LastName'] =$assoc['CovererLastName'] ;
-	if (intval($assoc['loggedInUserKey']) == intval($assoc['CoverageA']))
-		$assoc['IsUserCoverer'] = true;
+	if ($assoc['coverageA'])
+		if (  intval($assoc['loggedInUserKey']) == intval($assoc['coverageA']))
+			$assoc['IsUserCoverer'] = true;
 	$ss = print_r($assoc, true); fwrite($fp, $ss);
 	$jData = json_encode($assoc);
 	echo $jData;
 	exit();
-
 	function formatDate($dt){
+		global $fp;
 		try  {
-			return $dt->format('d-m-Y');
+			return $dt->format('m/d/Y');
 		}
 		catch(Exception $e){
-		//	echo $e->getMessage();
+		  fwrite($fp,  $e->getMessage());
 		}
 	}

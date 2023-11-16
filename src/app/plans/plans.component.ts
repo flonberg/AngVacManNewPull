@@ -234,6 +234,7 @@ export class PlansComponent implements OnInit {
           this .isUserAnMD = true;
               }    
 console.log("198 serviceMDs is %o", this. serviceMDs)
+console.log("237237 isUserMD is %o", this .isUserAnMD)
           })
   }
 

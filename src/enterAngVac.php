@@ -2,6 +2,9 @@
 require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
 //require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
 header("Content-Type: application/json; charset=UTF-8");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 ini_set("error_log", "./log/enterAngVacError.txt");
 //header("Access-Control-Allow-Origin: *");	
 //$handle = connectDB_FL()	;

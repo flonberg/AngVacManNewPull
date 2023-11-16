@@ -285,17 +285,16 @@
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please select a WTM date and supply any additional parameters such as WTM location.</p>
     <table *ngIf = vidxToSee class='toFit'>
           <tr>
-
             <td> 
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Start Date </mat-label>
-                <input matInput placeholder="Ex. Pizza" [value]="toSeeParams['startDateConvent']"  readonly >
+                <input matInput  [value]="toSeeParams['startDate']"  readonly >
               </mat-form-field>
             </td>
              <td> 
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>End Date </mat-label>
-                <input matInput placeholder="Ex. Pizza" [value]="toSeeParams['endDateConvent']"  readonly >
+                <input matInput  [value]="toSeeParams['endDate']"  readonly >
               </mat-form-field>
              </td> 
    
@@ -305,11 +304,11 @@
                   <mat-radio-button class="example-margin" value="decline"  (click) = "editCovParams('CovAccepted', 0)" >Decline</mat-radio-button>
                 </mat-radio-group>
             </td> 
-       
-            <td *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
-              <mat-form-field  class='h50'  >
-                <mat-label>WTM Date </mat-label>
-                <input matInput [(ngModel)]="startDate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)" placeholder=" {{ toSeeParams['WTMDateConvent'] }}">
+            <td style="text-align:right;">WTM Date</td>
+            <td class='h50' *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
+              <mat-form-field  appearance="fill"  class='h50'  >
+                <input matInput [(ngModel)]="WTMdate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)"
+                   placeholder= "{{toSeeParams['WTM_Date']}}">
                 <mat-datepicker-toggle matSuffix [for]="picker5"    ></mat-datepicker-toggle>
                 <mat-datepicker #picker5></mat-datepicker>
               </mat-form-field>
