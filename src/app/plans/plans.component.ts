@@ -179,6 +179,7 @@ export class PlansComponent implements OnInit {
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
+console.log("182182 toSeeParams from %o", this. toSeeParams)        
         this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
         if (+this .toSeeParams['loggedInUserKey'] == this .toSeeParams['coverageA'])
           this .isLoggedInUserCoverer = true;
@@ -190,6 +191,42 @@ export class PlansComponent implements OnInit {
         this .showEditFunc(this .toSeeParams)
     })
   }
+  /**
+ * Used when user clicks on her tA, to show the edit controls. 
+ * @param vacEdit 
+ */
+ private showEditFunc(vacEdit){
+  this .toSeeParams = vacEdit
+    console.log("190190 toSeeParams %o", this .toSeeParams)    
+    this .tAparams ={} as tAparams;
+     this .selectedOption = "1";
+    let isUserGoAwayer = false
+    if (this.userid && this. userid.includes(vacEdit['userid']))
+      isUserGoAwayer = true
+    this .startDateConvent = vacEdit.startDate
+    this .endDateConvent = vacEdit.endDate  
+    this .WTMDateConvent = vacEdit.WTMdate
+    this .tAparams.vidx  = vacEdit.vidx;
+    this .vidxToEdit = vacEdit.vidx;                   // for debugging
+    this .selectedOption = String(vacEdit.reasonIdx)
+    this .vacEdit = vacEdit; 
+    this. showReadOnly = true
+    if (this.userid &&  !this. userid.includes(vacEdit['userid']) ){
+      this .showReadOnly = true
+      this .showEdit = false
+    }
+    else if (this.userid && this. userid.includes(vacEdit['userid']) ){
+      this .showEdit = true
+      this .showReadOnly = false
+    }
+    else 
+      this .showReadOnly = true
+    if (this .showAcceptance){
+      this .showReadOnly = false
+      this .showAcceptor = true
+    }
+   return 
+   } 
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
    */  
@@ -516,42 +553,7 @@ public daysBeforeCalcStart(vac){
 }
 selectedOption:string
 goAwayerLastName2: string = ''
-/**
- * Used when user clicks on her tA, to show the edit controls. 
- * @param vacEdit 
- */
- private showEditFunc(vacEdit){
-this .toSeeParams = vacEdit
-  console.log("190190 toSeeParams %o", this .toSeeParams)    
-  this .tAparams ={} as tAparams;
-   this .selectedOption = "1";
-  let isUserGoAwayer = false
-  if (this.userid && this. userid.includes(vacEdit['userid']))
-    isUserGoAwayer = true
-  this .startDateConvent = vacEdit.startDate
-  this .endDateConvent = vacEdit.endDate  
-  this .WTMDateConvent = vacEdit.WTMdate
-  this .tAparams.vidx  = vacEdit.vidx;
-  this .vidxToEdit = vacEdit.vidx;                   // for debugging
-  this .selectedOption = String(vacEdit.reasonIdx)
-  this .vacEdit = vacEdit; 
-  this. showReadOnly = true
-  if (this.userid &&  !this. userid.includes(vacEdit['userid']) ){
-    this .showReadOnly = true
-    this .showEdit = false
-  }
-  else if (this.userid && this. userid.includes(vacEdit['userid']) ){
-    this .showEdit = true
-    this .showReadOnly = false
-  }
-  else 
-    this .showReadOnly = true
-  if (this .showAcceptance){
-    this .showReadOnly = false
-    this .showAcceptor = true
-  }
- return 
- } 
+
  /**
   * Determines if a day on Calendar Top is a Weekend or Today
   * @param d 

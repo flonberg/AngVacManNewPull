@@ -18,6 +18,7 @@ $handle = connectDB_FL();
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
 	$assoc['startDate'] = formatDate($assoc['startDate']);
+	$assoc['startDate_m-d-y'] = formatDate($assoc['startDate']);
 	$assoc['endDate'] = formatDate($assoc['endDate']);
 	//$assoc['startDateConvent'] = formatDate($assoc['startDate']);
 	$assoc['WTMnote'] = $assoc['WTMnote'];
@@ -42,10 +43,13 @@ $handle = connectDB_FL();
 	exit();
 	function formatDate($dt){
 		global $fp;
-		try  {
-			return $dt->format('m/d/Y');
+		if (is_object($dt))
+			try  {
+				return $dt->format('m/d/Y');
+			}
+			catch(Exception $e){
+			fwrite($fp,  $e->getMessage());
 		}
-		catch(Exception $e){
-		  fwrite($fp,  $e->getMessage());
-		}
+		else
+			return $dt;
 	}
