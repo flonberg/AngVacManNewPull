@@ -261,7 +261,6 @@ console.log("182182 toSeeParams from %o", this. toSeeParams)
       }  
     }
    console.log("201 byServArr is %o", byServArr)
-
     }
   private getServiceMDs(userid){
     var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMDsByService.php?userid='+ userid
@@ -852,6 +851,8 @@ submitTA(){                                                                  // 
      console.log("756 cheTAparams is return false");
    }   
    console.log("854854 ret from enterAngVac is %o", this.safeJSONparse(this .postRes))
+   if (this .wkDev == 'prod')
+    location.reload();
  }
 safeJSONparse(jsonString) {
   var valid = false;
