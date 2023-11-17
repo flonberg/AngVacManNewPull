@@ -469,7 +469,8 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
   this .changesSavedShow = true;
   this .showAcceptance = false; 
  // this .ngOnInit();
-
+  if (this .wkDev == 'prod')
+    location.reload();
 }
 private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
