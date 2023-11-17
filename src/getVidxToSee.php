@@ -23,7 +23,11 @@ $handle = connectDB_FL();
 	//$assoc['startDateConvent'] = formatDate($assoc['startDate']);
 	$assoc['WTMnote'] = $assoc['WTMnote'];
 	if ($assoc['WTMdate'])
-		$assoc['WTM_Date'] = formatDate($assoc['WTMdate']);
+		if (strpos($assoc['WTMdate'], '1900') === FALSE)
+			$assoc['WTMdate'] = formatDate($assoc['WTMdate']);
+		else {
+			$assoc['WTMdate'] = "";
+		}
 	$dstr = print_r($assoc, true); fwrite($fp, $dstr);
 	$selStr = "SELECT UserKey from users WHERE UserID = '".$_GET['userid']."'";
 	$assoc['loggedInUserKey'] = getSingle($selStr, 'UserKey', $handle);

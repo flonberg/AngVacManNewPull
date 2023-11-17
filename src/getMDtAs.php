@@ -73,6 +73,8 @@ function getMDtAs(){
 			$vacGraph[$i][$assoc['userid']]['class']= 'green';
 		if ($assoc['WTMdate'])
 			$vacGraph[$i][$assoc['userid']]['WTMdate'] = formatDate($assoc['WTMdate']);
+		if (strpos($vacGraph[$i][$assoc['userid']]['WTMdate'], '1900') !== FALSE)
+		$vacGraph[$i][$assoc['userid']]['WTMdate']= "";
 		$vacGraph[$i][$assoc['userid']]['daysTillStartDate'] = getdays($firstDay, $vacGraph[$i][$assoc['userid']]['startDate'], $firstDay) + 1;	// +1 to accomodate Service Col 
 		$vacGraph[$i][$assoc['userid']]['daysTillCalEnd'] = getdays( $vacGraph[$i][$assoc['userid']]['endDate'], $lastDay, $firstDay) ;
 		// 1 day tA has StartDate = EndDate so have to add 1 to length

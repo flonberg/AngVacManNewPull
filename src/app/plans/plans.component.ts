@@ -177,6 +177,7 @@ export class PlansComponent implements OnInit {
     
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
+console.log("180180 url is  %o", url)  
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
 console.log("182182 toSeeParams from %o", this. toSeeParams)        
@@ -818,7 +819,7 @@ WTMparam(ev, pName){
       this .showError  = 0;
   }
   if (pName == 'WTMdate')
-   this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'yyyy-MM-dd')  
+   this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'MM/dd/yyyy')  
 }
 postRes: any;
 overlap: boolean
