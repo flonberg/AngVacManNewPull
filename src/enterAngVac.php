@@ -34,7 +34,7 @@ do {																			// put index in case of permission failure
 	$data = json_decode($body);													// get the params from the REST call
 	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputData is \r\n". $s);  // Create pretty form of data to log
 	$ret = array("result"=>"success");											// default response
-	//	$tst3 =  checkOverlap($data);												// check SELF overlap
+		$tst3 =  checkOverlap($data);												// check SELF overlap
 	/**
 	 * Check for overlap with same GoAwayer
 	 */

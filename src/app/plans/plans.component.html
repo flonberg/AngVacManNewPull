@@ -304,7 +304,7 @@
                   <mat-radio-button class="example-margin" value="decline"  (click) = "editCovParams('CovAccepted', 0)" >Decline</mat-radio-button>
                 </mat-radio-group>
             </td> 
-            <td style="text-align:right;">WTM Date</td>
+            <td style="text-align:right;"  *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 " >WTM Date</td>
             <td class='h50' *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
               <mat-form-field  appearance="fill"  class='h50'  >
                 <input matInput [(ngModel)]="WTMdate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)"
