@@ -871,5 +871,9 @@ showConventDate(date){
 goToLink(){
   var url ='https://whiteboard.partners.org/esb/FLwbe/Documentation/MD_VacManUserManual.html'
   window.open(url, "_blank");
-}
+  }
+goToPhysStaffAvail(){
+  var url ='https://whiteboard.partners.org/esb/FLwbe/vacation/indexPHP.php?userid='+this.userid+'&vidx=0&first=vN&func=0'
+  window.open(url, "_blank");
+  }  
 }
