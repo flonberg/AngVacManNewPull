@@ -42,6 +42,7 @@ export class AppComponent {
    }
 
    setDate(start, end){
+    var test = 3.14
      console.log("eve is %o", start)
    }
    /**
