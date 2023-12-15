@@ -118,6 +118,7 @@ export class PlansComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    var test = 3.14                                       // test for GIT
    // this .wkDev = this . checkWorkingDir()                // get the Working Directory to switch dev/proc
     console.log("110110 wkDev is %o", this .wkDev)
     this .dayOfMonth = new Date().getDate();
