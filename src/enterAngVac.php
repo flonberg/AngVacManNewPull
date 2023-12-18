@@ -50,6 +50,9 @@ do {																			// put index in case of permission failure
 		$jData = json_encode($retArray); echo $jData;							// retrun response
 		exit();																	// DO NOTHING ELSE
 	}
+	else {
+		$nomCovLastName = getNomCovLastName($data)
+	}
 	$data = getNeededParams($data);												// get Aux Params for Emails
 	$overlap = '0';$overlapVidx = '0';											// default values
 	$theOverlap = checkServiceOverLap($data);									// the vidx of the overlapping tA
@@ -85,7 +88,7 @@ do {																			// put index in case of permission failure
 	$lastVidx = $row['id'];
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	sendAskForCoverage($lastVidx, $data);
-	sendStaff($lastVidx, $data);
+	sendStaff($lastVidx, $data, $nomCovLastName);
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -249,9 +252,10 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
-function sendStaff($vidx, $newTa){
-	global $fp, $handleBB, $handle;
+function sendStaff($vidx, $newTa, $nomCovLastName){
+	global $fp, $handleBB, $handle,;
 	$dstr = print_r($newTa, true); fwrite($fp, "\r\n newTa is \r\n ");fwrite($fp, $dstr);	
+
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
 	$dB = new getDBData($selStr, $handleBB);
 	$assoc = $dB->getAssoc();
@@ -276,7 +280,7 @@ function sendStaff($vidx, $newTa){
 		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
 		$msg = "<p> Hi ".$row[$i++]['FirstName']."<p>";
 		$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
-		$msg.= "<p> Dr. ".$data->CovererLastName." has been nominated to cover </p>"; 
+		$msg.= "<p> Dr. ".$nomCovLastName." has been nominated to cover </p>"; 
 		$msg.= "<p> You will get an email when the coverage has been accepted </p>";
 		$msg .= "<p> To see details of this Time click on the below link. </p>";
 		$message = '

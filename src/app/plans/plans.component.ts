@@ -1,7 +1,7 @@
 import { AppComponent } from './../app.component';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe, NumberSymbol } from '@angular/common';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
+import { analyzeAndValidateNgModules, templateSourceUrl } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { throwError } from 'rxjs';
@@ -91,8 +91,9 @@ export class PlansComponent implements OnInit {
   wkDev = "dev";
   queryParams:{}
   showAcceptor: boolean = false;
+  now: Date
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
-
+    this.now = new Date()
     if ( this .checkWorkingDir() == 'prod')
       this .wkDev = 'prod';
     this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this.wkDev+'/getMDtAs.php?adv='+ this.monthInc;  
@@ -465,13 +466,15 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
       if (ev == 1)
-        location.reload();
+        location.reload(true);
+        location.reload(true);
   })
   this .changesSavedShow = true;
   this .showAcceptance = false; 
- // this .ngOnInit();
-  if (this .wkDev == 'prod')
-    location.reload();
+  this .ngOnInit();
+ // if (this .wkDev == 'prod')
+   // location.reload(true);
+   // location.reload(true);
 }
 private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
