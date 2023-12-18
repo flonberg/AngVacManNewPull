@@ -108,6 +108,12 @@ function checkServiceOverLap($data){
 	}
 	return $row;
 }	
+function getNomCovLastName($data){
+	global $handle;
+	$selStr = "SELECT LastName FROM physicians WHERE UserKey = ". $data['CoverageA'];
+	$ret =  getSingle($selStr, 'LastName', $handle);
+	return $ret;
+}
 /**
  * Check for overlap of existing tA for the given goAwayer
  */
@@ -270,6 +276,8 @@ function sendStaff($vidx, $newTa){
 		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
 		$msg = "<p> Hi ".$row[$i++]['FirstName']."<p>";
 		$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
+		$msg.= "<p> Dr. ".$data->CovererLastName." has been nominated to cover </p>"; 
+		$msg.= "<p> You will get an email when the coverage has been accepted </p>";
 		$msg .= "<p> To see details of this Time click on the below link. </p>";
 		$message = '
 			<html>

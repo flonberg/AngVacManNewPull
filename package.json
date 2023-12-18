@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider gatsby build"
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider; ng build"
   },
   "private": true,
   "dependencies": {

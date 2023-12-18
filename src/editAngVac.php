@@ -115,9 +115,9 @@ $IAP = new InsertAndUpdates();
 		fwrite($fp, "\r\n vidx is ". $data['vidx']);
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
-		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx']."acceptor=1";	// No 8 2021
+		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
 		fwrite($fp, "\r\n ". $link);
-		$mailAddress = $data['CovererEmail'];								
+		$mailAddress = $data->CovererEmail;								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		//$mailAddress .= ",". $data->CovererEmail;	
 		$subj = "Coverage for Time Away";
