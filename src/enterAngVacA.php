@@ -16,7 +16,6 @@ else
 //$handle = $connDB->handle242;
 $handle = connectDB_FL();
 $handleBB = connectBB();
-$debug = $_GET['debug'] == '1' ? true : false;
 
 $IAP = new InsertAndUpdates();
 $admins = getAdmins();
@@ -50,6 +49,9 @@ do {																			// put index in case of permission failure
 		$retArray = array("test"=>"coverageA");									// compose response message array
 		$jData = json_encode($retArray); echo $jData;							// retrun response
 		exit();																	// DO NOTHING ELSE
+	}
+	else {
+		$nomCovLastName = getNomCovLastName($data)
 	}
 	$data = getNeededParams($data);												// get Aux Params for Emails
 	$overlap = '0';$overlapVidx = '0';											// default values
@@ -86,7 +88,7 @@ do {																			// put index in case of permission failure
 	$lastVidx = $row['id'];
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	sendAskForCoverage($lastVidx, $data);
-	sendStaff($lastVidx, $data);
+	sendStaff($lastVidx, $data, $nomCovLastName);
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -109,6 +111,12 @@ function checkServiceOverLap($data){
 	}
 	return $row;
 }	
+function getNomCovLastName($data){
+	global $handle;
+	$selStr = "SELECT LastName FROM physicians WHERE UserKey = ". $data['CoverageA'];
+	$ret =  getSingle($selStr, 'LastName', $handle);
+	return $ret;
+}
 /**
  * Check for overlap of existing tA for the given goAwayer
  */
@@ -145,7 +153,7 @@ function checkOverlap($data){
 
 function sendAskForCoverage($vidx, $data)
 {
-	global $handle, $fp, $level, $debug;
+	global $handle, $fp, $level;
 	fwrite($fp, "\r\n vidx is $vidx");
 	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
@@ -172,21 +180,19 @@ function sendAskForCoverage($vidx, $data)
 			</head>	
 		</html>
 			'; 
-	
+		fwrite($fp, "\r\n message sent to sendMailClassLib \r\n". $message);	
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
-		if ($debug)
-			fwrite($fp, "\r\n message sent to sendMailClassLib \r\n". $message);
-		else
-			$sendMail->send();	
+		echo $jData;
+		$sendMail->send();	
 }
 /**
  * Finds the specific days of the overlap and sends email announcing them 
  * $oData is the tA which is found to be overlapping. newStartDate and newEndDate or the dates of tA  2B inserted. 
  */
 function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY which has DateTimes
-	global $handle, $fp, $level, $debug;
+	global $handle, $fp, $level;
 	$newStartDateDate = new DateTime(($newTa->startDate));										// create PHP DateTime Object
 	$newEndDateDate = new DateTime(($newTa->endDate));
 	$overLapDays = array();																		// make array to hold overlapDays
@@ -242,16 +248,14 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 					</body>
 				</head>	
 			</html>'; 
-		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		if ($debug)
-			fwrite($fp, $msg);
-		else
+			$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 			$sendMail->send();	
 	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
-function sendStaff($vidx, $newTa){
-	global $fp, $handleBB, $handle, $debug;
+function sendStaff($vidx, $newTa, $nomCovLastName){
+	global $fp, $handleBB, $handle,;
 	$dstr = print_r($newTa, true); fwrite($fp, "\r\n newTa is \r\n ");fwrite($fp, $dstr);	
+
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
 	$dB = new getDBData($selStr, $handleBB);
 	$assoc = $dB->getAssoc();
@@ -276,7 +280,8 @@ function sendStaff($vidx, $newTa){
 		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
 		$msg = "<p> Hi ".$row[$i++]['FirstName']."<p>";
 		$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
-		$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
+		$msg.= "<p> Dr. ".$nomCovLastName." has been nominated to cover </p>"; 
+		$msg.= "<p> You will get an email when the coverage has been accepted </p>";
 		$msg .= "<p> To see details of this Time click on the below link. </p>";
 		$message = '
 			<html>
@@ -293,25 +298,17 @@ function sendStaff($vidx, $newTa){
 				</head>	
 			</html>
 			'; 
-
+		fwrite($fp, $msg);	
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		if ($debug)
-			fwrite($fp,"\r\n Staff Email \r\n". $msg);	
-		else
-			$sendMail->send();		
+		$sendMail->send();		
 	}
 	$dstr = print_r($row, true); fwrite($fp, $dstr);
 }
-function getNomCovLastName($data){
-	global $handle;
-	$selStr = "SELECT LastName FROM physicians WHERE UserKey = ". $data['CoverageA'];
-	$ret =  getSingle($selStr, 'LastName', $handle);
-	return $ret;
-}
+
 
 
 function getNeededParams($data){
-	global $handle, $fp, $debug;
+	global $handle, $fp;
 	$userid = isset($data->useridStr) ? $data->useridStr : $data->userid;
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$userid."'", "UserKey", $handle);			// get name of GoAwayer
 	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
@@ -319,7 +316,6 @@ function getNeededParams($data){
 	fwrite($fp, "\r\n getNeededParams selStr \r\n $selStr");
 	$dB = new getDBData($selStr, $handle);
 	while ($assoc = $dB->getAssoc()){
-	
 		if ($assoc['UserKey'] == $data->goAwayerUserKey){
 			$data->goAwayerLastName = $assoc['LastName'];
 			$data->service = $assoc['service'];
@@ -329,8 +325,6 @@ function getNeededParams($data){
 			$data->CovererEmail = $assoc['Email'];
 		}	
 	}
-	if ($debug)
-	 	{$dsrt = print_r($data, true); fwrite($fp, $dsrt);	}
 	return $data; 
 }
 
