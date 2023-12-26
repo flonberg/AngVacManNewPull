@@ -267,7 +267,8 @@ function sendStaff($vidx, $newTa){
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
-
+	$covMsg = "<p> The coverage for this Time Away is to be determines </p>";
+	
 	while ($assoc = $dB->getAssoc()){
 		$row[$i] = $assoc;
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	

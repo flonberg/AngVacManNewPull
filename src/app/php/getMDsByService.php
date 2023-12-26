@@ -8,7 +8,7 @@ $handle = connectDB_FL();
 	$s =  print_r($_GET, true); fwrite($fp, $s); 
 	$selStr = "SELECT UserKey, service, LastName FROM physicians WHERE Rank ='0' ORDER BY LastName";
 	$dB = new getDBData($selStr, $handle);
-	$i = 0;
+	$i = 1;
 	while ($assoc = $dB->getAssoc()){
 			$selStr2 = "SELECT UserID from users WHERE UserKey ='".$assoc['UserKey']."'";
 			$assoc['UserID'] = getSingle($selStr2, "UserID", $handle);

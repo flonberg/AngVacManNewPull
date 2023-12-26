@@ -268,12 +268,13 @@ console.log("182182 toSeeParams from %o", this. toSeeParams)
     var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMDsByService.php?userid='+ userid
     this .http.get(url).subscribe(res =>{
       this. serviceMDs = res;
+      var TDB_MD = {'UserKey':0,'service':99,'LastName':'TBD','UserId':'TBD'}
       for(let entry of this .serviceMDs){
         if (this .userid == entry.UserID)
           this .isUserAnMD = true;
-              }    
-console.log("198 serviceMDs is %o", this. serviceMDs)
-console.log("237237 isUserMD is %o", this .isUserAnMD)
+              }  
+      this .serviceMDs[41] = TDB_MD
+      console.log("277277 %o", this .serviceMDs)
           })
   }
 
@@ -283,6 +284,7 @@ console.log("237237 isUserMD is %o", this .isUserAnMD)
     this .http.get(url).subscribe(res =>{
       this. MDservice = res;
           })
+      return               
   }
 
 
@@ -790,7 +792,8 @@ checkTAparams(){
   }
 }
 covererSelect(ev){
- this .tAparams.coverageA = ev.value.UserKey
+ if (ev.value) 
+  this .tAparams.coverageA = ev.value.UserKey
  if (this .showError == 4)
   this .showError  = 0;
 }

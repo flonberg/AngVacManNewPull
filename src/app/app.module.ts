@@ -52,7 +52,7 @@ import { EntertaComponent } from './enterta/enterta.component';
 
     BrowserAnimationsModule,
     RouterModule.forRoot([
-      { path: '**', component: AppComponent}
+      { path: '**', component: PlansComponent}
     ])
   ],
 
