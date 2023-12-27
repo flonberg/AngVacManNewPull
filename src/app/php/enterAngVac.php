@@ -1,6 +1,6 @@
 <?php
-require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
-//require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
+//require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
+require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
 header("Content-Type: application/json; charset=UTF-8");
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -23,7 +23,7 @@ $admins = getAdmins();
 $today = date('Y-m-d');
 $in = 0;
 do {																			// put index in case of permission failure
-	$fp = fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
+	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
 	if ($in++ > 5)
 		break;
 	}
@@ -33,17 +33,18 @@ do {																			// put index in case of permission failure
 //		$tableName = 'MDtimeAway2BB';
  	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
 	$data = json_decode($body);													// get the params from the REST call
-	$s = print_r($data, true);   fwrite($fp, "\r\n 22 inputData is \r\n". $s);  // Create pretty form of data to log
+	$s = print_r($data, true);   fwrite($fp, "\r\n 36 inputData is \r\n". $s);  // Create pretty form of data to log
 	$ret = array("result"=>"success");											// default response
-		$tst3 =  checkOverlap($data);												// check SELF overlap
 	/**
 	 * Check for overlap with same GoAwayer
 	 */
 	if (checkOverlap($data) == 1){
 		$rArray = array("result"=>0);											// signal for Display Warning Message						
-		$rData = json_encode($rArray);  echo $rData;							// send back responst
-		fwrite($fp, "\r\n overlap ". $rData ." \r\n");							// log response
+		//$rData = json_encode($rArray);  echo $rData;							// send back responst
+		//fwrite($fp, "\r\n overlap ". $rData ." \r\n");							// log response
+		$ret = array("result"=>"selfOverlap");	echo json_encode($ret);						// default response
 		exit();																	// DO NOTHING ELSE
+
 	}
 	// Check is Coverage is Nominated
 	if (!isset($data->coverageA)){												// if NO Coverage
@@ -52,6 +53,7 @@ do {																			// put index in case of permission failure
 		exit();																	// DO NOTHING ELSE
 	}
 	$data = getNeededParams($data);												// get Aux Params for Emails
+	$dstr = print_r($data, true); fwrite($fp, "\r\n 253 Ta with augmented parameters is \r\n ");fwrite($fp, $dstr);	
 	$overlap = '0';$overlapVidx = '0';											// default values
 	$theOverlap = checkServiceOverLap($data);									// the vidx of the overlapping tA
 	/**
@@ -81,7 +83,6 @@ do {																			// put index in case of permission failure
 	fwrite($fp, "\r\n $insStr");
 	$stmt=sqlsrv_query($handle, $insStr);
 	$next_result = sqlsrv_next_result($stmt); 
-	ob_start(); var_dump($next_result);$data1 = ob_get_clean();fwrite($fp, "\r\n next_result \r\n ". $data1);
 	$row = sqlsrv_fetch_array($stmt);
 	$lastVidx = $row['id'];
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
@@ -126,9 +127,9 @@ function checkOverlap($data){
 		$newStartDateString = $data->startDate;  $newEndDateString = $data->endDate;
 		$today=date_create(); $todayString =  date_format($today,"Y-m-d ");		
 		$today = new DateTime(); $todayString = $today->format('Y-m-d');
-		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate >+ '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
+		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate > '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
 		fwrite($fp, "\r\n $selStr ");
-		$dB = new getDBData( $selStr, $handleBB);
+		$dB = new getDBData( $selStr, $handle);
 		$i = 0;
 		while ($assoc = $dB->getAssoc()){													// check each found tA for overlap
 			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
@@ -247,13 +248,12 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			fwrite($fp, $msg);
 		else
 			$sendMail->send();	
-	//	ob_start(); var_dump($assoc);$data = ob_get_clean();fwrite($fp, "\r\n assoc is \r\n". $data);
 }
 function sendStaff($vidx, $newTa){
 	global $fp, $handleBB, $handle, $debug;
-	$dstr = print_r($newTa, true); fwrite($fp, "\r\n newTa is \r\n ");fwrite($fp, $dstr);	
+
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
-	$dB = new getDBData($selStr, $handleBB);
+	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
 	//SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID FROM other LEFT JOIN users on other.UserKey = users.UserKey WHERE other.UserKey IN ( 25, 361, 814, 928, 928) 
 	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";

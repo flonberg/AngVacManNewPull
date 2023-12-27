@@ -762,7 +762,7 @@ checkTAparams(){
     this .showError = 3;
     return false;
   }
-  if (this. tAparams.coverageA < 1){
+  if (this. tAparams.coverageA < 0){
     this. errorTxt = "Please enter a Coverer";
     this .showError = 4;
     return false;
@@ -838,7 +838,7 @@ submitTA(){                                                                  // 
       this .http.post(url, jData).subscribe(ret=>{
           this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
           if (this.postRes)
-            this .overlap = this. postRes['result'] == 0 ? true : false;    // turn on Warning message. 
+            this .overlap = this. postRes['result'] == 'selfOverlap' ? true : false;    // turn on Warning message. 
             {
               let faultArray = this. safeJSONparse(this. postRes);
               console.log("697 postRes %o", faultArray)
