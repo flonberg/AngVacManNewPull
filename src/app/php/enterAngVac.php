@@ -254,7 +254,8 @@ function sendStaff($vidx, $newTa){
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
 	//SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID FROM other LEFT JOIN users on other.UserKey = users.UserKey WHERE other.UserKey IN ( 25, 361, 814, 928, 928) 
-	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
+	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 
+	FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
 	foreach ($assoc as $key=>$val){
 		if ($val > 0)
 			$selStr .= " $val,";
