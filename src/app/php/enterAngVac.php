@@ -40,9 +40,7 @@ do {																			// put index in case of permission failure
 	 */
 	if (checkOverlap($data) == 1){
 		$rArray = array("result"=>0);											// signal for Display Warning Message						
-		//$rData = json_encode($rArray);  echo $rData;							// send back responst
-		//fwrite($fp, "\r\n overlap ". $rData ." \r\n");							// log response
-		$ret = array("result"=>"selfOverlap");	echo json_encode($ret);						// default response
+		$ret = array("result"=>"selfOverlap");	echo json_encode($ret);			// generate and encode response
 		exit();																	// DO NOTHING ELSE
 
 	}
@@ -76,11 +74,11 @@ do {																			// put index in case of permission failure
 		fwrite($fp, "\r\n No userid \r\n");
 		exit();
 	}
-	$tableName = 
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
 				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT @@IDENTITY as id";
-	fwrite($fp, "\r\n $insStr");
+	if ($debug) 
+		fwrite($fp, "\r\n $insStr");
 	$stmt=sqlsrv_query($handle, $insStr);
 	$next_result = sqlsrv_next_result($stmt); 
 	$row = sqlsrv_fetch_array($stmt);
@@ -102,7 +100,6 @@ function checkServiceOverLap($data){
 		OR	( endDate >= '".$data->startDate."' AND  endDate <= '".$data->endDate."')
 		OR (   startDate <= '".$data->startDate."' AND  endDate >= '".$data->endDate."'  )
 			)";
-	fwrite($fp, "\r\n 84  selStr is \r\n  $selStr \r\n");
 	$dB = new getDBData($selStr, $handleBB);
 	while ($assoc = $dB->getAssoc()){
 		$row[$i] = $assoc;																	// store the overlapping tA
@@ -114,7 +111,7 @@ function checkServiceOverLap($data){
  * Check for overlap of existing tA for the given goAwayer
  */
 function checkOverlap($data){
-		global $handle,$handleBB, $fp, $tableName; 
+		global $handle,$handleBB, $fp, $tableName, $debug; 
 		$tString = $data->endDate;
 		$necParams = array('userid', 'startDate', 'endDate');
 		foreach ($necParams as $key => $val){
@@ -128,12 +125,14 @@ function checkOverlap($data){
 		$today=date_create(); $todayString =  date_format($today,"Y-m-d ");		
 		$today = new DateTime(); $todayString = $today->format('Y-m-d');
 		$selStr = "SELECT * FROM $tableName WHERE reasonIdx < 9  AND endDate > '$todayString'  AND   userid='".$data->userid."'";	// get users tAs in future
-		fwrite($fp, "\r\n $selStr ");
+	//	if ($debug)
+	//		fwrite($fp, "\r\n $selStr ");
 		$dB = new getDBData( $selStr, $handle);
 		$i = 0;
 		while ($assoc = $dB->getAssoc()){													// check each found tA for overlap
 			$cmpStartDate = $assoc['startDate']->format('Y-m-d'); 	$cmpEndDate = $assoc['endDate']->format('Y-m-d'); 
-			fwrite($fp, "\r\n  Comparing tA startDate = $newStartDateString to be GREATER than  $cmpStartDate and LESS than  $cmpEndDate");
+			if ($debug)
+				fwrite($fp, "\r\n  Comparing tA startDate = $newStartDateString to be GREATER than  $cmpStartDate and LESS than  $cmpEndDate");
 			$tst =  ($newStartDateTime >= $assoc['startDate'] && $newStartDateTime <= $assoc['endDate']); 				
 			$tst2 =  ($newEndDateTime >= $assoc['startDate'] && $newEndDateTime <= $assoc['endDate']); 					
 			if ($tst || $tst2){
@@ -147,10 +146,13 @@ function checkOverlap($data){
 function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp, $level, $debug;
-	fwrite($fp, "\r\n vidx is $vidx");
+	if ($data['coverageA'] == 0){
+		fwrite($fp, "150 coverageA == 0 so not sending AskForCoverage Email");
+		return;
+	}
 	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
-	fwrite($fp, "\r\n ". $link);
+	//fwrite($fp, "\r\n ". $link);
 	$mailAddress = $data->CovererEmail;								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$subj = "Coverage for Time Away";
@@ -177,9 +179,7 @@ function sendAskForCoverage($vidx, $data)
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
-		if ($debug)
-			fwrite($fp, "\r\n message sent to sendMailClassLib \r\n". $message);
-		else
+		if (!$debug)
 			$sendMail->send();	
 }
 /**
@@ -244,9 +244,7 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 				</head>	
 			</html>'; 
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		if ($debug)
-			fwrite($fp, $msg);
-		else
+		if (!$debug)
 			$sendMail->send();	
 }
 function sendStaff($vidx, $newTa){
@@ -263,7 +261,6 @@ function sendStaff($vidx, $newTa){
 	}
 	$selStr = substr($selStr, 0, -1);
 	$selStr .= ")";
-	fwrite($fp, "selsrt 9999  8888is \r\n $selStr \r\n");
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
@@ -296,12 +293,10 @@ function sendStaff($vidx, $newTa){
 			'; 
 
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		if ($debug)
-			fwrite($fp,"\r\n Staff Email \r\n". $msg);	
-		else
+		if (!$debug)
 			$sendMail->send();		
 	}
-	$dstr = print_r($row, true); fwrite($fp, $dstr);
+	//$dstr = print_r($row, true); fwrite($fp, $dstr);
 }
 function getNomCovLastName($data){
 	global $handle;
@@ -317,7 +312,7 @@ function getNeededParams($data){
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$userid."'", "UserKey", $handle);			// get name of GoAwayer
 	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
 	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey ='".$data->coverageA ."'"; 
-	fwrite($fp, "\r\n getNeededParams selStr \r\n $selStr");
+	//($fp, "\r\n getNeededParams selStr \r\n $selStr");
 	$dB = new getDBData($selStr, $handle);
 	while ($assoc = $dB->getAssoc()){
 	
@@ -330,8 +325,8 @@ function getNeededParams($data){
 			$data->CovererEmail = $assoc['Email'];
 		}	
 	}
-	if ($debug)
-	 	{$dsrt = print_r($data, true); fwrite($fp, $dsrt);	}
+//	if ($debug)
+	// 	{$dsrt = print_r($data, true); fwrite($fp, $dsrt);	}
 	return $data; 
 }
 

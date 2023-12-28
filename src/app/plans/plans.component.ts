@@ -832,7 +832,6 @@ submitTA(){                                                                  // 
   this .faultMessage = "t";
   if (this .checkTAparams()){
       var jData = JSON.stringify(this .tAparams)
-//var url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/'+this. wkDev+'/enterAngVac.php';
       var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/enterAngVac.php?debug=1';
   console.log("832832 url is %o", url);    
       this .http.post(url, jData).subscribe(ret=>{
