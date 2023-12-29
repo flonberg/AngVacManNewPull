@@ -28,14 +28,14 @@ function makeLast2Weeks(){
     $TwoWeeksAheadString =  date_format($TwoWeeksAhead,"Y-m-d");
     $dates =  array($TwoWeeksAheadString,$todayString);
     var_dump($dates);
-    $dstr = print_r($dates, true); fwrite($fp, "\r\n dates are \r\n". $dstr);
+    $dstr = print_r($dates, true); fwrite($fp, "\r\n 2 Week dates are \r\n". $dstr);
     return $dates;
 }
 function makeLogFile(){
     $in = 0;
     $today = new DateTime(); $todayString = $today->format('Y-m-d');
     do {																			// put index in case of permission failure
-        $fp = @fopen("./log/TwoWeeksBackLog".$todayString."_".$in.".txt", "w+");			
+        $fp = @fopen("./log/sendCoverageTBDLog".$todayString."_".$in.".txt", "w+");			
         if ($in++ > 5)
             break;
         }
@@ -43,22 +43,22 @@ function makeLogFile(){
     return $fp;    
 }
 function getNoCovTAs($dates){
-    global $handle;
-    $selStr = "SELECT startDate, endDate, userid, coverageA FROM MDtimeAway WHERE startDate > '".$dates[1]."' AND startDate < '".$dates[0]."' AND reasonIdx < 9 AND coverageA = '0'";
+    global $handle, $fp;
+    $selStr = "SELECT vidx, startDate, endDate, userid, coverageA FROM MDtimeAway WHERE startDate > '".$dates[1]."' AND startDate < '".$dates[0]."' AND reasonIdx < 9 AND coverageA = '0'";
     $dB = new getDBData($selStr, $handle);
     $i = 0;
     while ($assoc = $dB->getAssoc()){
-        $row[$i++] = $assoc;
-        $selStr2 = "SELECT physicians.Email, physicians.LastName,physicians.UserKey, users.UserID 
+        $row[$i] = $assoc;                                                          // get the tA
+        $selStr2 = "SELECT physicians.Email, physicians.LastName,physicians.UserKey, users.UserID   
             FROM physicians
-            LEFT JOIN users on users.UserKey = physicians.UserKey WHERE users.UserID = '".$assoc['userid']."'";
-        echo "<br> 5555 $selStr2 <br>";    
-        $dB2 = new getDBData( $selStr2, $handle);
+            LEFT JOIN users on users.UserKey = physicians.UserKey WHERE users.UserID = '".$assoc['userid']."'"; 
+        $dB2 = new getDBData( $selStr2, $handle);                                   // get Email, LastName, and UserKey of goAwayer
         $assoc2 = $dB2->getAssoc();
-    echo "<br> 5858 <br>"; var_dump($assoc2);    
-
+        $result = array_merge($row[$i], $assoc2);
     }
-    var_dump($row);
-    return $row;
+    fwrite($fp, "\r\n Data for email to goAwayer is \r\n");
+    $dstr = print_r($result, true); fwrite($fp, $dstr);
+    var_dump($result);
+    return $result;
     
 }
