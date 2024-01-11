@@ -246,7 +246,7 @@ class sendMailClassLib
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
 		$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail".$todayStr.".log", "a+");
-		$nowString = $now->format("Y-m-d H:i:s");   fwrite($this->logFp, "\r\n $nowString");
+		$nowString = $now->format("Y-m-d H:i:s");   fwrite($this->logFp, "\r\n $nowString --- $address --- $subject ");
 	}
 	public function setHeaders($headers){
 		$this->headers = $headers;

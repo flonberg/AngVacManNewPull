@@ -74,9 +74,9 @@ do {																			// put index in case of permission failure
 		fwrite($fp, "\r\n No userid \r\n");
 		exit();
 	}
-	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self, createWhen)
+	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
-				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' , getdate()); SELECT @@IDENTITY as id";
+				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0', getdate()); SELECT @@IDENTITY as id";
 	if ($debug) 
 		fwrite($fp, "\r\n $insStr");
 	$stmt=sqlsrv_query($handle, $insStr);
@@ -146,7 +146,7 @@ function checkOverlap($data){
 function sendAskForCoverage($vidx, $data)
 {
 	global $handle, $fp, $level, $debug;
-	if ($data['coverageA'] == 0){
+	if ($data->coverageA == 0){
 		fwrite($fp, "150 coverageA == 0 so not sending AskForCoverage Email");
 		return;
 	}
