@@ -4,23 +4,49 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ini_set("error_log", "./log/test2.txt");
 require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
+$fp = makeLogFile();
 $handle = connectDB_FL();
-
-$oneWeekTAs = getTAs(1);
-foreach ($oneWeekTAs as $key => $val)
+$numWeeks = 1;
+$debug = FALSE; if (isset($_GET['debug'])) $debug = TRUE;
+if (isset($_GET['numWeeks']))
+    $numWeeks = $_GET['numWeeks'];
+$remColName = "OneWeekReminder";                                           
+if ($numWeeks == 2)
+        $remColName = "TwoWeekReminder";
+$oneWeekTAs = getTAs($numWeeks, $remColName);
+foreach ($oneWeekTAs as $key => $val){
     sendEmails($val);
-
+    updateMDtimeAway($val, $remColName);
+}
+function updateMDtimeAway($TBDtA, $remColName){
+    global $handle, $fp;
+    $updateStr = "UPDATE TOP(1) MDtimeAway SET $remColName = 1 WHERE vidx = '".$TBDtA['vidx']."'";
+    echo "<br> $updateStr";
+    try { 
+        $res = sqlsrv_query($handle, $updateStr);
+        } 	catch(Exception $e) {
+                fwrite($fp, "Exception is ". $e);
+            }
+    if ($res !== FALSE){
+        fwrite($fp, "\r\n Sucess SQL \r\n". $updateStr);
+    }
+    else {
+        fwrite($fp, "\r\n update failed for $updateStr");	
+        $errs = print_r( sqlsrv_errors(), true); fwrite($fp, $errs);
+    }        
+}
 /**
  * Get the tAs 
  */
-function getTAs($numWeeks){
+function getTAs($numWeeks, $remColName){
     global $handle;
     $date    = new DateTime();                                                  // Creates new DatimeTime for today
     $today = $date->format("Y-m-d");
     $Weeks = $date->modify( '+ '.$numWeeks.' weeks' );                          // go ahead $numWeeks weeks
     $WeeksFormat = $Weeks->format('Y-m-d');
+
     $selStr = "SELECT vidx,userkey,startDate, userid, coverageA, CovAccepted, OneWeekReminder, TwoWeekReminder FROM MDtimeAway WHERE startDate <= '".$WeeksFormat."' 
-        AND startDate > '".$today."' AND OneWeekReminder < 1 AND coverageA = 0 AND reasonIdx < 90";
+        AND startDate > '".$today."' AND ".$remColName ." < 1 AND coverageA = 0 AND reasonIdx < 90";
     $dB = new getDBData($selStr, $handle);
     $i = 0;
     while ($assoc = $dB->getAssoc()){
@@ -60,4 +86,15 @@ function sendEmails($TBDtAs){
 	$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);
     if (!$debug)
         $sendMail->send();	
+}
+function makeLogFile(){
+    $in = 0;
+    $today = new DateTime(); $todayString = $today->format('Y-m-d');
+    do {																			// put index in case of permission failure
+        $fp = @fopen("./log/sendCoverageTBDLog".$todayString."_".$in.".txt", "w+");			
+        if ($in++ > 5)
+            break;
+        }
+        while ($fp ===FALSE);
+    return $fp;    
 }

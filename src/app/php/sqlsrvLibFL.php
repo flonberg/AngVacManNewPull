@@ -1,21 +1,5 @@
 <?php
 
-function connectBB()
-{
-$serverName = "ROBLACKBOARD19\ROBLACKBOARD19";
-$connectionInfo = array( "UID"=>'WB_Dev',
-                         "PWD"=>'intake',
-                         "Database"=>"imrt");
-$handle = sqlsrv_connect( $serverName, $connectionInfo);
-	if($handle===false)
-	{
-	$timestamp = date('Y-m-d h:i:s');
-	$errors = $timestamp.PHP_EOL.print_r( sqlsrv_errors(),true);
-	error_log("\n".$errors.PHP_EOL.PHP_EOL.PHP_EOL, 3,'H:/inetpub/lib/connectionErrors.log');
-	echo 'Unable to connect to Blackboard<br>';
-	}
-return $handle;	
-}
 function connectDB_FL()
 {
 
@@ -32,10 +16,26 @@ $handle = sqlsrv_connect( $serverName, $connectionInfo);
 return $handle;
 
 }
+
+function connectBB()
+{
+$serverName = "ROBLACKBOARD19\ROBLACKBOARD19";
+$connectionInfo = array( "UID"=>'WB_Dev',
+                         "PWD"=>'intake',
+                         "Database"=>"imrt");
+$handle = sqlsrv_connect( $serverName, $connectionInfo);
+	if($handle===false)
+	{
+	$timestamp = date('Y-m-d h:i:s');
+	$errors = $timestamp.PHP_EOL.print_r( sqlsrv_errors(),true);
+	error_log("\n".$errors.PHP_EOL.PHP_EOL.PHP_EOL, 3,'H:/inetpub/lib/connectionErrors.log');
+	echo 'Unable to connect to Blackboard<br>';
+	}
+return $handle;	
+}
 /* returns assoc. array with key specified by '$keyStr' */
 function getAssocByKey($selStr, $keyStr, $handle)
 {
-							//	echo "<br> lib hs <br>"; var_dump($handle);
 	$row=null;
 	$res = sqlsrv_query($handle, $selStr);
 	if ($res == FALSE)
@@ -52,8 +52,8 @@ function getAssocByKey($selStr, $keyStr, $handle)
 function getSingle($s,  $p, $handle)
 {
 	$res = sqlsrv_query($handle, $s);
-//	if ($res == FALSE)							// Nov 4 2021
-//		error("getSingle---".$s);
+	if ($res == FALSE)
+		error("getSingle---".$s);
 	if (is_resource($res)){							// Oct16_2018 
 		$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC );
 		if (isset($row[$p]))									// oct4_2018
@@ -104,21 +104,22 @@ function doCmd($cmdStr, $handle)
 
 function error($s)
 {
-	echo "<script>";
-	echo "alert('QUERY failed for $s')";
-	echo "</script>";
+	$errorArray = array('err'=>$s);
 }
+
+
+
 
 function getLast($handle, $tableName, $p)
 {
 
 	$selString = "SELECT TOP 1 ". $p ." FROM $tableName ORDER BY ". $p ." DESC";
-											echo "<br> selString is <br> $selString";
+									
 	$res1 = sqlsrv_query($handle, $selString);	
 	if ($res1 == FALSE)
 		error($selString);
 	$assoc = sqlsrv_fetch_array($res1, SQLSRV_FETCH_ASSOC );
-											echo "<br> assoc is <br>"; var_dump($assoc);
+								
 	$last = $assoc[$p];
 	return $last;
 }
@@ -156,142 +157,110 @@ class getDBData
                 return $row_count;
         }
 }
-/*
-function genInsert($s)
-{
-        $result = mssql_query($s)
-                        or die("insert Query failed,  for query  $s ");
-}
-function genDelete($s)
-{
-	$result = mssql_query($s)
-		or die("Delete query failed for $s");
-}
-function genInsertIdx($s)
-{
-        $result = mssql_query($s)
-                        or die("insert Query failed,  for query  $s ");
-	$res = mssql_query("select SCOPE_IDENTITY()")
-		or die ("scope_identity failed");
-	$row = mssql_fetch_array($res);
-	return $row[0];
-}
-
-function genUpdate($s)
-{
-        mssql_query($s)
-                      or die("update Query failed,  for   . $s ");
-}
-y
-function getAssoc($s)
-{
-         $result = mssql_query($s) or die ("general query failed for $s");
-         return mssql_fetch_row($result);
-}
-
-function getAssoc1($s)
-{
-         $result = mssql_query($s) or die ("getAssoc1 general query failed for $s");
-         return mssql_fetch_assoc($result);
-}
-
-function getAssocMulti($s)
-{
-	$i = 0;
-         $result = mssql_query($s) or die ("getAssocMulti general query failed for $s");
-	 while ($row = mssql_fetch_assoc($result))
-		 $rowAssoc[$row['name']] = $row;
-         return $rowAssoc;
-}
-
-function getTechnique()
-{
-	$techniqueDB = new getDBData("SELECT techidx, technique FROM technique WHERE active=1");
-	while ($techniqueRow = $techniqueDB->getAssoc())
-		$techniques[$techniqueRow['techidx']] = $techniqueRow['technique'];
-	return $techniques;
-}
-
-function getPhysicist()
-{
-	$physicistDB = new getDBData("SELECT UserKey, LastName FROM physicists ");
-	while ($physicistRow = $physicistDB->getAssoc())
-		$physicist[$physicistRow['UserKey']] = $physicistRow['LastName'];
-	return $physicist;
-}
-
-function getMD()
-{
-	$MDDB = new getDBData("SELECT UserKey, LastName FROM physicians ");
-	while ($MDRow = $MDDB->getAssoc())
-		$MD[$MDRow['UserKey']] = $MDRow['LastName'];
-	return $MD;
-}
-function getDx()
-{
- $dxDB = new getDBData("SELECT dxidx, dxDescript FROM MQdiag order by dxcode");
- while ($dxRow = $dxDB->getAssoc())
-  $dxs[$dxRow['dxidx']] = $dxRow['dxDescript'];
- return $dxs;
-}
- 
-
-
-function getTxModes()
-{
-	$txModeDB = new getDBData("SELECT idx, mode FROM txmode");
-	while ($txModeRow = $txModeDB->getAssoc())
-		$txModes[$txModeRow['idx']] = $txModeRow['mode'];
-	return $txModes;
-}
-
-
-function editComment($planId, $Comment)
-{
-                $Comment_Result=mssql_query("SELECT QA_Comment FROM QA_Params WHERE Plan_Idx=$planId");
-                $Comment_Read=mssql_result($Comment_Result,0,"QA_Comment");
-                if ( $Comment_Read != $Comment){
-                        $query = "UPDATE QA_Params SET QA_Comment = '$Comment' WHERE Plan_Idx = $planId";
-                        mssql_query("$query") or die ("Comment update failed for $planId");
-                }
-}
-function check_valid_user($userid)
-{
-	if (strlen($userid) >0)
-	{
-		$loguser =getSingle("SELECT userid FROM login WHERE UserID = '" . $userid ."'", "userid");	
-		$date = date('Y-m-d H:m');
-	//	genUpdate("UPDATE login SET Logtime = '" .$date ."' WHERE UserID ='" . $userid ."'");	
-		$priviledge = getSingle("SELECT privledge FROM users WHERE UserID = '" . $userid ."'", "privledge");
-		return $priviledge;
+function safeSQL_lib($insStr, $handle){
+	global $fp,$cp, $mp; 
+	try { 
+		$res = sqlsrv_query($handle, $insStr);
+		} 	catch(Exception $e) {
+				error_log( "Exception is ". $e);
+			}
+	if ($res !== FALSE){
+		fwrite($cp, "\r\n Sucess SQL ". $insStr);
 	}
-	return false;
-}
+	else {
+		fwrite($mp, "\r\n update failed for $insStr");	fwrite($cp, "\r\n update failed");
 
-function genMenu($name, array $options, $selected=null)
+	}
+}
+class logFiles 
 {
+	public $cumul;									// accumulating file
+	public $error; 												// accumulating error file
+	public $int;												// rewrite each run
+	public $loc;
+	public function __construct(){
+		$myDir = __DIR__;
+		if (strpos($myDir, '_dev_') !== FALSE)
+			$this->loc = "_dev_";
+		if (strpos($myDir, '_prod_') !== FALSE)
+			$this->loc = "_prod_";	
+		$now = new DateTime(); $nowString = $now->format("Y-m-d H:i:s");
+		$this->cumul = 	fopen("H:\\inetpub\\esblogs\\".$this->loc."\\test2_FL_LIB_Inc2.log", "w+"); 	
+		fwrite($this->cumul, "\r\n $nowString \r\n");
+		$this->errorFileName = 	"H:\\inetpub\\esblogs\\".$this->loc."\\test2_FL_LIB_Error2.log"; 	
+		fwrite($this->error, "\r\n $nowString \r\n");	
+	}
+	
 
-	$txMode = new getDBData($q);
-	$i = 0;
-        while ($row = $txMode->getAssoc())
-        {
-		$midx[$i] = $row[$s1];
-		$mname[$i] = $row[$s2];
-		$i++;
-	}
-	$count = $i;
-	if($mmode == 1)
-	{
-	//	echo "<option value=\"ALL\">ALL</option>";
-	}
-	$dropdown  = '<select name = "'. $name.'" id="'. $name.'">'."\n";
-	$selected = $selected;
-	foreach ($options as $key => $option)
-	{
-		$select = $selected==$key ? ' selected' :null;
-		$dropdown .= '<option value"' .$key.'"' . $select. '>' . $option  . '</option>'."\n";
-	}
-	$dropdown .= '<select>' ."\n";
-	return $dropdown; 
 }
-*/
+class InsertAndUpdates 
+{
+	public $lf;
+	public function __construct(){
+		$now = new DateTime(); $nowString = $now->format("Y-m-d H:i:s"); $nowStringShort = $now->format('Y-m-d');
+		$fileIndex = 0;
+		do {
+			$fileIndex++;
+			$fileName = "H:\\inetpub\\esblogs\\_dev_\\insAndUpdate".$nowStringShort."-".$fileIndex.".log"; 
+			$this->lf = @fopen($fileName, "a+");
+			if ($fileIndex > 10)
+				break;
+		}	while ($this->lf === FALSE);
+		
+		if ($this->lf === FALSE){														// permission proble, 
+			$fileName = "H:\\inetpub\\esblogs\\_dev_\\insAndUpdate".$nowStringShort."A.log"; 
+			$this->lf = @fopen($fileName, "a+");
+		}
+		fwrite($this->lf, "\r\n \r\n ". $nowString);
+	}
+	function safeSQL($insStr, $handle){
+		try { 
+			$res = sqlsrv_query($handle, $insStr);
+			} 	catch(Exception $e) {
+					error_log( "Exception is ". $e);
+				}
+		if ($res !== FALSE){
+			fwrite($this->lf, "\r\n Sucess SQL \r\n". $insStr);
+		}
+		else {
+			fwrite($this->lf, "\r\n update failed for $insStr");	
+			$errs = print_r( sqlsrv_errors(), true); fwrite($this->lf, $errs);
+		}
+	}
+	function close(){
+		fclose($this->lf);
+	}
+}
+
+class sendMailClassLib
+{
+	public function __construct($address, $subject, $msg){
+		$this->address = $address;
+		$this->subject = $subject; 
+		$this->msg = $msg;
+		$this->headers="";
+		$this->headers = 'MIME-Version: 1.0' . "\r\n";
+		$this->headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+	 	$this->headers .= 'From: whiteboard@partners.org' . "\r\n";
+	 	$this->headers .= 'Cc: flonberg@partners.org'. "\r\n";
+		$now = new DateTime(); 
+		$todayStr = $now->format("Y-m-d");
+		$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail".$todayStr.".log", "a+");
+		$nowString = $now->format("Y-m-d H:i:s");   fwrite($this->logFp, "\r\n $nowString");
+	}
+	public function setHeaders($headers){
+		$this->headers = $headers;
+	}
+	public function send(){
+		 mail($this->address,$this->subject,$this->msg, $this->headers);
+	}
+	public function setSubject($subject){
+		$this->subject = $subject; 
+	}
+	public function addToHeader($txt){
+		$this->headers .= $txt ."\r\n";
+	}
+}
+
+
+

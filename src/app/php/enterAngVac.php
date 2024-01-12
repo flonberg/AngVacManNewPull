@@ -351,8 +351,8 @@ function enterCovsInVacCov($regDuties, $dows, $userkey, $vidx)
 	   				fwrite($fp, PHP_EOL );fwrite($fp, $now);fwrite($fp, $insStr );
 					//sqlsrv_query( $handle, $insStr);
 					$IAP->safeSQL( $insStr, $handle);
+					}
 				}
-			}
 			}
 		}
 }
