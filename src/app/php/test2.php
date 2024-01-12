@@ -14,10 +14,11 @@ $remColName = "OneWeekReminder";
 if ($numWeeks == 2)
         $remColName = "TwoWeekReminder";
 $oneWeekTAs = getTAs($numWeeks, $remColName);
-foreach ($oneWeekTAs as $key => $val){
-    sendEmails($val);
-    updateMDtimeAway($val, $remColName);
-}
+if (is_array($oneWeekTAs))
+    foreach ($oneWeekTAs as $key => $val){
+        sendEmails($val);
+        updateMDtimeAway($val, $remColName);
+    }
 function updateMDtimeAway($TBDtA, $remColName){
     global $handle, $fp;
     $updateStr = "UPDATE TOP(1) MDtimeAway SET $remColName = 1 WHERE vidx = '".$TBDtA['vidx']."'";
@@ -56,12 +57,13 @@ function getTAs($numWeeks, $remColName){
         if (is_array($assoc2))
             $row[$i++] = array_merge($assoc, $assoc2);
     }
-    echo "<pre>"; print_r($row); echo "</pre>";
-    return $row;
+    //echo "<pre>"; print_r($row); echo "</pre>";
+    if (isset($row))
+        return $row;
 }
 function sendEmails($TBDtAs){
     global $fp, $debug;
-    $link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$TBDtAs['vidx']."&userid=".$TBDtAs['userid'];	
+    $link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$TBDtAs['vidx']."&userid=".$TBDtAs['userid']."&TBDtoNom=1";	
     $mailAddress = $TBDtAs['Email'];								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$subj = "Coverage for Time Away";
@@ -84,17 +86,18 @@ function sendEmails($TBDtAs){
     </html>
      '; 
 	$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);
-    if (!$debug)
-        $sendMail->send();	
+   // if (!$debug)
+    $sendMail->send();	
 }
 function makeLogFile(){
     $in = 0;
     $today = new DateTime(); $todayString = $today->format('Y-m-d');
     do {																			// put index in case of permission failure
-        $fp = @fopen("./log/sendCoverageTBDLog".$todayString."_".$in.".txt", "w+");			
+        $fp = @fopen("./log/sendCoverageTBDLog".$in.".txt", "a+");			
         if ($in++ > 5)
             break;
         }
         while ($fp ===FALSE);
+    fwrite($fp, "\r\n $todayString \r\n");    
     return $fp;    
 }

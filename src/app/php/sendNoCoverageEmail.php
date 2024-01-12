@@ -26,7 +26,7 @@ exit();
 
 function sendEmails($TBDtAs){
     global $fp, $debug;
-    $link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$TBDtAs['vidx']."&userid=".$TBDtAs['userid'];	
+    $link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$TBDtAs['vidx']."&userid=".$TBDtAs['userid']."&TBDtoNum=1";	
     $mailAddress = $TBDtAs['Email'];								
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$subj = "Coverage for Time Away";

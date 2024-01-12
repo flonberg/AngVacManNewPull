@@ -4,7 +4,6 @@ header("Content-Type: application/json; charset=UTF-8");
 $handle = connectDB_FL();
 ini_set("error_log", "./Alog/editAngVacError.txt");
 $IAP = new InsertAndUpdates();
-
 	$fp = fopen("./Alog/editAngVacLog.txt", "a+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
@@ -18,6 +17,7 @@ $IAP = new InsertAndUpdates();
 		exit();
 	}
 
+	fwrite($fp, "\r\n before editing CoverageA is ". $beforeCoverageA);
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
 	if ( isset( $data['startDate'] ) && strlen($data['startDate']) > 2  ){
 		$upDtStr .= "startDate = '". $data['startDate']."',";
@@ -33,13 +33,15 @@ $IAP = new InsertAndUpdates();
 	if ( isset( $data['note'] ) &&    strlen($data['note']) > 1)
 		$upDtStr .= "note = '". $data['note']."',";
 	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0)
-	{
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
-		}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
-		if (isset( $data['WTM_self'] ))
+	if (isset( $data['WTM_self'] ))
 		$upDtStr .= "WTM_self = '". $data['WTM_self']."',";	
+	if (isset( $data['coverageA'] )){
+		$upDtStr .= "coverageA = '". $data['coverageA']."',";
+		$beforeCoverageA = getCoverer($data['vidx']);								// get the CoverageA before edit to see if Email needed
+	}	
 //	$tst = strlen($data['WTMnote']);
        //	fwrite($fp, "\r\n\ strnel is $tst \r\n ");
 	if (isset( $data['WTMnote'] ) &&    strlen($data['WTMnote']) > 1)
@@ -62,9 +64,16 @@ $IAP = new InsertAndUpdates();
 	elseif ($_GET['email'] == 1)								// tA params changed
 			sendTaChangedMail($data);
 	elseif ($_GET['email'] == 2)
-		sendFinalEmail($data);		
+		sendFinalEmail($data);	
+
 	exit();
 
+	function getCoverer($vidx){
+		global $handle;
+		$selStr = "SELECT coverageA FROM MDtimeAway WHERE vidx = $vidx";
+		$cov = getSingle( $selStr, 'coverageA', $handle);
+		return $cov;
+	}
 	function sendDeleteTaEmail($data){
 		global $handle, $fp;
 		$startDateString = $data['dBstartDate']->format('Y-m-d');
@@ -117,7 +126,7 @@ $IAP = new InsertAndUpdates();
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
 		fwrite($fp, "\r\n ". $link);
-		$mailAddress = $data->CovererEmail;								
+		$mailAddress = $data['CovererEmail'];								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		//$mailAddress .= ",". $data->CovererEmail;	
 		$subj = "Coverage for Time Away";
