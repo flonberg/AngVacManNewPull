@@ -35,12 +35,17 @@ $handle = connectDB_FL();
 	$assoc['goAwayerUserKey'] = getSingle($selStr, 'UserKey', $handle);
 	$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['goAwayerUserKey']."'";
 	$assoc['goAwayerLastName'] = getSingle($selStr, 'LastName', $handle);
-	$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['coverageA']."'";
-	$assoc['CovererLastName'] = getSingle($selStr, 'LastName', $handle);
-	$assoc['covererDetails']['LastName'] =$assoc['CovererLastName'] ;
-	if ($assoc['coverageA'])
-		if (  intval($assoc['loggedInUserKey']) == intval($assoc['coverageA']))
-			$assoc['IsUserCoverer'] = true;
+	if ($assoc['coverageA'] > 0){
+		$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['coverageA']."'";
+		$assoc['CovererLastName'] = getSingle($selStr, 'LastName', $handle);
+		$assoc['covererDetails']['LastName'] =$assoc['CovererLastName'] ;
+		if ($assoc['coverageA'])
+			if (  intval($assoc['loggedInUserKey']) == intval($assoc['coverageA']))
+				$assoc['IsUserCoverer'] = true;
+	}
+	else if ($assoc['coverageA'] == 0){
+		$assoc['CovererLastName'] = 'TBD';
+	}
 	$ss = print_r($assoc, true); fwrite($fp, $ss);
 	$jData = json_encode($assoc);
 	echo $jData;

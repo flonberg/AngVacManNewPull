@@ -209,9 +209,10 @@
         </td>
       </tr>
       <tr>
-        <th> Coverer </th> <th *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" > WTM-Coverer </th> 
-                           <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>
-                            <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
+        <th> Coverer </th> 
+        <th *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" > WTM-Coverer </th> 
+        <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>
+        <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
        </tr>
        <tr>
          <td>
@@ -264,8 +265,10 @@
         <th *ngIf = "vacEdit.WTMnote && vacEdit.WTMnote.length > 2">WTM Note </th>
       </tr>
       <tr>
-        <td> Dr. {{ vacEdit.covererDetails.LastName }} </td>
-        <td *ngIf = " vacEdit.WTM_self == 0"> Dr. {{ vacEdit.covererDetails.LastName }}</td>
+        <td *ngIf = "vacEdit.covererDetails"> Dr. {{ vacEdit.covererDetails.LastName }} </td>
+        <td *ngIf = "!vacEdit.covererDetails" > TBD </td>
+        <td *ngIf = " vacEdit.WTM_self == 0  && vacEdit.covererDetails"> Dr. {{ vacEdit.covererDetails.LastName }}</td>
+        <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
         <td   *ngIf = "vacEdit.WTM_self == 1"> Dr. {{ vacEdit.LastName }}</td>
    
         <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > {{ toSeeParams.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}}  </td>

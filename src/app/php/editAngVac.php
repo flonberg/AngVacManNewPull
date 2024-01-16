@@ -9,15 +9,13 @@ $IAP = new InsertAndUpdates();
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
 	$data = getNeededParams($data);															// get additional param needed
-	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
+	$std = print_r($data, true); fwrite($fp, "\r\n data from php//input is \r\n". $std);
 	
 	if (isset($data['accepted']) && $data['accepted'] == 0){								// Coverer has DECLINED coverage
 		sendDeclineEmail($data);
 		fwrite($fp, "\r\n Send	ing Decline email");
 		exit();
 	}
-
-	fwrite($fp, "\r\n before editing CoverageA is ". $beforeCoverageA);
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
 	if ( isset( $data['startDate'] ) && strlen($data['startDate']) > 2  ){
 		$upDtStr .= "startDate = '". $data['startDate']."',";
@@ -41,6 +39,7 @@ $IAP = new InsertAndUpdates();
 	if (isset( $data['coverageA'] )){
 		$upDtStr .= "coverageA = '". $data['coverageA']."',";
 		$beforeCoverageA = getCoverer($data['vidx']);								// get the CoverageA before edit to see if Email needed
+		fwrite($fp, "\r\n before editing CoverageA is ". $beforeCoverageA);
 	}	
 //	$tst = strlen($data['WTMnote']);
        //	fwrite($fp, "\r\n\ strnel is $tst \r\n ");
@@ -125,7 +124,7 @@ $IAP = new InsertAndUpdates();
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
-		fwrite($fp, "\r\n ". $link);
+		fwrite($fp, "\r\n link is \r\n ". $link);
 		$mailAddress = $data['CovererEmail'];								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		//$mailAddress .= ",". $data->CovererEmail;	

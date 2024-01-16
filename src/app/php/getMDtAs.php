@@ -86,6 +86,9 @@ function getMDtAs(){
 			$vacGraph[$i][$assoc['userid']]['covererageA_UserKey'] = $assoc['coverageA' ];
 			$vacGraph[$i][$assoc['userid']]['covererDetails'] = $MDs[$assoc['coverageA']];
 		}
+		else if ((isset($assoc['coverageA']) && strlen($assoc['coverageA']) == 0)){
+			$vacGraph[$i][$assoc['userid']]['covererDetails']['LastName'] = 'TBD';
+		}
 		$i++;
 	//	fwrite($fp, "\r\n ".$vacGraph[$i][$assoc['userid']]['startDate']." daysTillStart is ". $vacGraph[$i][$assoc['userid']]['daysTillStartDate'] );
 
