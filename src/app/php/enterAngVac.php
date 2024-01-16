@@ -179,7 +179,7 @@ function sendAskForCoverage($vidx, $data)
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
-		if (!$debug)
+	//	if (!$debug)
 			$sendMail->send();	
 }
 /**

@@ -23,7 +23,7 @@ $handle = connectDB_FL();
 	//$assoc['startDateConvent'] = formatDate($assoc['startDate']);
 	$assoc['WTMnote'] = $assoc['WTMnote'];
 	if ($assoc['WTMdate'])
-		if (strpos($assoc['WTMdate'], '1900') === FALSE)
+		if (@strpos($assoc['WTMdate'], '1900') === FALSE)
 			$assoc['WTMdate'] = formatDate($assoc['WTMdate']);
 		else {
 			$assoc['WTMdate'] = "";

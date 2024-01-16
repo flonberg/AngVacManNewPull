@@ -11,9 +11,10 @@ $IAP = new InsertAndUpdates();
 	$data = getNeededParams($data);															// get additional param needed
 	$std = print_r($data, true); fwrite($fp, "\r\n data from php//input is \r\n". $std);
 	
-	if (isset($data['accepted']) && $data['accepted'] == 0){								// Coverer has DECLINED coverage
-		sendDeclineEmail($data);
-		fwrite($fp, "\r\n Send	ing Decline email");
+	//if (isset($data['accepted']) && $data['accepted'] == 0){								// Coverer has DECLINED coverage
+	if (isset($data['accepted'])){								// Coverer has DECLINED coverage
+		sendAccept-DeclineEmail($data, $data['accepted']);
+		fwrite($fp, "\r\n Sending Accept-Decline email");
 		exit();
 	}
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
@@ -30,8 +31,10 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "reasonIdx = '". $data['reasonIdx']."',";
 	if ( isset( $data['note'] ) &&    strlen($data['note']) > 1)
 		$upDtStr .= "note = '". $data['note']."',";
-	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0)
+	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
+		sendCoverageAcceptedEmail()
+	}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
 	if (isset( $data['WTM_self'] ))
@@ -198,14 +201,17 @@ $IAP = new InsertAndUpdates();
 			return $date;	
 	}
 
-	function sendDeclineEmail($data){
+	function sendAccept-DeclineEmail($data, $num){
 		global $handle;
 		$toAddress =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data['goAwayerUserKey'], "Email", $handle);	
 		$toAddress = "flonberg@partners.org";					////// changed on 6-24-2016   \\\\\\\\\\\
 		$subj = "Coverage for Time Away";
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("Y-m-d");
-		$msg = "Dr. ". $data['CovererLastName'] ." has declined coverage for your time-away starting on ". $startDateString;
+		$action = 'accepted';
+		if ($num == 0 )
+			$action = 'declined';
+		$msg = "Dr. ". $data['CovererLastName'] ." has ". $action ." coverage for your time-away starting on ". $startDateString;
 		$headers = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 		$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
@@ -215,6 +221,7 @@ $IAP = new InsertAndUpdates();
 		$sendMail->send();
 	
 	}	
+
 /**
  * Check for overlap of existing tA for the given goAwayer, used in enterAngVac.php so should be idential 
  */

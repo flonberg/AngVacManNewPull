@@ -94,7 +94,7 @@ export class PlansComponent implements OnInit {
   now: Date
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this.now = new Date()
-    if ( this .checkWorkingDir() == 'prod')
+    if ( this .checkWorkingDir() == 'prod')                    
       this .wkDev = 'prod';
     this .getVacURL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this.wkDev+'/getMDtAs.php?adv='+ this.monthInc;  
   console.log("9898 url is %o", this.getVacURL)  
@@ -102,6 +102,7 @@ export class PlansComponent implements OnInit {
       this .queryParams = params
       if (this.queryParams['acceptor'] == '1'){
         this .showAcceptance = true
+        this .showAcceptor = true
         this .showReadOnly = false
         this .showEdit = false
       }
@@ -469,7 +470,6 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
         location.reload(true);
   })
   this .changesSavedShow = true;
-  this .showAcceptance = false; 
   this .ngOnInit();
  // if (this .wkDev == 'prod')
    // location.reload(true);
@@ -477,8 +477,10 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
 }
 private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
-  if (param == 'CovAccepted')
+  if (param == 'CovAccepted'){
       this .CovParams.accepted = value;
+    //  this .showAcceptor = false;
+  }
   if (param == 'WTMnote')
       this .CovParams.WTMnote = value.target.value;
   if (param == 'WTMdate'){

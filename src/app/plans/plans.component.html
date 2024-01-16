@@ -278,12 +278,13 @@
  
 
 <!--       Div for Acceptor       -->
-   <div *ngIf = 'showAcceptor' class='raised'>
+   <div *ngIf = 'showAcceptor && vacEdit' class='raised'>
     <span > Time Away for Dr. {{ vacEdit.goAwayerLastName }} </span>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 0 ||   toSeeParams['WTM_self'] == 1"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </p>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away.</p>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > You are also being asked to cover Dr. {{ toSeeParams['goAwayerLastName']  }}'s WTM.  .</p>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please select a WTM date and supply any additional parameters such as WTM location.</p>
+    <p *ngIf = "changesSavedShow" style="color:green"> Response Saved </p>
     <table *ngIf = vidxToSee class='toFit'>
           <tr>
             <td> 
