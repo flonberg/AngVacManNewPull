@@ -7,7 +7,7 @@ $handle = connectDB_FL();
 ini_set("error_log", "./Alog/editAngVacError.txt");
 $IAP = new InsertAndUpdates();
 
-	$fp = fopen("./Alog/editAngVacLog.txt", "a+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
+	$fp = fopen("./Alog/editAngVacLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
@@ -36,8 +36,10 @@ $IAP = new InsertAndUpdates();
 	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
 		$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
+fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);		
 		if ($CovAcceptedEmail == 0){
-			$udpateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx'];
+			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx'];
+			safeSQL($updateStr, $handle);
 			sendCovAcceptedEmail($data);
 		}	
 	}
@@ -65,18 +67,16 @@ $IAP = new InsertAndUpdates();
 		exit();
 	elseif ($_GET['email'] == 1)								// tA params changed
 			sendTaChangedMail($data);
-	elseif ($_GET['email'] == 2)
-		sendFinalEmail($data);		
+	//elseif ($_GET['email'] == 2)
+	//	sendFinalEmail($data);		
 	exit();
 	function sendCovAcceptedEmail($data){
-		global $fp;
-		fwrite($fp, "\r\n 696969 \r\n");
-		sendStaffLib($data);
+		sendStaffLib($data, 1);
 	}
 	function sendDeleteTaEmail($data){
 		global $handle, $fp;
 		$startDateString = $data['dBstartDate']->format('Y-m-d');
-		$mailAddress = $data->CovererEmail;								
+		$mailAddress = $data['CovererEmail'];								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Time Away Deleted";
 	

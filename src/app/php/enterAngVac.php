@@ -287,13 +287,12 @@ function sendStaff($vidx, $newTa){
 					</p>
 					<p>
 					<a href='.$link .'>View Time Away. </a>
-					<p> The above link will NOT work if Internet Explorer is your default browser.  In the case copy the link to use in Chrome </p> 
 					</body>
 				</head>	
 			</html>
 			'; 
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		if (!$debug)
+		//if (!$debug)
 			$sendMail->send();		
 	}
 	//$dstr = print_r($row, true); fwrite($fp, $dstr);
