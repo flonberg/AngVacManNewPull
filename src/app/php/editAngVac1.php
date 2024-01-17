@@ -1,22 +1,20 @@
 <?php
 require_once 'H:\inetpub\lib\ESB\_dev_\sqlsrvLibFL.php';
-require_once './mailLib.php';
-require_once './safeSQL.php';
 header("Content-Type: application/json; charset=UTF-8");
 $handle = connectDB_FL();
 ini_set("error_log", "./Alog/editAngVacError.txt");
 $IAP = new InsertAndUpdates();
-
 	$fp = fopen("./Alog/editAngVacLog.txt", "a+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
 	$data = getNeededParams($data);															// get additional param needed
-	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
+	$std = print_r($data, true); fwrite($fp, "\r\n data from php//input is \r\n". $std);
 	
-	if (isset($data['accepted']) && $data['accepted'] == 0){								// Coverer has DECLINED coverage
-		sendDeclineEmail($data);
-		fwrite($fp, "\r\n Send	ing Decline email");
+	//if (isset($data['accepted']) && $data['accepted'] == 0){								// Coverer has DECLINED coverage
+	if (isset($data['accepted'])){								// Coverer has DECLINED coverage
+		sendAccept-DeclineEmail($data, $data['accepted']);
+		fwrite($fp, "\r\n Sending Accept-Decline email");
 		exit();
 	}
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
@@ -35,27 +33,29 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "note = '". $data['note']."',";
 	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
-		$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
-		if ($CovAcceptedEmail == 0){
-			$udpateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx'];
-			sendCovAcceptedEmail($data);
-		}	
+	//	sendCoverageAcceptedEmail()
 	}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
-		if (isset( $data['WTM_self'] ))
+	if (isset( $data['WTM_self'] ))
 		$upDtStr .= "WTM_self = '". $data['WTM_self']."',";	
+	if (isset( $data['coverageA'] )){
+		$upDtStr .= "coverageA = '". $data['coverageA']."',";
+		$beforeCoverageA = getCoverer($data['vidx']);								// get the CoverageA before edit to see if Email needed
+		fwrite($fp, "\r\n before editing CoverageA is ". $beforeCoverageA);
+	}	
 //	$tst = strlen($data['WTMnote']);
        //	fwrite($fp, "\r\n\ strnel is $tst \r\n ");
 	if (isset( $data['WTMnote'] ) &&    strlen($data['WTMnote']) > 1)
 		$upDtStr .= "WTMnote = '". $data['WTMnote']."',";
 	$upDtStr = substr($upDtStr, 0, -1);
 	$upDtStr .= " WHERE vidx = ".$data['vidx'];
-	safeSQL( $upDtStr, $handle);
+	fwrite($fp, "\r\n  59  ". $upDtStr );
+	$IAP->safeSQL( $upDtStr, $handle);
 	if (isset($data['reasonIdx']) && $data['reasonIdx']=='99'){		// This is DELETE request
 		if (isset($data['overlapVidx']) && $data['overlapVidx'] > 0){		// there is a Overlap tA
 			$updateStr = "UPDATE TOP(1) MDtimeAway SET overlap = 0, overlapVidx = 0 WHERE vidx = '".$data['overlapVidx']."'";
-			$safeSQL($updateStr, $handle);
+			$IAP->safeSQL($updateStr, $handle);
 
 		}
 		sendDeleteTaEmail($data);
@@ -66,12 +66,15 @@ $IAP = new InsertAndUpdates();
 	elseif ($_GET['email'] == 1)								// tA params changed
 			sendTaChangedMail($data);
 	elseif ($_GET['email'] == 2)
-		sendFinalEmail($data);		
+		sendFinalEmail($data);	
+
 	exit();
-	function sendCovAcceptedEmail($data){
-		global $fp;
-		fwrite($fp, "\r\n 696969 \r\n");
-		sendStaffLib($data);
+
+	function getCoverer($vidx){
+		global $handle;
+		$selStr = "SELECT coverageA FROM MDtimeAway WHERE vidx = $vidx";
+		$cov = getSingle( $selStr, 'coverageA', $handle);
+		return $cov;
 	}
 	function sendDeleteTaEmail($data){
 		global $handle, $fp;
@@ -100,7 +103,7 @@ $IAP = new InsertAndUpdates();
 	}
 	function getNeededParams($data){
 		global $handle, $fp;
-		$selStr = "SELECT userid, overlap, overlapVidx, WTM_Change_Needed, WTM_self, startDate, endDate, coverageA, CovAcceptEmail FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
+		$selStr = "SELECT userid, overlap, overlapVidx, WTM_Change_Needed, WTM_self, startDate, endDate, coverageA FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
 		fwrite($fp, "\r\n $selStr \r\n");
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
@@ -124,8 +127,8 @@ $IAP = new InsertAndUpdates();
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
-		fwrite($fp, "\r\n ". $link);
-		$mailAddress = $data->CovererEmail;								
+		fwrite($fp, "\r\n link is \r\n ". $link);
+		$mailAddress = $data['CovererEmail'];								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		//$mailAddress .= ",". $data->CovererEmail;	
 		$subj = "Coverage for Time Away";
@@ -156,7 +159,7 @@ $IAP = new InsertAndUpdates();
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
 		$merged = array_merge($assoc, $data);
-	//	$std = print_r($merged, true); fwrite($fp, $std);
+		$std = print_r($merged, true); fwrite($fp, $std);
 		$startDateString = $merged['startDate']->format("M-d-Y");
 		$endDateString = $merged['endDate']->format("M-d-Y");
 		$WTM_dateString = makeDateString($merged['WTMdate']);
@@ -198,14 +201,15 @@ $IAP = new InsertAndUpdates();
 			return $date;	
 	}
 
-	function sendDeclineEmail($data){
+	function sendAccept-DeclineEmail($data, $num){
 		global $handle;
 		$toAddress =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data['goAwayerUserKey'], "Email", $handle);	
 		$toAddress = "flonberg@partners.org";					////// changed on 6-24-2016   \\\\\\\\\\\
 		$subj = "Coverage for Time Away";
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("Y-m-d");
-		$msg = "Dr. ". $data['CovererLastName'] ." has declined coverage for your time-away starting on ". $startDateString;
+		$action = 'accepted';
+		$msg = "Dr. ". $data['CovererLastName'] ." has ". $action ." coverage for your time-away starting on ". $startDateString;
 		$headers = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 		$headers .= 'From: <whiteboard@partners.org>' . "\r\n";
@@ -215,6 +219,7 @@ $IAP = new InsertAndUpdates();
 		$sendMail->send();
 	
 	}	
+
 /**
  * Check for overlap of existing tA for the given goAwayer, used in enterAngVac.php so should be idential 
  */

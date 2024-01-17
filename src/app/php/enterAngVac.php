@@ -292,7 +292,6 @@ function sendStaff($vidx, $newTa){
 				</head>	
 			</html>
 			'; 
-
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		if (!$debug)
 			$sendMail->send();		
