@@ -30,14 +30,13 @@ fwrite($fp, "\r\n 55555 ");    ob_start(); var_dump($newTa );$data = ob_get_clea
 					</p>
 					<p>
 					<a href='.$link .'>View Time Away. </a>
-					<p> The above link will NOT work if Internet Explorer is your default browser.  In the case copy the link to use in Chrome </p> 
 					</body>
 				</head>	
 			</html>
 			'; 
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		//if (!$debug)
-		//	$sendMail->send();	  
+			$sendMail->send();	  
         }
     }
     function getStaff($goAwayerUserKey){

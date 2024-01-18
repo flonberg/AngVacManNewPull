@@ -40,7 +40,7 @@ fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);
 		if ($CovAcceptedEmail == 0){
 			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx'];
 			safeSQL($updateStr, $handle);
-			sendStaffLib($data, 1);
+			sendCovAcceptedEmail($data);
 		}	
 	}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
@@ -68,7 +68,7 @@ fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);
 	elseif ($_GET['email'] == 1)								// tA params changed
 			sendTaChangedMail($data);
 	//elseif ($_GET['email'] == 2)
-		sendFinalEmail($data);		
+	//	sendFinalEmail($data);		
 	exit();
 	function sendCovAcceptedEmail($data){
 		sendStaffLib($data, 1);

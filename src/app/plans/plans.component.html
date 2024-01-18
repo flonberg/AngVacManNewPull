@@ -269,7 +269,8 @@
         <td *ngIf = "!vacEdit.covererDetails" > TBD </td>
         <td *ngIf = " vacEdit.WTM_self == 0  && vacEdit.covererDetails"> Dr. {{ vacEdit.covererDetails.LastName }}</td>
         <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
-        <td   *ngIf = "vacEdit.WTM_self == 1"> Dr. {{ vacEdit.LastName }}</td>
+        <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> Dr. {{ vacEdit.goAwayerLastName }}</td>
+        <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"> Dr. {{ vacEdit.LastName }}</td>
    
         <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > {{ toSeeParams.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}}  </td>
       </tr>

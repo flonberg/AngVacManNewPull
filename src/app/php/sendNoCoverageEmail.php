@@ -22,7 +22,31 @@ foreach($covTBDtAs as $key=>$val){
     }
 exit();
 
-
+function getNoCovTAs($dates){
+    global $handle, $fp;
+    $selStr = "SELECT vidx, CovTBDemail, startDate, endDate, userid, coverageA, CovTBDemail FROM MDtimeAway WHERE startDate > '".$dates[1]."' AND startDate < '".$dates[0]."' AND reasonIdx < 9 AND coverageA = '0'";
+    $dB = new getDBData($selStr, $handle);
+    $i = 0;
+    while ($assoc = $dB->getAssoc()){
+        $row[$i] = $assoc;                                                          // get the tA
+        $selStr2 = "SELECT physicians.Email, physicians.LastName,physicians.UserKey, users.UserID   
+            FROM physicians
+            LEFT JOIN users on users.UserKey = physicians.UserKey WHERE users.UserID = '".$assoc['userid']."'"; 
+        $dB2 = new getDBData( $selStr2, $handle);                                   // get Email, LastName, and UserKey of goAwayer
+        $assoc2 = $dB2->getAssoc();
+        $result = array_merge($row[$i], $assoc2);
+    }
+    fwrite($fp, "\r\n Data for email to goAwayer is \r\n");
+    $dstr = print_r($result, true); fwrite($fp, $dstr);
+    if (!isset($result['CovTBDemail']))                             // check is email has already been sent
+        $toWrite = 1;                                               // record that email IS NOW being sent    
+    else if ($result['CovTBDemail']== '1')                          // if first email has been sent
+        $toWrite = 2;                                               // record that SECOND email has been sent
+    $updateStr = "UPDATE TOP(1) MDtimeAway SET CovTBDemail = '".$toWrite."' WHERE vidx = ".$result['vidx'];
+    fwrite($fp, "\r\n $updateStr \r\n");
+    var_dump($result);
+    return $result;
+}
 
 function sendEmails($TBDtAs){
     global $fp, $debug;
@@ -82,29 +106,4 @@ function makeLogFile(){
         }
         while ($fp ===FALSE);
     return $fp;    
-}
-function getNoCovTAs($dates){
-    global $handle, $fp;
-    $selStr = "SELECT vidx, CovTBDemail, startDate, endDate, userid, coverageA, CovTBDemail FROM MDtimeAway WHERE startDate > '".$dates[1]."' AND startDate < '".$dates[0]."' AND reasonIdx < 9 AND coverageA = '0'";
-    $dB = new getDBData($selStr, $handle);
-    $i = 0;
-    while ($assoc = $dB->getAssoc()){
-        $row[$i] = $assoc;                                                          // get the tA
-        $selStr2 = "SELECT physicians.Email, physicians.LastName,physicians.UserKey, users.UserID   
-            FROM physicians
-            LEFT JOIN users on users.UserKey = physicians.UserKey WHERE users.UserID = '".$assoc['userid']."'"; 
-        $dB2 = new getDBData( $selStr2, $handle);                                   // get Email, LastName, and UserKey of goAwayer
-        $assoc2 = $dB2->getAssoc();
-        $result = array_merge($row[$i], $assoc2);
-    }
-    fwrite($fp, "\r\n Data for email to goAwayer is \r\n");
-    $dstr = print_r($result, true); fwrite($fp, $dstr);
-    if (!isset($result['CovTBDemail']))                             // check is email has already been sent
-        $toWrite = 1;                                               // record that email IS NOW being sent    
-    else if ($result['CovTBDemail']== '1')                          // if first email has been sent
-        $toWrite = 2;                                               // record that SECOND email has been sent
-    $updateStr = "UPDATE TOP(1) MDtimeAway SET CovTBDemail = '".$toWrite."' WHERE vidx = ".$result['vidx'];
-    fwrite($fp, "\r\n $updateStr \r\n");
-    var_dump($result);
-    return $result;
 }
