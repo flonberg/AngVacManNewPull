@@ -462,7 +462,6 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
   console.log("341 tAparams is  %o  detail is %o  jData is %o ", this .tAparams, detail, jData)
   console.log("367 detail is %o emalparam is %o", detail, emailParam)
   var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editAngVac.php?email='+emailParam;  // set endPoint for dev
-
   console.log('420 url is %o', url);
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 

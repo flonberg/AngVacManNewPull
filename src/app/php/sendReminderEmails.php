@@ -14,15 +14,19 @@ $remColName = "OneWeekReminder";
 if ($numWeeks == 2)
         $remColName = "TwoWeekReminder";
 $oneWeekTAs = getTAs($numWeeks, $remColName);
+
 if (is_array($oneWeekTAs))
     foreach ($oneWeekTAs as $key => $val){
         sendEmails($val);
         updateMDtimeAway($val, $remColName);
     }
+exit();  
+/**
+ * Update OneWeekReminder of TwoWeekReminder -> 1 for vidx
+ */  
 function updateMDtimeAway($TBDtA, $remColName){
     global $handle, $fp;
     $updateStr = "UPDATE TOP(1) MDtimeAway SET $remColName = 1 WHERE vidx = '".$TBDtA['vidx']."'";
-    echo "<br> $updateStr";
     try { 
         $res = sqlsrv_query($handle, $updateStr);
         } 	catch(Exception $e) {
@@ -45,7 +49,6 @@ function getTAs($numWeeks, $remColName){
     $today = $date->format("Y-m-d");
     $Weeks = $date->modify( '+ '.$numWeeks.' weeks' );                          // go ahead $numWeeks weeks
     $WeeksFormat = $Weeks->format('Y-m-d');
-
     $selStr = "SELECT vidx,userkey,startDate, userid, coverageA, CovAccepted, OneWeekReminder, TwoWeekReminder FROM MDtimeAway WHERE startDate <= '".$WeeksFormat."' 
         AND startDate > '".$today."' AND ".$remColName ." < 1 AND coverageA = 0 AND reasonIdx < 90";
     $dB = new getDBData($selStr, $handle);
@@ -57,7 +60,7 @@ function getTAs($numWeeks, $remColName){
         if (is_array($assoc2))
             $row[$i++] = array_merge($assoc, $assoc2);
     }
-    //echo "<pre>"; print_r($row); echo "</pre>";
+    echo "<pre>"; print_r($row); echo "</pre>";
     if (isset($row))
         return $row;
 }

@@ -11,6 +11,7 @@ $IAP = new InsertAndUpdates();
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
+	$std = print_r($data, true); fwrite($fp, "\r\n data from POST has \r\n". $std);
 	$data = getNeededParams($data);															// get additional param needed
 	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
 	
@@ -23,11 +24,11 @@ $IAP = new InsertAndUpdates();
 	if ( isset( $data['startDate'] ) && strlen($data['startDate']) > 2  ){
 		$upDtStr .= "startDate = '". $data['startDate']."',";
 		$upDtStr .= "CovAccepted = '0',";
-		sendTaChangedMail($data);
+		sendTaChangedMail($data,0);
 	}
 	if (isset( $data['endDate'] ) &&   strlen($data['endDate']) > 2  ){
 		$upDtStr .= "endDate = '". $data['endDate']."',";
-		sendTaChangedMail($data);
+		sendTaChangedMail($data,0);
 	}
 	if (isset( $data['reasonIdx'] ) &&   $data['reasonIdx'] >= 1)
 		$upDtStr .= "reasonIdx = '". $data['reasonIdx']."',";
@@ -36,7 +37,6 @@ $IAP = new InsertAndUpdates();
 	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
 		$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
-fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);		
 		if ($CovAcceptedEmail == 0){
 			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx'];
 			safeSQL($updateStr, $handle);
@@ -65,8 +65,12 @@ fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);
 	}	
 	if ($_GET['email'] == 0)									// some edits do NOT require an email. 
 		exit();
-	elseif ($_GET['email'] == 1)								// tA params changed
-			sendTaChangedMail($data);
+	elseif ($_GET['email'] == 1){								// tA params changed
+		if (isset($data['coverageA']))							// Nominated Coverer is Changes
+			sendTaChangedMail($data,1);							// send special email for nominated coverr
+		else
+			sendTaChangedMail($data,0);							// send ordinary 'param changed' email. 
+		}
 	//elseif ($_GET['email'] == 2)
 		sendFinalEmail($data);		
 	exit();
@@ -106,10 +110,11 @@ fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);
 		$assoc = $dB->getAssoc();
 		$data['userid'] = $assoc['userid'];
 		$data['dBstartDate'] = $assoc['startDate'];							//  used to inform the Coverer of the StartDate of the changed tA. 
-		$data['goAwayerUserKey'] =  getSingle("SELECT UserKey FROM users WHERE UserID ='". $assoc['userid']."'",  "UserKey", $handle);		
-		$data['CovererUserKey'] =  $assoc['coverageA'];		// get name of GoAwayer
-		$data['CovererUserId'] =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $assoc['coverageA'],  "UserID", $handle);		
-		$data['CovererLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$assoc['coverageA']  ."'", "LastName", $handle);			// get name of GoAwayer
+		$data['goAwayerUserKey'] =  getSingle("SELECT UserKey FROM users WHERE UserID ='". $assoc['userid']."'",  "UserKey", $handle);	
+		if (!$data['CoverageA'] > 0 )										// user did NOT enter a Coverer	
+			$data['CovererUserKey'] =  $assoc['coverageA'];					// use value from dataBase
+		$data['CovererUserId'] =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data['coverageA'],  "UserID", $handle);		
+		$data['CovererLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['coverageA']  ."'", "LastName", $handle);			// get name of GoAwayer
 		$data['goAwayerLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['goAwayerUserKey']  ."'", "LastName", $handle);			// get name of GoAwayer
 		$data['overlap'] = $assoc['overlap'];
 		$data['overlapVidx'] = $assoc['overlapVidx'];
@@ -118,18 +123,21 @@ fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);
 		$data['adminEmail'] = $admins['adminEmail'];
 		return $data;
 	}
-	function sendTaChangedMail($data){
+	function sendTaChangedMail($data, $mode){
 		global $handle, $fp;
 		fwrite($fp, "\r\n vidx is ". $data['vidx']);
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
 		fwrite($fp, "\r\n ". $link);
-		$mailAddress = $data->CovererEmail;								
+		$mailAddress = $data['CovererEmail'];								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		//$mailAddress .= ",". $data->CovererEmail;	
 		$subj = "Coverage for Time Away";
-		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ."'s parameters for being away starting on $startDateString have changed. ";
+		if ($mode == 1)
+			$msg ="Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." would like you to cover for their Time Away starting on $startDateString . ";
+		else
+			$msg = "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ."'s parameters for being away starting on $startDateString have changed. ";
 		$msg .= "<p> To accept or decline this altered coverage click on the below link.</p>";
 		$message = '
 			<html>
@@ -139,7 +147,6 @@ fwrite($fp, "\r\n 393939 CovAcceptedEmail is ". $CovAcceptedEmail);
 							<p>'. $msg .'</p>
 							<p>
 								<a href='.$link .'> Accept Coverage. </a>
-							<p> The above link will NOT work if Internet Explorer is your default browser.  In the case copy the link to use in Chrome </p> 
 						</body>
 				</head>	
 			</html>
