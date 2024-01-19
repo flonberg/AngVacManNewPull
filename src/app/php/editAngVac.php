@@ -34,6 +34,8 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "reasonIdx = '". $data['reasonIdx']."',";
 	if ( isset( $data['note'] ) &&    strlen($data['note']) > 1)
 		$upDtStr .= "note = '". $data['note']."',";
+	if ( isset( $data['coverageA'] ) &&    $data['coverageA'] > 1)
+		$upDtStr .= "coverageA = '". $data['coverageA']."',";
 	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
 		$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
@@ -47,8 +49,6 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
 		if (isset( $data['WTM_self'] ))
 		$upDtStr .= "WTM_self = '". $data['WTM_self']."',";	
-//	$tst = strlen($data['WTMnote']);
-       //	fwrite($fp, "\r\n\ strnel is $tst \r\n ");
 	if (isset( $data['WTMnote'] ) &&    strlen($data['WTMnote']) > 1)
 		$upDtStr .= "WTMnote = '". $data['WTMnote']."',";
 	$upDtStr = substr($upDtStr, 0, -1);
@@ -111,10 +111,12 @@ $IAP = new InsertAndUpdates();
 		$data['userid'] = $assoc['userid'];
 		$data['dBstartDate'] = $assoc['startDate'];							//  used to inform the Coverer of the StartDate of the changed tA. 
 		$data['goAwayerUserKey'] =  getSingle("SELECT UserKey FROM users WHERE UserID ='". $assoc['userid']."'",  "UserKey", $handle);	
-		if (!$data['CoverageA'] > 0 )										// user did NOT enter a Coverer	
-			$data['CovererUserKey'] =  $assoc['coverageA'];					// use value from dataBase
+		if (!isset($data['coverageA'])  )	{									// user did NOT enter a Coverer	
+			$data['coverageA'] =  $assoc['coverageA'];					// use value from dataBase
+		}
 		$data['CovererUserId'] =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data['coverageA'],  "UserID", $handle);		
 		$data['CovererLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['coverageA']  ."'", "LastName", $handle);			// get name of GoAwayer
+		$data['CovererEmail'] = getSingle("SELECT Email FROM physicians WHERE UserKey = '".$data['coverageA']  ."'", "Email", $handle);			// get name of GoAwayer
 		$data['goAwayerLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['goAwayerUserKey']  ."'", "LastName", $handle);			// get name of GoAwayer
 		$data['overlap'] = $assoc['overlap'];
 		$data['overlapVidx'] = $assoc['overlapVidx'];
@@ -129,6 +131,8 @@ $IAP = new InsertAndUpdates();
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
+		if ($mode==1)																	// Coverer Nominated so need to see 'acceptor' screen
+			$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx']."&acceptor=1";	
 		fwrite($fp, "\r\n ". $link);
 		$mailAddress = $data['CovererEmail'];								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
