@@ -249,7 +249,6 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 }
 function sendStaff($vidx, $newTa){
 	global $fp, $handleBB, $handle, $debug;
-
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
@@ -262,6 +261,7 @@ function sendStaff($vidx, $newTa){
 	}
 	$selStr = substr($selStr, 0, -1);
 	$selStr .= ")";
+	fwrite($fp, "\r\n 264 staff Query SelStr is \r\n". $selStr);
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
@@ -275,7 +275,10 @@ function sendStaff($vidx, $newTa){
 		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
 		$msg = "<p> Hi ".$row[$i++]['FirstName']."<p>";
 		$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
-		$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
+		if ($newTa->coverageA == 0)
+			$msg.= "The cover for this time away is to be determined";
+		else
+			$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
 		$msg .= "<p> To see details of this Time click on the below link. </p>";
 		$message = '
 			<html>

@@ -15,11 +15,9 @@ $IAP = new InsertAndUpdates();
 	$data = getNeededParams($data);															// get additional param needed
 	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
 	
-	if (isset($data['accepted']) && $data['accepted'] == 0){								// Coverer has DECLINED coverage
-		sendDeclineEmail($data);
-		fwrite($fp, "\r\n Send	ing Decline email");
-		exit();
-	}
+	//if (isset($data['accepted']) )							// 
+	//		sendStaffLib($data,$data['accepted']);
+	
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
 	if ( isset( $data['startDate'] ) && strlen($data['startDate']) > 2  ){
 		$upDtStr .= "startDate = '". $data['startDate']."',";
@@ -28,6 +26,7 @@ $IAP = new InsertAndUpdates();
 	}
 	if (isset( $data['endDate'] ) &&   strlen($data['endDate']) > 2  ){
 		$upDtStr .= "endDate = '". $data['endDate']."',";
+		$upDtStr .= "CovAccepted = '0',";
 		sendTaChangedMail($data,0);
 	}
 	if (isset( $data['reasonIdx'] ) &&   $data['reasonIdx'] >= 1)
@@ -36,13 +35,22 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "note = '". $data['note']."',";
 	if ( isset( $data['coverageA'] ) &&    $data['coverageA'] > 1)
 		$upDtStr .= "coverageA = '". $data['coverageA']."',";
-	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){
+	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){					// Coverer has accepted coverage
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
 		$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
-		if ($CovAcceptedEmail == 0){
-			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx'];
+		if ($CovAcceptedEmail == 0)
+		{										// No email communicating CovAccepted has yet been sent
+			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx']; 
 			safeSQL($updateStr, $handle);
-			sendStaffLib($data, 1);
+			if ($data['accepted'] == 1)
+				{										// coverer has accepted
+				sendStaffLib($data, 1);											// send CoverageAccepted emails
+				sendToGoAwayer($data, 1);
+			}
+			if ($data['accepted'] == 0)											// coverer has Declined
+				sendStaffLib($data, 2);	{										// send Coverage Declined emails
+				sendToGoAwayer($data, 2);	
+			}
 		}	
 	}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
@@ -74,16 +82,13 @@ $IAP = new InsertAndUpdates();
 	//elseif ($_GET['email'] == 2)
 		sendFinalEmail($data);		
 	exit();
-	function sendCovAcceptedEmail($data){
-		sendStaffLib($data, 1);
-	}
+
 	function sendDeleteTaEmail($data){
 		global $handle, $fp;
 		$startDateString = $data['dBstartDate']->format('Y-m-d');
 		$mailAddress = $data->CovererEmail;								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Time Away Deleted";
-	
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." has canceled the Time Away starting on $startDateString for which you were the coverage";
 		$message = '
 			<html>
@@ -118,6 +123,7 @@ $IAP = new InsertAndUpdates();
 		$data['CovererLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['coverageA']  ."'", "LastName", $handle);			// get name of GoAwayer
 		$data['CovererEmail'] = getSingle("SELECT Email FROM physicians WHERE UserKey = '".$data['coverageA']  ."'", "Email", $handle);			// get name of GoAwayer
 		$data['goAwayerLastName'] = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$data['goAwayerUserKey']  ."'", "LastName", $handle);			// get name of GoAwayer
+		$data['goAwayerEmail'] = getSingle("SELECT Email FROM physicians WHERE UserKey = '".$data['goAwayerUserKey']  ."'", "Email", $handle);			// get name of GoAwayer
 		$data['overlap'] = $assoc['overlap'];
 		$data['overlapVidx'] = $assoc['overlapVidx'];
 		$dB2 = new getDBData("SELECT adminEmail, adminUserKey, physicianUserKey FROM physicianAdmin WHERE physicianUserKey = ".$data['goAwayerUserKey'], $handle);	
@@ -209,14 +215,17 @@ $IAP = new InsertAndUpdates();
 			return $date;	
 	}
 
-	function sendDeclineEmail($data){
-		global $handle;
+	function sendCoverageAccepted($data, $mode){
+		global $handle, $fp;
 		$toAddress =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data['goAwayerUserKey'], "Email", $handle);	
 		$toAddress = "flonberg@partners.org";					////// changed on 6-24-2016   \\\\\\\\\\\
 		$subj = "Coverage for Time Away";
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("Y-m-d");
-		$msg = "Dr. ". $data['CovererLastName'] ." has declined coverage for your time-away starting on ". $startDateString;
+		$choice = 'accepted';
+		if ($mode == 2)
+			$choice = 'declined';
+		$msg = "Dr. ". $data['CovererLastName'] ." has $choice coverage for the time-away starting on ". $startDateString;
 		$headers = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 		$headers .= 'From: <whiteboard@partners.org>' . "\r\n";

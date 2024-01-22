@@ -234,6 +234,7 @@ console.log("182182 toSeeParams from %o", this. toSeeParams)
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
    */  
+  gotData:boolean = false
   private getTheData(){
     console.log("68 url is %o", this .getVacURL)
     this .http.get(this .getVacURL).subscribe(res =>{
@@ -244,7 +245,8 @@ console.log("182182 toSeeParams from %o", this. toSeeParams)
         console.log("166 coverers is %o", this. coverers)
       for (const tRow in this. vacData){ 
         this.makeDaysOfRow(this .vacData[tRow])               // fill out the row of boxes for the Calenday
-        this .vacData[tRow][9] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
+        this .vacData[tRow][9] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box    
+        this .gotData = true  
     //    this .vacData[tRow][10] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
       }  
     })
@@ -829,12 +831,12 @@ WTMparam(ev, pName){
 postRes: any;
 overlap: boolean
 faultMessage; string;
-submitTA(){                                                                  // need to put in full error checking. 
+submitTA(){     
+  this .gotData = false                                                             // need to put in full error checking. 
   this .faultMessage = "t";
   if (this .checkTAparams()){
       var jData = JSON.stringify(this .tAparams)
       var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/enterAngVac.php?debug=1';
-  console.log("832832 url is %o", url);    
       this .http.post(url, jData).subscribe(ret=>{
           this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
           if (this.postRes)
