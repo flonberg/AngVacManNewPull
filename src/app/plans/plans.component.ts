@@ -208,6 +208,10 @@ console.log("182182 toSeeParams from %o", this. toSeeParams)
     if (this.userid && this. userid.includes(vacEdit['userid']))
       isUserGoAwayer = true
     this .startDateConvent = vacEdit.startDate
+    if (vacEdit.startDate.includes('1900')){
+      this .startDateConvent = 'TBD';
+      this .toSeeParams.WTMdate = 'TBD';
+    }
     this .endDateConvent = vacEdit.endDate  
     this .WTMDateConvent = vacEdit.WTMdate
     this .tAparams.vidx  = vacEdit.vidx;

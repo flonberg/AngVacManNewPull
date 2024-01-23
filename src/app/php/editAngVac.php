@@ -43,7 +43,7 @@ $IAP = new InsertAndUpdates();
 			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx']; 
 			safeSQL($updateStr, $handle);
 			if ($data['accepted'] == 1)
-				{										// coverer has accepted
+				{																// coverer has accepted
 				sendStaffLib($data, 1);											// send CoverageAccepted emails
 				sendToGoAwayer($data, 1);
 			}
@@ -61,6 +61,7 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "WTMnote = '". $data['WTMnote']."',";
 	$upDtStr = substr($upDtStr, 0, -1);
 	$upDtStr .= " WHERE vidx = ".$data['vidx'];
+	fwrite($fp, "\r\n ". $upDtStr);
 	safeSQL( $upDtStr, $handle);
 	if (isset($data['reasonIdx']) && $data['reasonIdx']=='99'){		// This is DELETE request
 		if (isset($data['overlapVidx']) && $data['overlapVidx'] > 0){		// there is a Overlap tA
