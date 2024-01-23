@@ -38,7 +38,7 @@ $IAP = new InsertAndUpdates();
 	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){					// Coverer has accepted coverage
 		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
 		$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
-		if ($CovAcceptedEmail == 0)
+	//	if ($CovAcceptedEmail == 0)
 		{										// No email communicating CovAccepted has yet been sent
 			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx']; 
 			safeSQL($updateStr, $handle);
@@ -47,8 +47,8 @@ $IAP = new InsertAndUpdates();
 				sendStaffLib($data, 1);											// send CoverageAccepted emails
 				sendToGoAwayer($data, 1);
 			}
-			if ($data['accepted'] == 0)											// coverer has Declined
-				sendStaffLib($data, 2);	{										// send Coverage Declined emails
+			else if ($data['accepted'] == 0){										// coverer has Declined
+				sendStaffLib($data, 2);											// send Coverage Declined emails
 				sendToGoAwayer($data, 2);	
 			}
 		}	
@@ -66,9 +66,8 @@ $IAP = new InsertAndUpdates();
 		if (isset($data['overlapVidx']) && $data['overlapVidx'] > 0){		// there is a Overlap tA
 			$updateStr = "UPDATE TOP(1) MDtimeAway SET overlap = 0, overlapVidx = 0 WHERE vidx = '".$data['overlapVidx']."'";
 			$safeSQL($updateStr, $handle);
-
 		}
-		sendDeleteTaEmail($data);
+		sendDeleteEmail2($data);
 		exit();
 	}	
 	if ($_GET['email'] == 0)									// some edits do NOT require an email. 
@@ -86,7 +85,7 @@ $IAP = new InsertAndUpdates();
 	function sendDeleteTaEmail($data){
 		global $handle, $fp;
 		$startDateString = $data['dBstartDate']->format('Y-m-d');
-		$mailAddress = $data->CovererEmail;								
+		$mailAddress = $data['CovererEmail'];								
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$subj = "Time Away Deleted";
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." has canceled the Time Away starting on $startDateString for which you were the coverage";

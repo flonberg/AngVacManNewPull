@@ -22,21 +22,41 @@ function sendStaffLib( $newTa, $mode){
 				$msg.= "<p>Dr. ". $newTa['CovererLastName'] ." has declined coverage. </p>";
         }
 		$msg .= "<p> To see details of this Time click on the below link. </p>";
-
 		$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $msg, $link);	
 		//if (!$debug)
 			$sendMail->send();	  
         }
     }
+function sendDeleteEmail2($newTa){
+	$dB = getStaff($newTa['goAwayerUserKey']);
+	while ($assoc = $dB->getAssoc()){	
+	//	$mailAddress = $assoc['Email'];
+		$mailAddress = 'flonberg@mgh.harvard.edu';
+		$link = "";
+		$subj = "Time Away for Dr. ". $newTa['goAwayerLastName'];
+		$msg = "<p> Hi ".$assoc['FirstName']."<p>";
+		$msg.= "<p> Dr. ". $newTa['goAwayerLastName'] ." has canceled their Time Away starting ". $newTa['dBstartDate']->format('Y-m-d') ."</p>";
+		$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $msg, $link);	
+		$sendMail->send();	 
+	} 
+	//$mailAddress = $newTa['CovererEmail'];
+	$mailAddress = "flonberg@mgh.harvard.edu";
+	//$msg ="<p> Dr. ".$newTa['CovererLastName'] ."</p>";
+	$msg = "<p> Dr. ". $newTa['goAwayerLastName'] ." has canceled their Time Away starting on ". $newTa['dBstartDate']->format('Y-m-d') ."</p>";
+	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $msg, $link);	
+	$sendMail->send();	 
+}	
 function sendToGoAwayer($newTa, $mode){
 	global $handle, $fp;
-fwrite($fp, "\r\n 33333 \r\n");	
+	$choice = 'accepted';
+	if ($mode ==2)
+		$choice = 'declined';
 	$mailAddress = $newTa['goAwayerEmail'];
 	$mailAddress = 'flonberg@mgh.harvard.edu';
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$newTa['userid']."&vidxToSee=".$newTa['vidx'];
 	$subj = "Time Away for Dr. ". $newTa['goAwayerLastName'];
 	$msg = "<p>Dr. ". $newTa['goAwayerLastName']."</p>";
-	$msg.= "<p>Dr. ". $newTa['CovererLastName'] ." has declined coverage for yourTime Away starting ". $newTa['dBstartDate']->format('Y-m-d') ."</p>";
+	$msg.= "<p>Dr. ". $newTa['CovererLastName'] ." has $choice coverage for yourTime Away starting ". $newTa['dBstartDate']->format('Y-m-d') ."</p>";
 	$msg .= "<p> To select a new coverer, please use below link. </p>";
 	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $msg, $link);	
 	$sendMail->send();
@@ -55,6 +75,7 @@ function getStaff($goAwayerUserKey){
         }
         $selStr = substr($selStr, 0, -1);
         $selStr .= ")";
+fwrite($fp, "\r\n 787878 getStaff selStr \r\n". $selStr);		
         $dB = new getDBData($selStr, $handle);
         return $dB;
     }
@@ -86,11 +107,15 @@ class sendMailClassLibLoc
 			<head>
 				<title> Physician Time Away </title>
 				<body>
-				<p>
-				'. $msg .'
-				</p>
-				<p>
-				<a href='.$this->link .'>View Time Away. </a>
+					<p>
+					'. $msg .'
+					</p>';
+		if (strlen($link > 5))			
+			$this->message .=			
+						'<p>
+							<a href='.$link .'>View Time Away. </a>
+						</p>';
+		$this->message .='			
 				</body>
 			</head>	
 		</html>
