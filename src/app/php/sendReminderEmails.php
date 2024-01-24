@@ -6,7 +6,7 @@ ini_set("error_log", "./log/test2.txt");
 require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
 $fp = makeLogFile();
 $handle = connectDB_FL();
-$numWeeks = 1;
+$numWeeks = 2;
 $debug = FALSE; if (isset($_GET['debug'])) $debug = TRUE;
 if (isset($_GET['numWeeks']))
     $numWeeks = $_GET['numWeeks'];
@@ -14,7 +14,6 @@ $remColName = "OneWeekReminder";
 if ($numWeeks == 2)
         $remColName = "TwoWeekReminder";
 $oneWeekTAs = getTAs($numWeeks, $remColName);
-
 if (is_array($oneWeekTAs))
     foreach ($oneWeekTAs as $key => $val){
         sendEmails($val);
@@ -46,11 +45,13 @@ function updateMDtimeAway($TBDtA, $remColName){
 function getTAs($numWeeks, $remColName){
     global $handle;
     $date    = new DateTime();                                                  // Creates new DatimeTime for today
+echo "<br> numWeeks is ". $numWeeks;    
     $today = $date->format("Y-m-d");
     $Weeks = $date->modify( '+ '.$numWeeks.' weeks' );                          // go ahead $numWeeks weeks
     $WeeksFormat = $Weeks->format('Y-m-d');
     $selStr = "SELECT vidx,userkey,startDate, userid, coverageA, CovAccepted, OneWeekReminder, TwoWeekReminder FROM MDtimeAway WHERE startDate <= '".$WeeksFormat."' 
         AND startDate > '".$today."' AND ".$remColName ." < 1 AND coverageA = 0 AND reasonIdx < 90";
+    echo "<br>". $selStr;    
     $dB = new getDBData($selStr, $handle);
     $i = 0;
     while ($assoc = $dB->getAssoc()){

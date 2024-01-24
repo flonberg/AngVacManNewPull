@@ -591,7 +591,7 @@ goAwayerLastName2: string = ''
   }
 
   getNameClass(d){
-  //  console.log("565 in getNameClass %o", d);
+   // console.log("565 in getNameClass %o", d);
     if (d['overlap'] == 1 && d['class'] == 'orange')
       return "orangeOverlap";
     if (d['overlap'] == 1 && d['class'] == 'green')

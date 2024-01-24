@@ -3,9 +3,7 @@ function sendStaffLib( $newTa, $mode){
     global $fp, $handleBB, $handle, $debug;
     $dB = getStaff($newTa['goAwayerUserKey']);
 	$i = 0;
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$newTa['vidx'];	
-	$covMsg = "<p> The coverage for this Time Away is TBD </p>";
-	
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$newTa['vidx'];		
 	while ($assoc = $dB->getAssoc()){
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$assoc['UserID']."&vidxToSee=".$newTa['vidx'];	
 	//	$mailAddress = $assoc['Email'];
@@ -14,14 +12,19 @@ function sendStaffLib( $newTa, $mode){
 		$msg = "<p> Hi ".$assoc['FirstName']."<p>";
         if ($mode == 0)
 		    $msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa['endDate'] ."</p>";
-        if ($mode == 1 || $mode ==2){
+        if ($mode == 1 || $mode ==2 || $mode == 3){
             $msg.= "<p>With reference to Dr. ". $newTa['goAwayerLastName'] ." Time Away starting ". $newTa['dBstartDate']->format('Y-m-d') ."</p>";
 		    if ($mode == 1)
 				$msg.= "<p>Dr. ". $newTa['CovererLastName'] ." has accepted coverage. </p>";
 			if ($mode == 2)
 				$msg.= "<p>Dr. ". $newTa['CovererLastName'] ." has declined coverage. </p>";
+			if ($mode == 3)
+				$msg.= "The parameters for this Time Away have changed";
         }
-		$msg .= "<p> To see details of this Time click on the below link. </p>";
+		$msg .= "<p> To see details of this Time Away click on the below link. </p>";
+		$msg .= '<p>
+			<a href='.$link .'>View Time Away. </a>
+			</p>';
 		$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $msg, $link);	
 		//if (!$debug)
 			$sendMail->send();	  

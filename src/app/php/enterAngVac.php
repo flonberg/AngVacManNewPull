@@ -153,9 +153,11 @@ function sendAskForCoverage($vidx, $data)
 	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	//fwrite($fp, "\r\n ". $link);
-	$mailAddress = $data->CovererEmail;								
+	$mailAddress = $data->CovererEmail;		
+	$subj = "Coverage for Time Away";	
+	$subj .= " to ". $data->CovererEmail;					
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-	$subj = "Coverage for Time Away";
+	$subj .= "  to  ".$data->CovererEmail;	
 	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
 	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
 		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
@@ -228,10 +230,10 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			}
 	
 		$ppr4 = print_r($prodMailAddress, true); fwrite($fp, "\r\n Prod Overlap Mail Address is ". $ppr4);
-		$mailAddress = "flonberg@partners.org";												////// for testing   \\\\\\\\\\\
-		if ($level == 'prod')
-			$mailAddress = $prodMailAddress;
-		$subj = "Two Physicians in $serviceName Away";
+		$mailAddress = $prodMailAddress;
+		$subj = "Two Physicians in $serviceName Away  --- to ". $prodMailAddress;
+		$mailAddress = "flonberg@partners.org";	
+
 		$msg =    "Dr. ".$newTa->goAwayerLastName." and Dr. ". $assoc['LastName'] ." will both be away ". $overLapPhrase;					// The Coverer is the WTM Coverer
 		$msg .= "\r\n prod mail address is ". $prodMailAddress; 
 		$message = '
@@ -248,7 +250,7 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 			$sendMail->send();	
 }
 function sendStaff($vidx, $newTa){
-	global $fp, $handleBB, $handle, $debug;
+	global $fp, $handleBB, $handle, $debug, $level;
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
@@ -273,6 +275,7 @@ function sendStaff($vidx, $newTa){
 	//	$mailAddress = $assoc['Email'];
 		$mailAddress = 'flonberg@mgh.harvard.edu';
 		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
+		$subj .= " -- to   " .$assoc['Email'];								// store real address for fowarding
 		$msg = "<p> Hi ".$row[$i++]['FirstName']."<p>";
 		$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
 		if ($newTa->coverageA == 0)

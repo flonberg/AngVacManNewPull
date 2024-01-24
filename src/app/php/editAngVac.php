@@ -6,7 +6,10 @@ header("Content-Type: application/json; charset=UTF-8");
 $handle = connectDB_FL();
 ini_set("error_log", "./Alog/editAngVacError.txt");
 $IAP = new InsertAndUpdates();
-
+	if (strpos(getcwd(), 'dev') !== FALSE)
+		$level = 'dev';
+	else 
+		$level = 'prod';	
 	$fp = fopen("./Alog/editAngVacLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
@@ -14,20 +17,19 @@ $IAP = new InsertAndUpdates();
 	$std = print_r($data, true); fwrite($fp, "\r\n data from POST has \r\n". $std);
 	$data = getNeededParams($data);															// get additional param needed
 	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
-	
-	//if (isset($data['accepted']) )							// 
-	//		sendStaffLib($data,$data['accepted']);
-	
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
 	if ( isset( $data['startDate'] ) && strlen($data['startDate']) > 2  ){
 		$upDtStr .= "startDate = '". $data['startDate']."',";
 		$upDtStr .= "CovAccepted = '0',";
 		sendTaChangedMail($data,0);
+		sendStaffLib($data,3);
 	}
 	if (isset( $data['endDate'] ) &&   strlen($data['endDate']) > 2  ){
 		$upDtStr .= "endDate = '". $data['endDate']."',";
 		$upDtStr .= "CovAccepted = '0',";
 		sendTaChangedMail($data,0);
+		sendStaffLib($data,3);
+	
 	}
 	if (isset( $data['reasonIdx'] ) &&   $data['reasonIdx'] >= 1)
 		$upDtStr .= "reasonIdx = '". $data['reasonIdx']."',";
@@ -86,9 +88,10 @@ $IAP = new InsertAndUpdates();
 	function sendDeleteTaEmail($data){
 		global $handle, $fp;
 		$startDateString = $data['dBstartDate']->format('Y-m-d');
-		$mailAddress = $data['CovererEmail'];								
+		$mailAddress = $data['CovererEmail'];		
+		$subj = "Time Away Deleted";	
+		$subj .= "  to  ". $data['CovererEmail'];					
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$subj = "Time Away Deleted";
 		$msg =    "Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." has canceled the Time Away starting on $startDateString for which you were the coverage";
 		$message = '
 			<html>
@@ -132,18 +135,24 @@ $IAP = new InsertAndUpdates();
 		return $data;
 	}
 	function sendTaChangedMail($data, $mode){
-		global $handle, $fp;
+		global $handle, $fp, $level;
 		fwrite($fp, "\r\n vidx is ". $data['vidx']);
+		if ($data['coverageA'] == 0)								// no coverage nominated
+			return;													// do NOT send email
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("M-d-Y");
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx'];	// No 8 2021
 		if ($mode==1)																	// Coverer Nominated so need to see 'acceptor' screen
 			$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data['CovererUserId']."&vidxToSee=".$data['vidx']."&acceptor=1";	
 		fwrite($fp, "\r\n ". $link);
-		$mailAddress = $data['CovererEmail'];								
+		$mailAddress = $data['CovererEmail'];	
+		$subj = "Coverage for Time Away";
+		$subj .= " to ".$data['CovererEmail'];							
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		//$mailAddress .= ",". $data->CovererEmail;	
-		$subj = "Coverage for Time Away";
+
+		if ($level == 'dev')												
+			$subj .= "--- ". $data['CovererEmail'];							// add real address so I can forward. 
 		if ($mode == 1)
 			$msg ="Dr.".$data['CovererLastName'].": <br> Dr.". $data['goAwayerLastName'] ." would like you to cover for their Time Away starting on $startDateString . ";
 		else
@@ -169,13 +178,15 @@ $IAP = new InsertAndUpdates();
 	function sendFinalEmail($data){
 		global $fp, $handle;
 		$selStr = "SELECT * FROM MDtimeAway WHERE vidx = '".$data['vidx']."'";
-//		fwrite($fp, "\r\n $selStr \r\n ");
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
 		$merged = array_merge($assoc, $data);
-	//	$std = print_r($merged, true); fwrite($fp, $std);
-		$startDateString = $merged['startDate']->format("M-d-Y");
-		$endDateString = $merged['endDate']->format("M-d-Y");
+		if (is_object($merged['startDate']))
+			$startDateString = $merged['startDate']->format("M-d-Y");
+		if (isset($merged['dBstartDate']) && is_object($merged['dBstartDate']))
+			$startDateString = $merged['dBstartDate']->format('M-d-Y');
+		if (is_object($merged['endDate']))
+			$endDateString = $merged['endDate']->format("M-d-Y");
 		$WTM_dateString = makeDateString($merged['WTMdate']);
 		$std = print_r($merged, true); fwrite($fp, "\r\n in sendAcc merged is ". $std);
 		//$mailAddress = $assoCovererEmail;								
@@ -214,12 +225,15 @@ $IAP = new InsertAndUpdates();
 		else
 			return $date;	
 	}
+	
 
 	function sendCoverageAccepted($data, $mode){
-		global $handle, $fp;
-		$toAddress =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data['goAwayerUserKey'], "Email", $handle);	
+		global $handle, $fp, $level;
+		$toAddress =  getSingle("SELECT Email FROM physicians WHERE UserKey = ".$data['goAwayerUserKey'], "Email", $handle);
+		$subj = "Coverage for Time Away";	
+		$subj .= " to ". $toAddress;
 		$toAddress = "flonberg@partners.org";					////// changed on 6-24-2016   \\\\\\\\\\\
-		$subj = "Coverage for Time Away";
+	
 		if (is_object($data['dBstartDate']))
 			$startDateString = $data['dBstartDate']->format("Y-m-d");
 		$choice = 'accepted';

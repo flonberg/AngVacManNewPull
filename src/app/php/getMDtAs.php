@@ -69,6 +69,8 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['WTM_Change_Needed'] = $assoc['WTM_Change_Needed'];
 		$vacGraph[$i][$assoc['userid']]['CovAccepted'] = $assoc['CovAccepted'];
 		$vacGraph[$i][$assoc['userid']]['class']=  'orange' ;
+		if ($assoc['coverageA'] ==0 ) 
+			$vacGraph[$i][$assoc['userid']]['class']= 'red';
 		if ($assoc['CovAccepted'] > 0 ) 
 			$vacGraph[$i][$assoc['userid']]['class']= 'green';
 		if ($assoc['WTMdate'])

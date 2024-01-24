@@ -43,10 +43,15 @@ td.greenOverlap {
 	font-size:smaller;
 	cursor:pointer;	
 	border:solid;
-	color: red;
+	color: rgb(245, 74, 74);
 }
 td.orange {
 	background-color:orange;
+	font-size:smaller;
+	cursor:pointer;	
+}
+td.red {
+	background-color:orangered;
 	font-size:smaller;
 	cursor:pointer;	
 }
@@ -61,10 +66,7 @@ td.unApproved {
 	background-color:white;
 	font-size:smaller;
 }
-td.red {
-	background-color:rgb(224, 110, 110);
-	font-size:smaller;
-}
+
 td.weekend {
 	background-color: rgb(233, 114, 114);
 }
