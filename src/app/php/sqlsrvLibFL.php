@@ -234,6 +234,7 @@ class InsertAndUpdates
 
 class sendMailClassLib
 {
+	var $logFp;
 	public function __construct($address, $subject, $msg){
 		$this->address = $address;
 		$this->subject = $subject; 
@@ -245,8 +246,10 @@ class sendMailClassLib
 	 	$this->headers .= 'Cc: flonberg@partners.org'. "\r\n";
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
-		$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail".$todayStr.".log", "a+");
+	//	$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail".$todayStr.".log", "a+");
+		$this->logFp = fopen("./Alog/sendMail".$todayStr.".txt", "a+");
 		$nowString = $now->format("Y-m-d H:i:s");   fwrite($this->logFp, "\r\n $nowString");
+		$dstr = print_r($address, true); fwrite($this->logFp, "\r\n ". $dstr);
 	}
 	public function setHeaders($headers){
 		$this->headers = $headers;

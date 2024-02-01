@@ -1,15 +1,20 @@
 <?php
 function sendStaffLib( $newTa, $mode){
     global $fp, $handleBB, $handle, $debug;
-    $dB = getStaff($newTa['goAwayerUserKey']);
+	if (isset($newTa['goAwayerUserKey']))
+    	$dB = getStaff($newTa['goAwayerUserKey']);
+	
 	$i = 0;
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$newTa['vidx'];		
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$newTa['vidx'];	
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$newTa['vidx'];	
 	while ($assoc = $dB->getAssoc()){
-		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$assoc['UserID']."&vidxToSee=".$newTa['vidx'];	
+		$dstr = print_r($assoc, true); fwrite($fp, "\r\n ". $dstr);
+	}
+	
 	//	$mailAddress = $assoc['Email'];
 		$mailAddress = 'flonberg@mgh.harvard.edu';
 		$subj = "Time Away for Dr. ". $newTa['goAwayerLastName'];
-		$msg = "<p> Hi ".$assoc['FirstName']."<p>";
+		$msg = "<p> Greetings, <p>";
         if ($mode == 0)
 		    $msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa['endDate'] ."</p>";
         if ($mode == 1 || $mode ==2 || $mode == 3){
@@ -28,20 +33,25 @@ function sendStaffLib( $newTa, $mode){
 		$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $msg, $link);	
 		//if (!$debug)
 			$sendMail->send();	  
-        }
+        
     }
 function sendDeleteEmail2($newTa){
+	global $fp;
 	$dB = getStaff($newTa['goAwayerUserKey']);
 	while ($assoc = $dB->getAssoc()){	
+		$dstr = print_r($assoc, true); fwrite($fp, "\r\n ". $dstr);
+
+	}
+		fwrite($fp, "\r\n Cover Email is ". $newTa['CovererEmail'] ." CovererLastName is ". $newTa['CovererLastName']);
 	//	$mailAddress = $assoc['Email'];
 		$mailAddress = 'flonberg@mgh.harvard.edu';
 		$link = "";
 		$subj = "Time Away for Dr. ". $newTa['goAwayerLastName'];
-		$msg = "<p> Hi ".$assoc['FirstName']."<p>";
+		$msg = "<p>Greetings, <p>";
 		$msg.= "<p> Dr. ". $newTa['goAwayerLastName'] ." has canceled their Time Away starting ". $newTa['dBstartDate']->format('Y-m-d') ."</p>";
 		$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $msg, $link);	
 		$sendMail->send();	 
-	} 
+
 	//$mailAddress = $newTa['CovererEmail'];
 	$mailAddress = "flonberg@mgh.harvard.edu";
 	//$msg ="<p> Dr. ".$newTa['CovererLastName'] ."</p>";
@@ -104,7 +114,9 @@ class sendMailClassLibLoc
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
 		$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail".$todayStr.".log", "a+");
+		$this->logFp = fopen("./log/sendmail".$todayStr.".txt","a+");
 		$nowString = $now->format("Y-m-d H:i:s");   fwrite($this->logFp, "\r\n $nowString");
+		fwrite($this->logFp, $this->address);
 		$this->message = '
 		<html>
 			<head>

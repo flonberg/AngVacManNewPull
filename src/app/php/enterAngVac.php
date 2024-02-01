@@ -1,6 +1,8 @@
 <?php
 //require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
-require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
+//require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
+require_once 'H:\inetpub\lib\ESB\_dev_\sqlsrvLibFL.php';
+require_once './mailLib.php';
 header("Content-Type: application/json; charset=UTF-8");
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -23,7 +25,7 @@ $admins = getAdmins();
 $today = date('Y-m-d');
 $in = 0;
 do {																			// put index in case of permission failure
-	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
+	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "a+");			
 	if ($in++ > 5)
 		break;
 	}
@@ -85,7 +87,10 @@ do {																			// put index in case of permission failure
 	$lastVidx = $row['id'];
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	sendAskForCoverage($lastVidx, $data);
+	$selStr = "SELECT *  FROM $tableName WHERE vidx = $lastVidx";
+	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
 	sendStaff($lastVidx, $data);
+
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
 
@@ -254,7 +259,6 @@ function sendStaff($vidx, $newTa){
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
-	//SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID FROM other LEFT JOIN users on other.UserKey = users.UserKey WHERE other.UserKey IN ( 25, 361, 814, 928, 928) 
 	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 
 	FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
 	foreach ($assoc as $key=>$val){
@@ -268,41 +272,45 @@ function sendStaff($vidx, $newTa){
 	$i = 0;
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
 	$covMsg = "<p> The coverage for this Time Away is to be determines </p>";
-	
+	$mailAddress = 'flonberg@mgh.harvard.edu';
 	while ($assoc = $dB->getAssoc()){
+		$mailAddress .= ",flonberg@gmail.com";
+		$dstr = print_r($assoc, true);  fwrite($fp, "\r\n ". $dstr);
 		$row[$i] = $assoc;
-		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	
-	//	$mailAddress = $assoc['Email'];
-		$mailAddress = 'flonberg@mgh.harvard.edu';
-		$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
-		$subj .= " -- to   " .$assoc['Email'];								// store real address for fowarding
-		$msg = "<p> Hi ".$row[$i++]['FirstName']."<p>";
-		$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
-		if ($newTa->coverageA == 0)
-			$msg.= "The cover for this time away is to be determined";
-		else
-			$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
-		$msg .= "<p> To see details of this Time click on the below link. </p>";
-		$message = '
-			<html>
-				<head>
-					<title> Physician Time Away </title>
-					<body>
-					<p>
-					'. $msg .'
-					</p>
-					<p>
-					<a href='.$link .'>View Time Away. </a>
-					</body>
-				</head>	
-			</html>
-			'; 
-		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		//if (!$debug)
-			$sendMail->send();		
+	}
+	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	
+//	$mailAddress = $assoc['Email'];
+
+	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
+	$subj .= " -- to   " .$assoc['Email'];								// store real address for fowarding
+	$msg = "<p> Greetings,<p>";
+	$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
+	if ($newTa->coverageA == 0)
+		$msg.= "The cover for this time away is to be determined";
+	else
+		$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
+	$msg .= "<p> To see details of this Time click on the below link. </p>";
+	$message = '
+		<html>
+			<head>
+				<title> Physician Time Away </title>
+				<body>
+				<p>
+				'. $msg .'
+				</p>
+				<p>
+				<a href='.$link .'>View Time Away. </a>
+				</body>
+			</head>	
+		</html>
+		'; 
+	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $message,$link);	
+	//if (!$debug)
+		$sendMail->send();		
 	}
 	//$dstr = print_r($row, true); fwrite($fp, $dstr);
-}
+
 function getNomCovLastName($data){
 	global $handle;
 	$selStr = "SELECT LastName FROM physicians WHERE UserKey = ". $data['CoverageA'];
