@@ -116,6 +116,7 @@ export class PlansComponent implements OnInit {
       this .getTheData();
       this .getServiceMDs(this .userid)
       this. getMDService();
+      this .getMessage();
     })
    }
 
@@ -284,6 +285,17 @@ console.log("182182 toSeeParams from %o", this. toSeeParams)
       console.log("277277 %o", this .serviceMDs)
           })
   }
+  Message: Object
+  private getMessage(){
+console.log("290290")    
+    //let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
+    let url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMessage.php';
+      this .http.get(url).subscribe(res =>{
+        this. Message = res;
+        console.log("293293 %o", this .Message)
+            })           
+    }
+
 
  private getMDService(){
   //let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
