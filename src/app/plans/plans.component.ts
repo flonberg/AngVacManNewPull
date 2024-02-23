@@ -889,6 +889,10 @@ safeJSONparse(jsonString) {
 showConventDate(date){
   return this.datePipe.transform(date, 'M-dd-yyyy')
 }
+goToStaff(){
+  var url ='https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/MD_Staff/dist/boot3/'
+  window.open(url, "_blank");
+}
 goToLink(){
   var url ='https://whiteboard.partners.org/esb/FLwbe/Documentation/MD_VacManUserManual.html'
   window.open(url, "_blank");
