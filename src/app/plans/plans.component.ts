@@ -750,8 +750,8 @@ counterE(n){                                            // used for looper in Ca
         this. tAparams.endDate = this .datePipe.transform(new Date(dateRangeEnd.value), 'yyyy-MM-dd')   
         if (this .showError == 2)
           this .showError = 0;
+        this.makeTAdates()
       }
-
  }
  whatMonthIsStartDateIn(startDate){
   let thisMonth = new Date();
@@ -826,6 +826,24 @@ WTMnoteChange( ev){
     this .tAparams.WTMnote= ev.target.value;
     console.log("tAparams is %o", this.tAparams)
   }
+compoundCoverageBool: boolean = false  
+setCompoundCoverage(){
+  if (!this .compoundCoverageBool)
+    this .compoundCoverageBool = true
+  else
+    this .compoundCoverageBool = false
+console.log("834834 %o", this .tAparams)  
+}  
+TAdates:string[]
+makeTAdates(){
+  this.TAdates = []
+  this .TAdates[0] = this.tAparams['startDate']
+  let theDate = new Date(this .tAparams['startDate'])
+  for (let i=1; i < 20; i++){
+    let newDate = theDate.getDate() + 1 
+    this .TAdates[i] = newDate.toLocaleString()
+  }
+}
 WTMparam(ev, pName){
   console.log("101 %o --- %o ", ev, pName)
   if (pName == 'WTMdateChange')
