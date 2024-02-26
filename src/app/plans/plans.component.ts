@@ -25,6 +25,9 @@ interface tAparams {
   userid: number;
   WTM_Change_Needed: number;
   service: number;
+  CompoundCoverage: number;
+  CompoundCoverers: number[]
+  CoverDays: CoverDay[]
 }
 interface CovParams {
   accepted: boolean,
@@ -151,7 +154,10 @@ export class PlansComponent implements OnInit {
         vidx: 0,
         CovAccepted: 0,
         WTM_Change_Needed: 0,
-        service: 0
+        service: 0,
+        CompoundCoverage: 0,
+        CompoundCoverers: [],
+        CoverDays:[]
       }
       this. activatedRoute.queryParams.subscribe(params =>{
         this .queryParams = params
@@ -804,19 +810,14 @@ checkTAparams(){
   this .showError = 0;
   return true
  }
- reasonSelect(ev){
+reasonSelect(ev){
   if (this .tAparams){
     this .tAparams.reasonIdx= ev.value;
     if (this .showError == 3)
       this .showError  = 0;
   }
 }
-covererSelect(ev){
- if (ev.value) 
-  this .tAparams.coverageA = ev.value.UserKey
- if (this .showError == 4)
-  this .showError  = 0;
-}
+
 noteChange(name, ev){
 if (this .tAparams)
   this .tAparams.note= ev.target.value;
@@ -829,15 +830,32 @@ WTMnoteChange( ev){
   }
 compoundCoverageBool: boolean = false  
 setCompoundCoverage(){
-  if (!this .compoundCoverageBool)
+  if (!this .compoundCoverageBool){
     this .compoundCoverageBool = true
-  else
+    this .tAparams['CompoundCoverage'] = 1
+  }
+  else {
     this .compoundCoverageBool = false
-console.log("834834 %o", this .tAparams)  
+    this .tAparams['CompoundCoverage'] = 0 
+  }
 }  
+covererSelect(ev, num?:number){
+  if (ev.value) 
+    this .tAparams.coverageA = ev.value.UserKey
+  if (typeof num !== 'undefined' ){  
+    this .tAparams['CompoundCoverers'][num] = ev.value.UserKey
+    }
+console.log("848848 %o", this.tAparams)    
+  if (this .showError == 4)
+    this .showError  = 0;
+}
 TAdates:string[]
+TAdatesBool: boolean[]
+TAdatesFirst: number
+CompoundCoverers: number[]
 makeTAdates(){
   this.TAdates = []
+  this .TAdatesBool = []
   let startDateString = this.tAparams['startDate'] +"T12:00:00"
   let endDateString = this.tAparams['endDate'] +"T12:00:00"
   let startDate = new Date(startDateString)
@@ -846,12 +864,25 @@ makeTAdates(){
   let j = 0
   for (let i=0; i < 20; i++){
     let test = theDate.getDay()
-    if(theDate.getDay() != 6 && theDate.getDay() != 0) 
+    if(theDate.getDay() != 6 && theDate.getDay() != 0) {
+      this .TAdatesBool[j] = false
       this .TAdates[j++] = this.datePipe.transform(theDate, 'MM-dd ')
+
+    }
     theDate.setDate(theDate.getDate() + 1);
     if (theDate > endDate)
       break
   }
+}
+checkOffDate(CovIndex: number,index: number){
+ // console.log(" 862862 %o", index)
+  let covDay = new CoverDay(this .tAparams['vidx'], 100, this.TAdates[index])
+ // for (let i = 0; i < index; i++)
+  //  this .TAdatesBool[index]= true
+}
+isChecked(index: number){
+ // console.log(" 862862 %o", index)
+  return this .TAdatesBool[index]
 }
 WTMparam(ev, pName){
   console.log("101 %o --- %o ", ev, pName)
@@ -928,4 +959,14 @@ goToPhysStaffAvail(){
   var url ='https://whiteboard.partners.org/esb/FLwbe/vacation/indexPHP.php?userid='+this.userid+'&vidx=0&first=vN&func=0'
   window.open(url, "_blank");
   }  
+}
+class CoverDay {
+  vidx: number
+  CovererUserKey:number
+  date: string
+  constructor(vidx, CovererUserKey, date){
+    this .vidx = vidx
+    this .CovererUserKey = CovererUserKey
+    this .date = date
+  }
 }

@@ -131,7 +131,7 @@
         <div class='center'> 
           <mat-form-field >
             <mat-label> Coverer </mat-label>
-            <mat-select (selectionChange) ="covererSelect($event)" >
+            <mat-select (selectionChange) ="covererSelect($event,0)" >
               <mat-option *ngFor="let MD of serviceMDs "
               [value]="MD ">{{ MD.LastName }}</mat-option>
             </mat-select>
@@ -140,10 +140,9 @@
       </td>
       <td colspan="3">
         <table>
-          <tr>
-            
-            <td *ngFor = "let ind of TAdates">
-              <mat-checkbox [(ngModel)]="checked"  ></mat-checkbox>
+          <tr> 
+            <td *ngFor = "let ind of TAdates; let i = index">
+              <mat-checkbox [(ngModel)]="checked" (click) = 'checkOffDate(0,i)' [checked] = "isChecked(i)" ></mat-checkbox>
               {{ ind }} 
             </td>
           </tr>
@@ -161,6 +160,16 @@
             </mat-select>
           </mat-form-field> 
         </div>  
+      </td>
+      <td colspan="3">
+        <table>
+          <tr> 
+            <td *ngFor = "let ind of TAdates">
+              <mat-checkbox [(ngModel)]="checked"  ></mat-checkbox>
+              {{ ind }} 
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
     <tr> 
