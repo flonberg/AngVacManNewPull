@@ -843,11 +843,11 @@ makeTAdates(){
   let startDate = new Date(startDateString)
   let endDate = new Date(endDateString)
   let theDate = new Date(startDateString)
+  let j = 0
   for (let i=0; i < 20; i++){
-
     let test = theDate.getDay()
     if(theDate.getDay() != 6 && theDate.getDay() != 0) 
-      this .TAdates[i] = this.datePipe.transform(theDate, 'MM-dd ')
+      this .TAdates[j++] = this.datePipe.transform(theDate, 'MM-dd ')
     theDate.setDate(theDate.getDate() + 1);
     if (theDate > endDate)
       break

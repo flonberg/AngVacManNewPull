@@ -75,7 +75,7 @@
   <div class='raised' *ngIf = 'serviceMDs'>
     <table class='centerSmall'>
         <caption> Enter a Time Away  </caption>
-        <tr>
+    <tr>
       <td>
         <div class='center'>
           <mat-form-field >
@@ -138,7 +138,17 @@
           </mat-form-field> 
         </div>  
       </td>
-      <td *ngFor = "let ind of TAdates">{{ ind }} </td>
+      <td colspan="3">
+        <table>
+          <tr>
+            
+            <td *ngFor = "let ind of TAdates">
+              <mat-checkbox [(ngModel)]="checked"  ></mat-checkbox>
+              {{ ind }} 
+            </td>
+          </tr>
+        </table>
+      </td>
     </tr>
     <tr *ngIf = 'compoundCoverageBool'>
       <td> 
