@@ -751,6 +751,7 @@ counterE(n){                                            // used for looper in Ca
         if (this .showError == 2)
           this .showError = 0;
         this.makeTAdates()
+  console.log("754754 %o", this .TAdates)      
       }
  }
  whatMonthIsStartDateIn(startDate){
@@ -837,11 +838,19 @@ console.log("834834 %o", this .tAparams)
 TAdates:string[]
 makeTAdates(){
   this.TAdates = []
-  this .TAdates[0] = this.tAparams['startDate']
-  let theDate = new Date(this .tAparams['startDate'])
-  for (let i=1; i < 20; i++){
-    let newDate = theDate.getDate() + 1 
-    this .TAdates[i] = newDate.toLocaleString()
+  let startDateString = this.tAparams['startDate'] +"T12:00:00"
+  let endDateString = this.tAparams['endDate'] +"T12:00:00"
+  let startDate = new Date(startDateString)
+  let endDate = new Date(endDateString)
+  let theDate = new Date(startDateString)
+  for (let i=0; i < 20; i++){
+
+    let test = theDate.getDay()
+    if(theDate.getDay() != 6 && theDate.getDay() != 0) 
+      this .TAdates[i] = this.datePipe.transform(theDate, 'MM-dd ')
+    theDate.setDate(theDate.getDate() + 1);
+    if (theDate > endDate)
+      break
   }
 }
 WTMparam(ev, pName){
