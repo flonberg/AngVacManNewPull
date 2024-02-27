@@ -126,11 +126,12 @@
         <mat-checkbox [(ngModel)]="checked" (change) = "setCompoundCoverage()"  >Compound Coverage</mat-checkbox>
       </td> 
     </tr>
+
     <tr *ngIf = 'compoundCoverageBool'>
       <td> 
         <div class='center'> 
           <mat-form-field >
-            <mat-label> Coverer </mat-label>
+            <mat-label> Compound Coverer </mat-label>
             <mat-select (selectionChange) ="covererSelect($event,0)" >
               <mat-option *ngFor="let MD of serviceMDs "
               [value]="MD ">{{ MD.LastName }}</mat-option>
@@ -149,12 +150,13 @@
         </table>
       </td>
     </tr>
+
     <tr *ngIf = 'compoundCoverageBool'>
       <td> 
         <div class='center'> 
           <mat-form-field >
-            <mat-label> Coverer </mat-label>
-            <mat-select (selectionChange) ="covererSelect($event)" >
+            <mat-label>Compound Coverer </mat-label>
+            <mat-select (selectionChange) ="covererSelect($event,1)" >
               <mat-option *ngFor="let MD of serviceMDs "
               [value]="MD ">{{ MD.LastName }}</mat-option>
             </mat-select>
@@ -164,8 +166,32 @@
       <td colspan="3">
         <table>
           <tr> 
-            <td *ngFor = "let ind of TAdates">
-              <mat-checkbox [(ngModel)]="checked"  ></mat-checkbox>
+            <td *ngFor = "let ind of TAdates; let i = index">
+              <mat-checkbox [(ngModel)]="checked" (click) = 'checkOffDate(1,i)'  ></mat-checkbox>
+              {{ ind }} 
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr *ngIf = 'compoundCoverageBool'>
+      <td> 
+        <div class='center'> 
+          <mat-form-field >
+            <mat-label>Compound Coverer </mat-label>
+            <mat-select (selectionChange) ="covererSelect($event,1)" >
+              <mat-option *ngFor="let MD of serviceMDs "
+              [value]="MD ">{{ MD.LastName }}</mat-option>
+            </mat-select>
+          </mat-form-field> 
+        </div>  
+      </td>
+      <td colspan="3">
+        <table>
+          <tr> 
+            <td *ngFor = "let ind of TAdates; let i = index">
+              <mat-checkbox [(ngModel)]="checked" (click) = 'checkOffDate(2,i)'  ></mat-checkbox>
               {{ ind }} 
             </td>
           </tr>

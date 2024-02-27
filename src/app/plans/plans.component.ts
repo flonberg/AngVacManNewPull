@@ -876,7 +876,8 @@ makeTAdates(){
 }
 checkOffDate(CovIndex: number,index: number){
  // console.log(" 862862 %o", index)
-  let covDay = new CoverDay(this .tAparams['vidx'], 100, this.TAdates[index])
+  let covDay = new CoverDay( this .tAparams['CompoundCoverers'][CovIndex], this.TAdates[index])
+  this .tAparams['CoverDays'].push(covDay)
  // for (let i = 0; i < index; i++)
   //  this .TAdatesBool[index]= true
 }
@@ -961,11 +962,9 @@ goToPhysStaffAvail(){
   }  
 }
 class CoverDay {
-  vidx: number
   CovererUserKey:number
   date: string
-  constructor(vidx, CovererUserKey, date){
-    this .vidx = vidx
+  constructor( CovererUserKey, date){
     this .CovererUserKey = CovererUserKey
     this .date = date
   }
