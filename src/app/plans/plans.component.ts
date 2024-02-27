@@ -874,10 +874,23 @@ makeTAdates(){
       break
   }
 }
-checkOffDate(CovIndex: number,index: number){
- // console.log(" 862862 %o", index)
+checkOffDate(CovIndex: number,index: number, state?: any){
+ if (state.checked ){                        
   let covDay = new CoverDay( this .tAparams['CompoundCoverers'][CovIndex], this.TAdates[index])
   this .tAparams['CoverDays'].push(covDay)
+ }
+ else {
+  let toBeRemoved: number = -1
+  for (let i=0; i < this .tAparams['CoverDays'].length; i++){
+    if (this .tAparams['CoverDays'][i]['date']== this.TAdates[index]){
+      console.log("884884 %o --- %o  ---- %o", i,this .tAparams['CoverDays'][i]['date'], this.TAdates[index] )
+      toBeRemoved= i
+      break
+    }
+  }
+  this .tAparams['CoverDays'].splice(toBeRemoved,1)
+ }
+ console.log("887887 %o", this .tAparams['CoverDays'])
  // for (let i = 0; i < index; i++)
   //  this .TAdatesBool[index]= true
 }

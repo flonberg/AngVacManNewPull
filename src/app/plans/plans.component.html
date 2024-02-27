@@ -143,7 +143,7 @@
         <table>
           <tr> 
             <td *ngFor = "let ind of TAdates; let i = index">
-              <mat-checkbox [(ngModel)]="checked" (click) = 'checkOffDate(0,i)' [checked] = "isChecked(i)" ></mat-checkbox>
+              <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(0,i, $event)' value="angular" ></mat-checkbox>
               {{ ind }} 
             </td>
           </tr>
@@ -167,7 +167,7 @@
         <table>
           <tr> 
             <td *ngFor = "let ind of TAdates; let i = index">
-              <mat-checkbox [(ngModel)]="checked" (click) = 'checkOffDate(1,i)'  ></mat-checkbox>
+              <mat-checkbox [(ngModel)]="checked" (change) = 'checkOffDate(1,i, $event)' value="angular"  ></mat-checkbox>
               {{ ind }} 
             </td>
           </tr>
@@ -191,7 +191,7 @@
         <table>
           <tr> 
             <td *ngFor = "let ind of TAdates; let i = index">
-              <mat-checkbox [(ngModel)]="checked" (click) = 'checkOffDate(2,i)'  ></mat-checkbox>
+              <mat-checkbox [(ngModel)]="checked" (change) = 'checkOffDate(2,i, $event)' value="angular"  ></mat-checkbox>
               {{ ind }} 
             </td>
           </tr>
