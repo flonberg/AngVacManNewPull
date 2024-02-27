@@ -180,7 +180,7 @@
         <div class='center'> 
           <mat-form-field >
             <mat-label>Compound Coverer </mat-label>
-            <mat-select (selectionChange) ="covererSelect($event,1)" >
+            <mat-select (selectionChange) ="covererSelect($event,2)" >
               <mat-option *ngFor="let MD of serviceMDs "
               [value]="MD ">{{ MD.LastName }}</mat-option>
             </mat-select>

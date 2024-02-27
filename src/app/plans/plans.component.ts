@@ -874,25 +874,28 @@ makeTAdates(){
       break
   }
 }
-checkOffDate(CovIndex: number,index: number, state?: any){
- if (state.checked ){                        
-  let covDay = new CoverDay( this .tAparams['CompoundCoverers'][CovIndex], this.TAdates[index])
-  this .tAparams['CoverDays'].push(covDay)
- }
- else {
-  let toBeRemoved: number = -1
-  for (let i=0; i < this .tAparams['CoverDays'].length; i++){
-    if (this .tAparams['CoverDays'][i]['date']== this.TAdates[index]){
-      console.log("884884 %o --- %o  ---- %o", i,this .tAparams['CoverDays'][i]['date'], this.TAdates[index] )
-      toBeRemoved= i
-      break
-    }
+/**
+ * If Checked create a covDay class element and add it to tAparams covDay array, if UnCheck remove the covDay 
+ * @param CovIndex          // index of the Coverer
+ * @param index             // index of the toBe Covered Date
+ * @param state             // Checked of Unchecked 
+ */
+checkOffDate(CovIndex: number,index: number, state: any){
+  if (state.checked ){                       // add the covDay               
+    let covDay = new CoverDay( this .tAparams['CompoundCoverers'][CovIndex], this.TAdates[index])
+    this .tAparams['CoverDays'].push(covDay)
   }
-  this .tAparams['CoverDays'].splice(toBeRemoved,1)
- }
- console.log("887887 %o", this .tAparams['CoverDays'])
- // for (let i = 0; i < index; i++)
-  //  this .TAdatesBool[index]= true
+  else {                                                             // remove the covDay
+    let toBeRemoved: number = -1                                      // define a number
+    for (let i=0; i < this .tAparams['CoverDays'].length; i++){       // go thru the covDays
+      if (this .tAparams['CoverDays'][i]['date']== this.TAdates[index]){    
+        toBeRemoved= i                                                // set element to be removed
+        break 
+      }
+    }
+    this .tAparams['CoverDays'].splice(toBeRemoved,1)                 // remove element
+  }
+console.log("898898 %o", this.tAparams)  
 }
 isChecked(index: number){
  // console.log(" 862862 %o", index)

@@ -79,6 +79,7 @@ do {																			// put index in case of permission failure
 	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
 				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0', getdate()); SELECT @@IDENTITY as id";
+
 	if ($debug) 
 		fwrite($fp, "\r\n $insStr");
 	$stmt=sqlsrv_query($handle, $insStr);
@@ -86,6 +87,8 @@ do {																			// put index in case of permission failure
 	$row = sqlsrv_fetch_array($stmt);
 	$lastVidx = $row['id'];
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
+	if ($data->CompoundCoverage == 1)
+		enterCompoundCoverage($data->CoverDays,$lastVidx);
 	sendAskForCoverage($lastVidx, $data);
 	$selStr = "SELECT *  FROM $tableName WHERE vidx = $lastVidx";
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
@@ -93,6 +96,19 @@ do {																			// put index in case of permission failure
 
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
+
+function enterCompoundCoverage($data, $vidx){
+	global $handle, $fp;
+	fwrite($fp, "\r\n 101 \r\n");
+	foreach ($data as $key=>$val){
+		ob_start(); var_dump($val);$data = ob_get_clean();fwrite($fp, "\r\n ". $data);
+		$insStr = "INSERT INTO MD_TA_Coverage (vidx, CovererUserKey, date, deleted) values (".$vidx.",'".$val->CovererUserKey."','".$val->date."',0)";
+		$stmt = sqlsrv_query( $handle, $insStr);
+		if( $stmt === false ) {
+     		$dstr = print_r( sqlsrv_errors(), true); fwrite($fp, "\r\n $dstr \r\n");
+			}
+		}	
+	}	
 
 /**
  * Checks for an existing tA in the same service as the  2 B entered tA which overlaps. 
