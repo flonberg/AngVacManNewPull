@@ -95,6 +95,7 @@ export class PlansComponent implements OnInit {
   queryParams:{}
   showAcceptor: boolean = false;
   now: Date
+  compCovLoops: number[] = [0,1,2,3]
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this.now = new Date()
     if ( this .checkWorkingDir() == 'prod')                    

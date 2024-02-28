@@ -126,8 +126,8 @@
         <mat-checkbox [(ngModel)]="checked" (change) = "setCompoundCoverage()"  >Compound Coverage</mat-checkbox>
       </td> 
     </tr>
-
-    <tr *ngIf = 'compoundCoverageBool'>
+    <ng-container *ngIf = 'compoundCoverageBool'>
+    <tr *ngFor = "let index of compCovLoops">
       <td> 
         <div class='center'> 
           <mat-form-field >
@@ -150,8 +150,7 @@
         </table>
       </td>
     </tr>
-
-    <tr *ngIf = 'compoundCoverageBool'>
+    <tr>
       <td> 
         <div class='center'> 
           <mat-form-field >
@@ -174,8 +173,7 @@
         </table>
       </td>
     </tr>
-
-    <tr *ngIf = 'compoundCoverageBool'>
+    <tr >
       <td> 
         <div class='center'> 
           <mat-form-field >
@@ -198,6 +196,7 @@
         </table>
       </td>
     </tr>
+    </ng-container>
     <tr> 
       <td>
            <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
