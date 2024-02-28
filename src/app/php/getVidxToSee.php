@@ -17,6 +17,12 @@ $handle = connectDB_FL();
 	$selStr = "SELECT * FROM $tableName WHERE vidx = ".$_GET['vidxToSee'];
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
+
+	$selStr2 = "SELECT vidx,CovererUserKey,date,deleted FROM MD_TA_Coverage WHERE vidx = ".$assoc['vidx'];
+	$dB2 = new getDBData($selStr2, $handle);
+	$ind2 = 0;
+	while ($assoc2 = $dB2->getAssoc())
+		$assoc['Coverage'][$ind2++]= $assoc2;
 	$assoc['startDate'] = formatDate($assoc['startDate']);
 	$assoc['startDate_m-d-y'] = formatDate($assoc['startDate']);
 	$assoc['endDate'] = formatDate($assoc['endDate']);
@@ -28,7 +34,6 @@ $handle = connectDB_FL();
 		else {
 			$assoc['WTMdate'] = "";
 		}
-	$dstr = print_r($assoc, true); fwrite($fp, $dstr);
 	$selStr = "SELECT UserKey from users WHERE UserID = '".$_GET['userid']."'";
 	$assoc['loggedInUserKey'] = getSingle($selStr, 'UserKey', $handle);
 	$selStr = "SELECT UserKey from users WHERE UserID = '".$assoc['userid']."'";

@@ -109,8 +109,8 @@
           </mat-form-field>    
         </div>    
       </td>
-    </tr><tr> 
-
+    </tr>
+    <tr> 
       <td *ngIf = '!compoundCoverageBool'> 
         <div class='center'> 
           <mat-form-field >
@@ -126,77 +126,33 @@
         <mat-checkbox [(ngModel)]="checked" (change) = "setCompoundCoverage()"  >Compound Coverage</mat-checkbox>
       </td> 
     </tr>
+   <!--   Compound Coverage --> 
     <ng-container *ngIf = 'compoundCoverageBool'>
-    <tr *ngFor = "let index of compCovLoops">
-      <td> 
-        <div class='center'> 
-          <mat-form-field >
-            <mat-label> Compound Coverer </mat-label>
-            <mat-select (selectionChange) ="covererSelect($event,0)" >
-              <mat-option *ngFor="let MD of serviceMDs "
-              [value]="MD ">{{ MD.LastName }}</mat-option>
-            </mat-select>
-          </mat-form-field> 
-        </div>  
-      </td>
-      <td colspan="3">
-        <table>
-          <tr> 
-            <td *ngFor = "let ind of TAdates; let i = index">
-              <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(0,i, $event)' value="angular" ></mat-checkbox>
-              {{ ind }} 
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td> 
-        <div class='center'> 
-          <mat-form-field >
-            <mat-label>Compound Coverer </mat-label>
-            <mat-select (selectionChange) ="covererSelect($event,1)" >
-              <mat-option *ngFor="let MD of serviceMDs "
-              [value]="MD ">{{ MD.LastName }}</mat-option>
-            </mat-select>
-          </mat-form-field> 
-        </div>  
-      </td>
-      <td colspan="3">
-        <table>
-          <tr> 
-            <td *ngFor = "let ind of TAdates; let i = index">
-              <mat-checkbox [(ngModel)]="checked" (change) = 'checkOffDate(1,i, $event)' value="angular"  ></mat-checkbox>
-              {{ ind }} 
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr >
-      <td> 
-        <div class='center'> 
-          <mat-form-field >
-            <mat-label>Compound Coverer </mat-label>
-            <mat-select (selectionChange) ="covererSelect($event,2)" >
-              <mat-option *ngFor="let MD of serviceMDs "
-              [value]="MD ">{{ MD.LastName }}</mat-option>
-            </mat-select>
-          </mat-form-field> 
-        </div>  
-      </td>
-      <td colspan="3">
-        <table>
-          <tr> 
-            <td *ngFor = "let ind of TAdates; let i = index">
-              <mat-checkbox [(ngModel)]="checked" (change) = 'checkOffDate(2,i, $event)' value="angular"  ></mat-checkbox>
-              {{ ind }} 
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
+      <tr *ngFor = "let index of compCovLoops">
+        <td> 
+          <div class='center'> 
+            <mat-form-field >
+              <mat-label> Compound Coverer </mat-label>
+              <mat-select (selectionChange) ="covererSelect($event,0)" >
+                <mat-option *ngFor="let MD of serviceMDs "
+                [value]="MD ">{{ MD.LastName }}</mat-option>
+              </mat-select>
+            </mat-form-field> 
+          </div>  
+        </td>
+        <td colspan="3">
+          <table>
+            <tr> 
+              <td *ngFor = "let ind of TAdates; let i = index">
+                <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(0,i, $event)' value="angular" ></mat-checkbox>
+                {{ ind }} 
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </ng-container>
+ 
     <tr> 
       <td>
            <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
@@ -326,6 +282,7 @@
     </tr>
    </table>
   </div>
+
   <!--   THIRD PARTY   view-->
   <div class='raised' *ngIf = 'showReadOnly ' >
     <table class='toFit' *ngIf = showReadOnly>
@@ -366,19 +323,23 @@
     <p *ngIf = "changesSavedShow" style="color:green"> Response Saved </p>
     <table *ngIf = vidxToSee class='toFit'>
           <tr>
-            <td> 
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>Start Date </mat-label>
-                <input matInput  [value]="toSeeParams['startDate']"  readonly >
-              </mat-form-field>
-            </td>
-             <td> 
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>End Date </mat-label>
-                <input matInput  [value]="toSeeParams['endDate']"  readonly >
-              </mat-form-field>
-             </td> 
-   
+            <ng-container *ngIf = "toSeeParams['CompoundCoverage'] == 0">
+              <td> 
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>Start Date </mat-label>
+                  <input matInput  [value]="toSeeParams['startDate']"  readonly >
+                </mat-form-field>
+              </td>
+              <td> 
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>End Date </mat-label>
+                  <input matInput  [value]="toSeeParams['endDate']"  readonly >
+                </mat-form-field>
+              </td> 
+            </ng-container>      
+        <ng-container *ngIf = "toSeeParams['CompoundCoverage'] == 1">
+        <tr> <td> compound </td></tr>
+        </ng-container>
             <td >   
                 <mat-radio-group>
                   <mat-radio-button class="example-margin" value="accept" (click) = "editCovParams('CovAccepted', 1)" >Accept</mat-radio-button>

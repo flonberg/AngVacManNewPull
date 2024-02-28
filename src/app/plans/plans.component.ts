@@ -185,13 +185,18 @@ export class PlansComponent implements OnInit {
         return 'prod'
     }
     unsorted() { }                                                      // user by alphabetization of the data by service 
-    
+  loggedInUserCoverage: number[] = [] 
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
 console.log("180180 url is  %o", url)  
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
-console.log("182182 toSeeParams from %o", this. toSeeParams)        
+    for (var key in this .toSeeParams.Coverage) {
+      console.log("196196 %o  --- %o",key, this .toSeeParams.Coverage[key]);
+      if (this .toSeeParams['loggedInUserKey'] == this .toSeeParams.Coverage[key]['CovererUserKey'])
+        this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
+    }
+   console.log("200200 %o", this .loggedInUserCoverage) 
         this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
         if (+this .toSeeParams['loggedInUserKey'] == this .toSeeParams['coverageA'])
           this .isLoggedInUserCoverer = true;

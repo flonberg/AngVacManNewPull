@@ -76,9 +76,9 @@ do {																			// put index in case of permission failure
 		fwrite($fp, "\r\n No userid \r\n");
 		exit();
 	}
-	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail, createWhen)
+	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
-				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0', getdate()); SELECT @@IDENTITY as id";
+				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage, getdate()); SELECT @@IDENTITY as id";
 
 	if ($debug) 
 		fwrite($fp, "\r\n $insStr");
@@ -100,14 +100,16 @@ do {																			// put index in case of permission failure
 function enterCompoundCoverage($data, $vidx){
 	global $handle, $fp;
 	fwrite($fp, "\r\n 101 \r\n");
+	ob_start(); var_dump($data);$data1 = ob_get_clean();fwrite($fp, "\r\n ". $data1);
 	foreach ($data as $key=>$val){
-		ob_start(); var_dump($val);$data = ob_get_clean();fwrite($fp, "\r\n ". $data);
-		$insStr = "INSERT INTO MD_TA_Coverage (vidx, CovererUserKey, date, deleted) values (".$vidx.",'".$val->CovererUserKey."','".$val->date."',0)";
-		$stmt = sqlsrv_query( $handle, $insStr);
-		if( $stmt === false ) {
-     		$dstr = print_r( sqlsrv_errors(), true); fwrite($fp, "\r\n $dstr \r\n");
-			}
-		}	
+		if (isset($val->CovererUserKey)){
+			$insStr = "INSERT INTO MD_TA_Coverage (vidx, CovererUserKey, date, deleted) values (".$vidx.",'".$val->CovererUserKey."','".$val->date."',0)";
+			$stmt = sqlsrv_query( $handle, $insStr);
+			if( $stmt === false ) {
+				$dstr = print_r( sqlsrv_errors(), true); fwrite($fp, "\r\n $dstr \r\n");
+					}
+				}	
+		}
 	}	
 
 /**
