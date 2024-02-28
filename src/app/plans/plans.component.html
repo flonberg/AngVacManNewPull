@@ -338,7 +338,10 @@
               </td> 
             </ng-container>      
         <ng-container *ngIf = "toSeeParams['CompoundCoverage'] == 1">
-        <tr> <td> compound </td></tr>
+        <tr> 
+          <td> Your are being asked to cover </td>
+          <td *ngFor = "let item of loggedInUserCoverage"> {{ item['date']}}</td>
+        </tr>
         </ng-container>
             <td >   
                 <mat-radio-group>

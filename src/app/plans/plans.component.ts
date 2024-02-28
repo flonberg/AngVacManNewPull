@@ -169,8 +169,7 @@ export class PlansComponent implements OnInit {
           let url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this.wkDev+'/getLoggedInUserKey.php?userid='+ this .userid
           this .http.get(url).subscribe(res =>{
             let returnedObj = res;
-            this .loggedInUserKey = returnedObj['LoggedInUserKey'];
-    console.log("154154 loggedInUserKey = %o", this .loggedInUserKey)        
+            this .loggedInUserKey = returnedObj['LoggedInUserKey'];    
           })
         }
       })
@@ -188,11 +187,9 @@ export class PlansComponent implements OnInit {
   loggedInUserCoverage: number[] = [] 
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
-console.log("180180 url is  %o", url)  
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
     for (var key in this .toSeeParams.Coverage) {
-      console.log("196196 %o  --- %o",key, this .toSeeParams.Coverage[key]);
       if (this .toSeeParams['loggedInUserKey'] == this .toSeeParams.Coverage[key]['CovererUserKey'])
         this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
     }
