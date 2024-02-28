@@ -343,19 +343,33 @@ function getNeededParams($data){
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$userid."'", "UserKey", $handle);			// get name of GoAwayer
 	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
 	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey ='".$data->coverageA ."'"; 
+	if ($data->CompoundCoverage == 1){
+		$CompoundCovUserKeys = Array();
+		$ind = 0;
+		foreach ($data->CoverDays as $key=>$val){
+			if (!in_array($val->CovererUserKey, $CompoundCovUserKeys))
+				$CompoundCovUserKeys[$ind++]= $val->CovererUserKey;
+		}
+		$dstr = print_r($CompoundCovUserKeys, true); fwrite($fp, "\r\n CompoundUserKey is ". $dstr);	
+			$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians 
+				WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey IN (" . implode(',', $CompoundCovUserKeys) . ")";; 
+	}
 	//($fp, "\r\n getNeededParams selStr \r\n $selStr");
 	$dB = new getDBData($selStr, $handle);
-	while ($assoc = $dB->getAssoc()){
-	
-		if ($assoc['UserKey'] == $data->goAwayerUserKey){
-			$data->goAwayerLastName = $assoc['LastName'];
-			$data->service = $assoc['service'];
-		}
-		if ($assoc['UserKey'] == $data->coverageA){
-			$data->CovererLastName = $assoc['LastName'];
-			$data->CovererEmail = $assoc['Email'];
-		}	
+	if ($data->CompoundCoverage == 1){
 	}
+	else {
+		while ($assoc = $dB->getAssoc()){
+			if ($assoc['UserKey'] == $data->goAwayerUserKey){
+				$data->goAwayerLastName = $assoc['LastName'];
+				$data->service = $assoc['service'];
+				}
+			if ($assoc['UserKey'] == $data->coverageA){
+				$data->CovererLastName = $assoc['LastName'];
+				$data->CovererEmail = $assoc['Email'];
+				}	
+			}
+		}
 //	if ($debug)
 	// 	{$dsrt = print_r($data, true); fwrite($fp, $dsrt);	}
 	return $data; 

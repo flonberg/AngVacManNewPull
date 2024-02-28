@@ -340,7 +340,7 @@
         <ng-container *ngIf = "toSeeParams['CompoundCoverage'] == 1">
         <tr> 
           <td> Your are being asked to cover </td>
-          <td *ngFor = "let item of loggedInUserCoverage"> {{ item['date']}}</td>
+          <td *ngFor = "let item of loggedInUserCoverage" style="font-weight:bold"> {{ item['date']}}</td>
         </tr>
         </ng-container>
             <td >   
