@@ -154,7 +154,7 @@
           <div class='center'> 
             <mat-form-field >
               <mat-label> Compound Coverer </mat-label>
-              <mat-select (selectionChange) ="covererSelect($event,0)" >
+              <mat-select (selectionChange) ="covererSelect($event,index)" >
                 <mat-option *ngFor="let MD of serviceMDs "
                 [value]="MD ">{{ MD.LastName }}</mat-option>
               </mat-select>
@@ -165,7 +165,7 @@
           <table>
             <tr> 
               <td *ngFor = "let ind of TAdates; let i = index">
-                <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(i, $event)' value="angular" ></mat-checkbox>
+                <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(index, i, $event)' value="angular" ></mat-checkbox>
                 {{ ind }} 
               </td>
               <td *ngIf = "tAparams.WTM_self==0">

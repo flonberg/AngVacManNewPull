@@ -211,20 +211,45 @@ function sendAskForCoverage($vidx, $data)
 }
 function sendMultiAskForCoverage($vidx, $data){
 	global $handle, $fp;
-	$toSend = Array();
 	$toSendParams = Array();
 	$j = 0;
 	for ( $i=0; $i < count($data->CoverDays); $i++ ){
 		$covUserId = getSingle("SELECT UserID FROM users WHERE UserKey = ".$data->CoverDays[$i]->CovererUserKey, 'UserID', $handle);
-		if (!in_array($covUserId, $toSend)){
-			$toSend[$i]= $covUserId;
-	fwrite($fp, "\r\n 213213 covUserIs is ". $covUserId);	
-			$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->CoverDays[$i]->CovererUserKey ."'"; 
-			$dB = new getDBData($selStr, $handle);
-			$toSendParams[$covUserId] = $dB->getAssoc();
-		}
-$dsrt = print_r($toSend, true); fwrite($fp, "223223 ". $dsrt);
-$dsrt = print_r($toSendParams, true); fwrite($fp, "223223 ". $dsrt);
+		$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->CoverDays[$i]->CovererUserKey ."'"; 
+		$dB = new getDBData($selStr, $handle);
+		$toSendParams[$covUserId] = $dB->getAssoc();										// make param array forEach Coverer
+	}
+	$dsrt = print_r($toSendParams, true); fwrite($fp, "12345 ". $dsrt);
+	foreach ($toSendParams as $key=>$val){
+		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$key."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
+		$mailAddress = $val['Email'];		
+		$subj = "Coverage for Time Away";	
+		$subj .= " to ". $val['Email'];	
+		$mailAddress = $val['Email'];	
+		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+		$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
+		if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
+			$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
+		$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
+		$message = '
+			   <html>
+				   <head>
+						<title> Time Away Coverage </title>
+						<body>
+						<p>
+						'. $msg .'
+						</p>
+						<p>
+						<a href='.$link .'> Accept Coverage. </a>
+					</body>
+				</head>	
+			</html>
+				'; 
+			$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
+			$rData = array("result"=>"pending");
+			$jData = json_encode($rData);
+		//	if (!$debug)
+				$sendMail->send();	
 	}
 }
 

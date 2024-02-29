@@ -883,9 +883,9 @@ makeTAdates(){
  * @param index             // index of the toBe Covered Date
  * @param state             // Checked of Unchecked 
  */
-checkOffDate(index: number, state: any){
+checkOffDate(index: number,covDay:number, state: any){
   if (state.checked ){                       // add the covDay               
-    let covDay = new CoverDay( this .tAparams['CompoundCoverers'][0], this.TAdates[index])
+    let covDay = new CoverDay( this .tAparams['CompoundCoverers'][index], this.TAdates[index])
     this .tAparams['CoverDays'].push(covDay)
   }
   else {                                                             // remove the covDay
