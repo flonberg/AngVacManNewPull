@@ -25,7 +25,7 @@ $admins = getAdmins();
 $today = date('Y-m-d');
 $in = 0;
 do {																			// put index in case of permission failure
-	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "a+");			
+	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
 	if ($in++ > 5)
 		break;
 	}
@@ -53,6 +53,8 @@ do {																			// put index in case of permission failure
 		exit();																	// DO NOTHING ELSE
 	}
 	$data = getNeededParams($data);												// get Aux Params for Emails
+	$CompoundCovInfo = getCompoundCoverers($data);
+	$dstr = print_r($CompoundCovInfo, true); fwrite($fp, "\r\n5757 CompundCovInfo  is \r\n ");fwrite($fp, $dstr);	
 	$dstr = print_r($data, true); fwrite($fp, "\r\n 253 Ta with augmented parameters is \r\n ");fwrite($fp, $dstr);	
 	$overlap = '0';$overlapVidx = '0';											// default values
 	$theOverlap = checkServiceOverLap($data);									// the vidx of the overlapping tA
@@ -89,7 +91,8 @@ do {																			// put index in case of permission failure
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
 	if ($data->CompoundCoverage == 1)
 		enterCompoundCoverage($data->CoverDays,$lastVidx);
-	sendAskForCoverage($lastVidx, $data);
+	if ($data->CompoundCoverage == 0)
+		sendAskForCoverage($lastVidx, $data);
 	$selStr = "SELECT *  FROM $tableName WHERE vidx = $lastVidx";
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
 	sendStaff($lastVidx, $data);
@@ -304,10 +307,10 @@ function sendStaff($vidx, $newTa){
 	$subj .= " -- to   " .$assoc['Email'];								// store real address for fowarding
 	$msg = "<p> Greetings,<p>";
 	$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
-	if ($newTa->coverageA == 0)
-		$msg.= "The cover for this time away is to be determined";
-	else
-		$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
+//	if ($newTa->coverageA == 0)
+//		$msg.= "The cover for this time away is to be determined";
+//	else
+//		$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
 	$msg .= "<p> To see details of this Time click on the below link. </p>";
 	$message = '
 		<html>
@@ -336,43 +339,40 @@ function getNomCovLastName($data){
 	return $ret;
 }
 
-
 function getNeededParams($data){
 	global $handle, $fp, $debug;
 	$userid = isset($data->useridStr) ? $data->useridStr : $data->userid;
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$userid."'", "UserKey", $handle);			// get name of GoAwayer
-	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
-	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey ='".$data->coverageA ."'"; 
-	if ($data->CompoundCoverage == 1){
-		$CompoundCovUserKeys = Array();
-		$ind = 0;
-		foreach ($data->CoverDays as $key=>$val){
-			if (!in_array($val->CovererUserKey, $CompoundCovUserKeys))
-				$CompoundCovUserKeys[$ind++]= $val->CovererUserKey;
-		}
-		$dstr = print_r($CompoundCovUserKeys, true); fwrite($fp, "\r\n CompoundUserKey is ". $dstr);	
-			$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians 
-				WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey IN (" . implode(',', $CompoundCovUserKeys) . ")";; 
-	}
-	//($fp, "\r\n getNeededParams selStr \r\n $selStr");
-	$dB = new getDBData($selStr, $handle);
-	if ($data->CompoundCoverage == 1){
-	}
-	else {
-		while ($assoc = $dB->getAssoc()){
-			if ($assoc['UserKey'] == $data->goAwayerUserKey){
-				$data->goAwayerLastName = $assoc['LastName'];
-				$data->service = $assoc['service'];
+	//$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
+	//$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey ='".$data->coverageA ."'"; 
+	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."'"; 
+fwrite($fp, "348348 ". $selStr);	
+		$dB = new getDBData($selStr, $handle);
+			while ($assoc = $dB->getAssoc()){
+					$data->goAwayerLastName = $assoc['LastName'];
+					$data->service = $assoc['service'];
 				}
-			if ($assoc['UserKey'] == $data->coverageA){
-				$data->CovererLastName = $assoc['LastName'];
-				$data->CovererEmail = $assoc['Email'];
-				}	
-			}
-		}
-//	if ($debug)
-	// 	{$dsrt = print_r($data, true); fwrite($fp, $dsrt);	}
 	return $data; 
+}
+
+function getCompoundCoverers($data){
+	global $handle, $fp;
+	$CompoundCovInfo = Array();
+	$CompoundCovUserKeys = Array();
+	$ind = 0;
+	foreach ($data->CoverDays as $key=>$val){
+		if (!in_array($val->CovererUserKey, $CompoundCovUserKeys))
+			$CompoundCovUserKeys[$ind++]= $val->CovererUserKey;
+	}
+	$dstr = print_r($CompoundCovUserKeys, true); fwrite($fp, "\r\n CompoundUserKey is ". $dstr);	
+	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians 
+			WHERE  UserKey IN (" . implode(',', $CompoundCovUserKeys) . ")";
+	$dB = new getDBData($selStr, $handle);
+	$i = 0;
+	while ($assoc = $dB->getAssoc()){
+		$CompoundCovInfo[$i++] = $assoc;
+	}
+	return $CompoundCovInfo	;	
 }
 
 function enterCovsInVacCov($regDuties, $dows, $userkey, $vidx)

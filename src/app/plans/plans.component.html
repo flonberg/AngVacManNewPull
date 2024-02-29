@@ -122,6 +122,27 @@
           </mat-form-field> 
         </div>  
       </td>
+ 
+    </tr>
+     <!-- WTM  Change -->
+     <tr> 
+      <td>
+           <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
+      </td> 
+      <td *ngIf = "tAparams.WTMchange == 1" >
+        <mat-radio-group aria-label="Select an option">
+          <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
+          <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
+        </mat-radio-group>
+      </td>
+      <td *ngIf = "tAparams.WTM_self == 1"  >
+        <mat-form-field appearance="fill" class='h50'  >
+          <mat-label>WTM Date</mat-label>
+          <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdate')" placeholder=" {{ startDateConvent }}">
+          <mat-datepicker-toggle matSuffix [for]="picker2"    ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </td>
       <td>
         <mat-checkbox [(ngModel)]="checked" (change) = "setCompoundCoverage()"  >Compound Coverage</mat-checkbox>
       </td> 
@@ -147,35 +168,21 @@
                 <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(0,i, $event)' value="angular" ></mat-checkbox>
                 {{ ind }} 
               </td>
+              <td *ngIf = "tAparams.WTM_self==0">
+                <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(0,i, $event)' value="angular" ></mat-checkbox>
+                Cover WTM
+              </td>
             </tr>
           </table>
         </td>
       </tr>
     </ng-container>
- 
-    <tr> 
-      <td>
-           <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
-      </td> 
-      <td *ngIf = "tAparams.WTMchange == 1" >
-        <mat-radio-group aria-label="Select an option">
-          <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
-          <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
-        </mat-radio-group>
-      </td>
-      <td *ngIf = "tAparams.WTM_self == 1"  >
-        <mat-form-field appearance="fill" class='h50'  >
-          <mat-label>WTM Date</mat-label>
-          <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="WTMparam($event, 'WTMdate')" placeholder=" {{ startDateConvent }}">
-          <mat-datepicker-toggle matSuffix [for]="picker2"    ></mat-datepicker-toggle>
-          <mat-datepicker #picker2></mat-datepicker>
-        </mat-form-field>
-      </td>
-      </tr><tr>
-      <td>     
-           <button class='Button' (click) = "submitTA()">Submit </button>
-      </td>
-    </tr>
+
+    <tr>
+        <td>     
+            <button class='Button' (click) = "submitTA()">Submit </button>
+        </td>
+      </tr>
       </table>
       <div *ngIf = "showError > 0 "  class='warning'> {{ errorTxt }} </div>
       <div *ngIf = "overlap"  class='warning'  > This Time Away overlaps an already scheduled Time Away therefore  cannot be added to the data base. </div>
