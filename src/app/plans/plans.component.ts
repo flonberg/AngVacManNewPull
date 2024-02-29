@@ -19,7 +19,7 @@ interface tAparams {
   WTMdate?: string,
   vidx: number;
   CovAccepted: number;
-  WTMcoverer: string;
+  WTMcovererUserKey: number;
   WTMchange:number;
   WTM_self:Number;
   userid: number;
@@ -150,7 +150,7 @@ export class PlansComponent implements OnInit {
         coverageA: 0,
         WTMdate:'',
         WTMchange: 0,
-        WTMcoverer:'',
+        WTMcovererUserKey:0,
         WTM_self: -1,
         vidx: 0,
         CovAccepted: 0,
@@ -898,10 +898,11 @@ checkOffDate(index: number, state: any){
     }
     this .tAparams['CoverDays'].splice(toBeRemoved,1)                 // remove element
   }
-console.log("898898 %o", this.tAparams)  
+ 
 }
-setWTMcoverer(CovIndex: number,index: number, state: any){
-  let WTMCovererUserKey = this .tAparams['CompoundCoverers'][CovIndex]
+setWTMcoverer(index: number, state: any){
+  this .tAparams.WTMcovererUserKey = this .tAparams['CompoundCoverers'][0]
+  console.log("898898 %o", this.tAparams) 
 }
 isChecked(index: number){
  // console.log(" 862862 %o", index)

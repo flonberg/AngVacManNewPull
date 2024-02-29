@@ -89,10 +89,13 @@ do {																			// put index in case of permission failure
 	$row = sqlsrv_fetch_array($stmt);
 	$lastVidx = $row['id'];
 	fwrite($fp, "\r\n last vidx is $lastVidx \r\n ");
-	if ($data->CompoundCoverage == 1)
+	if ($data->CompoundCoverage == 1){
 		enterCompoundCoverage($data->CoverDays,$lastVidx);
+		sendMultiAskForCoverage($lastVidx,$data);
+	}
 	if ($data->CompoundCoverage == 0)
 		sendAskForCoverage($lastVidx, $data);
+
 	$selStr = "SELECT *  FROM $tableName WHERE vidx = $lastVidx";
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
 	sendStaff($lastVidx, $data);
@@ -176,9 +179,7 @@ function sendAskForCoverage($vidx, $data)
 		fwrite($fp, "150 coverageA == 0 so not sending AskForCoverage Email");
 		return;
 	}
-	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
-	//fwrite($fp, "\r\n ". $link);
 	$mailAddress = $data->CovererEmail;		
 	$subj = "Coverage for Time Away";	
 	$subj .= " to ". $data->CovererEmail;					
@@ -198,18 +199,35 @@ function sendAskForCoverage($vidx, $data)
 					</p>
 					<p>
 					<a href='.$link .'> Accept Coverage. </a>
-					<p> The above link will NOT work if Internet Explorer is your default browser.  In the case copy the link to use in Chrome </p> 
 				</body>
 			</head>	
 		</html>
 			'; 
-	
 		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
 		$rData = array("result"=>"pending");
 		$jData = json_encode($rData);
 	//	if (!$debug)
 			$sendMail->send();	
 }
+function sendMultiAskForCoverage($vidx, $data){
+	global $handle, $fp;
+	$toSend = Array();
+	$toSendParams = Array();
+	$j = 0;
+	for ( $i=0; $i < count($data->CoverDays); $i++ ){
+		$covUserId = getSingle("SELECT UserID FROM users WHERE UserKey = ".$data->CoverDays[$i]->CovererUserKey, 'UserID', $handle);
+		if (!in_array($covUserId, $toSend)){
+			$toSend[$i]= $covUserId;
+	fwrite($fp, "\r\n 213213 covUserIs is ". $covUserId);	
+			$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->CoverDays[$i]->CovererUserKey ."'"; 
+			$dB = new getDBData($selStr, $handle);
+			$toSendParams[$covUserId] = $dB->getAssoc();
+		}
+$dsrt = print_r($toSend, true); fwrite($fp, "223223 ". $dsrt);
+$dsrt = print_r($toSendParams, true); fwrite($fp, "223223 ". $dsrt);
+	}
+}
+
 /**
  * Finds the specific days of the overlap and sends email announcing them 
  * $oData is the tA which is found to be overlapping. newStartDate and newEndDate or the dates of tA  2B inserted. 

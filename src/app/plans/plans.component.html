@@ -169,7 +169,7 @@
                 {{ ind }} 
               </td>
               <td *ngIf = "tAparams.WTM_self==0">
-                <mat-checkbox [(ngModel)]="isChecked" (change) = 'setWTMcoverer(0,i, $event)' value="angular" ></mat-checkbox>
+                <mat-checkbox [(ngModel)]="isChecked" (change) = 'setWTMcoverer(i, $event)' value="angular" ></mat-checkbox>
                 Cover WTM
               </td>
             </tr>
