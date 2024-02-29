@@ -7,6 +7,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { throwError } from 'rxjs';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 import { ActivatedRoute } from '@angular/router';
+import { isDefined } from '@angular/compiler/src/util';
 
 interface tAparams {
   startDate? : string,
@@ -852,6 +853,12 @@ console.log("848848 %o", this.tAparams)
   if (this .showError == 4)
     this .showError  = 0;
 }
+isCovSelected(index: number){
+  if (isDefined(this.tAparams.CompoundCoverers[index]))
+    return true
+  else
+    return false
+}
 TAdates:string[]
 TAdatesBool: boolean[]
 TAdatesFirst: number
@@ -883,9 +890,9 @@ makeTAdates(){
  * @param index             // index of the toBe Covered Date
  * @param state             // Checked of Unchecked 
  */
-checkOffDate(index: number,covDay:number, state: any){
+checkOffDate(index: number,theCovDay:number, state: any){
   if (state.checked ){                       // add the covDay               
-    let covDay = new CoverDay( this .tAparams['CompoundCoverers'][index], this.TAdates[index])
+    let covDay = new CoverDay( this .tAparams['CompoundCoverers'][index], this.TAdates[theCovDay])
     this .tAparams['CoverDays'].push(covDay)
   }
   else {                                                             // remove the covDay
@@ -901,7 +908,7 @@ checkOffDate(index: number,covDay:number, state: any){
  
 }
 setWTMcoverer(index: number, state: any){
-  this .tAparams.WTMcovererUserKey = this .tAparams['CompoundCoverers'][0]
+  this .tAparams.WTMcovererUserKey = this .tAparams['CompoundCoverers'][index]
   console.log("898898 %o", this.tAparams) 
 }
 isChecked(index: number){
@@ -929,7 +936,8 @@ WTMparam(ev, pName){
 postRes: any;
 overlap: boolean
 faultMessage; string;
-submitTA(){     
+submitTA(){   
+console.log("949940 %o", this .tAparams)    
   this .gotData = false                                                             // need to put in full error checking. 
   this .faultMessage = "t";
   if (this .checkTAparams()){

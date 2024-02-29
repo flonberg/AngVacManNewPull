@@ -213,9 +213,9 @@ function sendMultiAskForCoverage($vidx, $data){
 	global $handle, $fp;
 	$toSendParams = Array();
 	$j = 0;
-	for ( $i=0; $i < count($data->CoverDays); $i++ ){
-		$covUserId = getSingle("SELECT UserID FROM users WHERE UserKey = ".$data->CoverDays[$i]->CovererUserKey, 'UserID', $handle);
-		$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->CoverDays[$i]->CovererUserKey ."'"; 
+	foreach ($data->CompoundCoverers as $key => $val) {
+		$covUserId = getSingle("SELECT UserID FROM users WHERE UserKey = ".$val, 'UserID', $handle);
+		$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$val ."'"; 
 		$dB = new getDBData($selStr, $handle);
 		$toSendParams[$covUserId] = $dB->getAssoc();										// make param array forEach Coverer
 	}
@@ -227,8 +227,9 @@ function sendMultiAskForCoverage($vidx, $data){
 		$subj .= " to ". $val['Email'];	
 		$mailAddress = $val['Email'];	
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
-		if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
+		$msg =    "<p>Dr. ".$val['LastName'].": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover.</p> ";
+	
+		if ($val['UserKey'] == $data->WTMcovererUserKey) 															// The Coverer is the WTM Coverer
 			$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
 		$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
 		$message = '
