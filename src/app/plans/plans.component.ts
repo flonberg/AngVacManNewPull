@@ -883,9 +883,9 @@ makeTAdates(){
  * @param index             // index of the toBe Covered Date
  * @param state             // Checked of Unchecked 
  */
-checkOffDate(CovIndex: number,index: number, state: any){
+checkOffDate(index: number, state: any){
   if (state.checked ){                       // add the covDay               
-    let covDay = new CoverDay( this .tAparams['CompoundCoverers'][CovIndex], this.TAdates[index])
+    let covDay = new CoverDay( this .tAparams['CompoundCoverers'][0], this.TAdates[index])
     this .tAparams['CoverDays'].push(covDay)
   }
   else {                                                             // remove the covDay
@@ -899,6 +899,9 @@ checkOffDate(CovIndex: number,index: number, state: any){
     this .tAparams['CoverDays'].splice(toBeRemoved,1)                 // remove element
   }
 console.log("898898 %o", this.tAparams)  
+}
+setWTMcoverer(CovIndex: number,index: number, state: any){
+  let WTMCovererUserKey = this .tAparams['CompoundCoverers'][CovIndex]
 }
 isChecked(index: number){
  // console.log(" 862862 %o", index)

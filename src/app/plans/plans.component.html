@@ -165,11 +165,11 @@
           <table>
             <tr> 
               <td *ngFor = "let ind of TAdates; let i = index">
-                <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(0,i, $event)' value="angular" ></mat-checkbox>
+                <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(i, $event)' value="angular" ></mat-checkbox>
                 {{ ind }} 
               </td>
               <td *ngIf = "tAparams.WTM_self==0">
-                <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(0,i, $event)' value="angular" ></mat-checkbox>
+                <mat-checkbox [(ngModel)]="isChecked" (change) = 'setWTMcoverer(0,i, $event)' value="angular" ></mat-checkbox>
                 Cover WTM
               </td>
             </tr>
