@@ -219,6 +219,7 @@ export class PlansComponent implements OnInit {
     })
   }
 gotCompCov:boolean = false
+CompCovArray:any
   /**
  * Used when user clicks on her tA, to show the edit controls. 
  * @param vacEdit 
@@ -230,9 +231,8 @@ gotCompCov:boolean = false
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getCompCov.php?vidx='+ vacEdit['vidx']
     this.CompCovParamsArray = []
     this .http.get(url).subscribe(res =>{
-      Object.keys(res).forEach(key => {
-        this .CompCovParamsArray.push(res[key])
-      })
+      this.CompCovArray = res
+      console.log("245245 %o", this.CompCovArray)
       this .gotCompCov = true
         console.log("195195 toSeeParams is %o", this .CompCovParamsArray) 
     })
@@ -1031,5 +1031,13 @@ class CoverDay {
   constructor( CovererUserKey, date){
     this .CovererUserKey = CovererUserKey
     this .date = date
+  }
+}
+class CompCovClass {
+  MD_LastName: string
+  Dates: string[]
+  Accepted: boolean[]
+  constructor(MDLastName:string){
+    this .MD_LastName = MDLastName
   }
 }
