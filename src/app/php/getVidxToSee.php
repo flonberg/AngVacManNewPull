@@ -18,7 +18,7 @@ $handle = connectDB_FL();
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
 
-	$selStr2 = "SELECT vidx,CovererUserKey,date,deleted FROM MD_TA_Coverage WHERE vidx = ".$assoc['vidx'];
+	$selStr2 = "SELECT idx,vidx,CovererUserKey,date,deleted, accepted FROM MD_TA_Coverage WHERE vidx = ".$assoc['vidx'];
 	$dB2 = new getDBData($selStr2, $handle);
 	$ind2 = 0;
 	while ($assoc2 = $dB2->getAssoc())

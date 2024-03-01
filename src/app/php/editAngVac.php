@@ -4,6 +4,9 @@ require_once './mailLib.php';
 require_once './safeSQL.php';
 header("Content-Type: application/json; charset=UTF-8");
 $handle = connectDB_FL();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 ini_set("error_log", "./Alog/editAngVacError.txt");
 $IAP = new InsertAndUpdates();
 	if (strpos(getcwd(), 'dev') !== FALSE)
@@ -17,6 +20,18 @@ $IAP = new InsertAndUpdates();
 	$std = print_r($data, true); fwrite($fp, "\r\n data from POST has \r\n". $std);
 	$data = getNeededParams($data);															// get additional param needed
 	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
+	if ($data['toSeeParams']['CompoundCoverage'] == 1 ){									// edit Compound Coverage
+		foreach ($data['toSeeParams']['Coverage'] as $key => $val){
+			if ($val['accepted'] == 1){
+				$updateStr = "UPDATE TOP(1) MD_TA_Coverage SET accepted = 1 WHERE idx = '".$val['idx']."'";
+				fwrite($fp, "\r\n $updateStr");
+				$stmt = sqlsrv_query( $handle, $updateStr);
+				if( $stmt === false ) {
+					$dstr = print_r( sqlsrv_errors(), true); fwrite($fp, "\r\n $dstr \r\n");
+						}
+			}
+		}
+	}
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
 	if ( isset( $data['startDate'] ) && strlen($data['startDate']) > 2  ){
 		$upDtStr .= "startDate = '". $data['startDate']."',";
@@ -29,7 +44,6 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "CovAccepted = '0',";
 		sendTaChangedMail($data,0);
 		sendStaffLib($data,3);
-	
 	}
 	if (isset( $data['reasonIdx'] ) &&   $data['reasonIdx'] >= 1)
 		$upDtStr .= "reasonIdx = '". $data['reasonIdx']."',";
@@ -37,23 +51,25 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "note = '". $data['note']."',";
 	if ( isset( $data['coverageA'] ) &&    $data['coverageA'] > 1)
 		$upDtStr .= "coverageA = '". $data['coverageA']."',";
-	if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){					// Coverer has accepted coverage
-		$upDtStr .= "CovAccepted = '". $data['accepted']."',";
-		$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
-	//	if ($CovAcceptedEmail == 0)
-		{										// No email communicating CovAccepted has yet been sent
-			$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx']; 
-			safeSQL($updateStr, $handle);
-			if ($data['accepted'] == 1)
-				{																// coverer has accepted
-				sendStaffLib($data, 1);											// send CoverageAccepted emails
-				sendToGoAwayer($data, 1);
-			}
-			else if ($data['accepted'] == 0){										// coverer has Declined
-				sendStaffLib($data, 2);											// send Coverage Declined emails
-				sendToGoAwayer($data, 2);	
-			}
-		}	
+	if ($data['toSeeParams']['CompoundCoverage'] == 0){
+		if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){					// Coverer has accepted coverage
+			$upDtStr .= "CovAccepted = '". $data['accepted']."',";
+			$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
+		//	if ($CovAcceptedEmail == 0)
+			{										// No email communicating CovAccepted has yet been sent
+				$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx']; 
+				safeSQL($updateStr, $handle);
+				if ($data['accepted'] == 1)
+					{																// coverer has accepted
+					sendStaffLib($data, 1);											// send CoverageAccepted emails
+					sendToGoAwayer($data, 1);
+				}
+				else if ($data['accepted'] == 0){										// coverer has Declined
+					sendStaffLib($data, 2);											// send Coverage Declined emails
+					sendToGoAwayer($data, 2);	
+				}
+			}	
+		}
 	}
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
@@ -199,9 +215,9 @@ $IAP = new InsertAndUpdates();
 			$msg .="<p> ". $merged['note']."</p>";	
 		if (isset($merged['WTMnote']) && strlen($merged['WTMnote'])>  2)
 			$msg .="<p>". $merged['WTMnote']."</p>";	
-		if ($merged['WTM_Change_Needed'] == '1'){
-			$msg .="<p> The WTM date has been changed to ". $merged['WTMdate']."</p>";
-		}
+	//if ($merged['WTM_Change_Needed'] == '1'){
+	//		$msg .="<p> The WTM date has been changed to ". $merged['WTMdate']."</p>";
+	//	}
 		$message = '
 			<html>
 				<head>

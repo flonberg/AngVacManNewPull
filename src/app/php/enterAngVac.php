@@ -109,7 +109,7 @@ function enterCompoundCoverage($data, $vidx){
 	ob_start(); var_dump($data);$data1 = ob_get_clean();fwrite($fp, "\r\n ". $data1);
 	foreach ($data as $key=>$val){
 		if (isset($val->CovererUserKey)){
-			$insStr = "INSERT INTO MD_TA_Coverage (vidx, CovererUserKey, date, deleted) values (".$vidx.",'".$val->CovererUserKey."','".$val->date."',0)";
+			$insStr = "INSERT INTO MD_TA_Coverage (vidx, CovererUserKey, date,accepted, deleted) values (".$vidx.",'".$val->CovererUserKey."','".$val->date."',0,0)";
 			$stmt = sqlsrv_query( $handle, $insStr);
 			if( $stmt === false ) {
 				$dstr = print_r( sqlsrv_errors(), true); fwrite($fp, "\r\n $dstr \r\n");

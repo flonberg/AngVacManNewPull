@@ -34,7 +34,8 @@ interface CovParams {
   accepted: boolean,
   WTMdate?: string,
   WTMnote?: string,
-  vidx: number
+  vidx: number,
+  toSeeParams?: any
 }
 interface calParams {
   firstMonthName: string,
@@ -139,7 +140,8 @@ export class PlansComponent implements OnInit {
     this. setCalDates();
     this .CovParams = {
       accepted: false,
-      vidx: 0
+      vidx: 0,
+    
     }
     this. showError = 0; 
     this. tAparams = {
@@ -476,9 +478,11 @@ private saveEdits(ev, detail?) {
 console.log("396 in saveEdits tAparams is %o", this .tAparams)  
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
   var emailParam = 0;                                             // determines IF and WHICH email 2b sent
-  if (detail == 'CovAccept'){
+//  if (detail == 'CovAccept')
+  {
     this. acknowlegeEdits = 'Edits Saved'
-    this. CovParams.vidx = this .vidxToSee                   
+    this. CovParams.vidx = this .vidxToSee  
+    this .CovParams.toSeeParams = this .toSeeParams       
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
   if (detail){  
@@ -504,15 +508,23 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
 }
 private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
-  if (param == 'CovAccepted'){
-      this .CovParams.accepted = value;
-    //  this .showAcceptor = false;
+  if (this .toSeeParams.CompoundCoverage == 1){
+    for (var index in this.toSeeParams.Coverage) {
+      if (this .loggedInUserKey ==this.toSeeParams.Coverage[index]['CovererUserKey'] )      // select coverages belonging to the loggedInUserKey
+        this.toSeeParams.Coverage[index]['accepted'] = 1                                    // set the to 'accepted' 
+    }
   }
-  if (param == 'WTMnote')
-      this .CovParams.WTMnote = value.target.value;
-  if (param == 'WTMdate'){
-    this .CovParams.WTMdate = this.datePipe.transform(value.value, 'yyyy-MM-dd')
-    console.log( 'this.CovParams has %o', this .CovParams);
+  else{
+    if (param == 'CovAccepted'){
+        this .CovParams.accepted = value;
+      //  this .showAcceptor = false;
+    }
+    if (param == 'WTMnote')
+        this .CovParams.WTMnote = value.target.value;
+    if (param == 'WTMdate'){
+      this .CovParams.WTMdate = this.datePipe.transform(value.value, 'yyyy-MM-dd')
+      console.log( 'this.CovParams has %o', this .CovParams);
+      }
   }
 }
 private isWTM_self(){
