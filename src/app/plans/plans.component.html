@@ -1,6 +1,7 @@
 <div class='relative2'>
   <h1> Physicians Time Away Schedule  </h1>
 <h3> {{ Message }}  </h3>
+<h2 *ngIf = "toSeeParams">{{ toSeeParams.vidx   }}  {{ toSeeParams.WTM_CovererUserKey}}  {{ loggedInUserKey }}</h2>
 </div>
 
 <div class='relative'>
@@ -326,7 +327,7 @@
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 0 ||   toSeeParams['WTM_self'] == 1"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away. </p>
     <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please accept or Decline this coverage for Dr. {{ toSeeParams['goAwayerLastName']  }}'s  time away.</p>
     <p *ngIf = "toSeeParams['WTM_CovererUserKey'] == toSeeParams['loggedInUserKey']"  > You are also being asked to cover Dr. {{ toSeeParams['goAwayerLastName']  }}'s WTM.  .</p>
-    <p *ngIf = "toSeeParams['WTM_Change_Needed'] == 1 &&   toSeeParams['WTM_self'] == 0"  > Please select a WTM date and supply any additional parameters such as WTM location.</p>
+    <p *ngIf =  "toSeeParams['WTM_CovererUserKey'] == toSeeParams['loggedInUserKey']"  > Please select a WTM date and supply any additional parameters such as WTM location.</p>
     <p *ngIf = "changesSavedShow" style="color:green"> Response Saved </p>
     <table *ngIf = vidxToSee class='toFit'>
           <tr>
@@ -356,6 +357,7 @@
                   <mat-radio-button class="example-margin" value="decline"  (click) = "editCovParams('CovAccepted', 0)" >Decline</mat-radio-button>
                 </mat-radio-group>
             </td> 
+            <ng-container *ngIf = "toSeeParams['WTM_CovererUserKey'] == toSeeParams['loggedInUserKey']"  >
             <td style="text-align:right;"  *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 " >WTM Date</td>
             <td class='h50' *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
               <mat-form-field  appearance="fill"  class='h50'  >
@@ -365,6 +367,7 @@
                 <mat-datepicker #picker5></mat-datepicker>
               </mat-form-field>
             </td>
+       
             <td  *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 && CovParams.accepted == 1"  >
               <div class='center'>
                 <mat-form-field >
@@ -373,6 +376,7 @@
                 </mat-form-field>    
               </div>    
             </td>
+          </ng-container>  
             <td>
               <button class='Button' (click) = "saveEdits($event, 'CovAccept')">Submit</button>
               <!--
