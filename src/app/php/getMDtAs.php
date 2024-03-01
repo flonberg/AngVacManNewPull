@@ -1,5 +1,4 @@
 <?php
-
 require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
 require_once('workdays.inc');
 require_once('dosimetristList.php');
@@ -46,6 +45,9 @@ function getMDtAs(){
 	$serviceGroup = array();	
 	$index = 0;															// use to keep track of number of tA's in each service
 	while ($assoc = $dB->getAssoc()){
+//		$dstr = print_r($assoc, true); fwrite ($fp, "\r\n ".$dstr);		
+		$isCompoundCoverage = $assoc['CompoundCoverage'];
+
 		$vacGraph[$i][$assoc['userid']]['index'] = $i;
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['service'] = $MDs[$UserKeys[$assoc['userid']]]['service'];
@@ -60,8 +62,7 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
 		$vacGraph[$i][$assoc['userid']]['reasonIdx'] = $assoc['reasonIdx'];
 		$vacGraph[$i][$assoc['userid']]['vidx'] = $assoc['vidx'];
-//		$assoc['startDate']->modify("+ 1 day");
-//		$assoc['endDate']->modify("+ 1 day");
+		$vacGraph[$i][$assoc['userid']]['CompoundCoverage'] = $assoc['CompoundCoverage'];
 		$vacGraph[$i][$assoc['userid']]['startDate'] = $assoc['startDate']->format('m/d/Y');
 		$vacGraph[$i][$assoc['userid']]['endDate'] = $assoc['endDate']->format('m/d/Y');
 		$vacGraph[$i][$assoc['userid']]['WTMnote'] = $assoc['WTMnote'];
@@ -82,7 +83,7 @@ function getMDtAs(){
 		// 1 day tA has StartDate = EndDate so have to add 1 to length
 		$vacGraph[$i][$assoc['userid']]['vacLength'] = getdays($vacGraph[$i][$assoc['userid']]['startDate'],$vacGraph[$i][$assoc['userid']]['endDate'], $firstDay) + 1  ;
 		$selStr = "SELECT UserID from users WHERE UserKey = '".$assoc['coverageA']."'";
-//	$vacGraph[$i][$assoc['userid']]['covererUserKey'] = $selStr;
+
 		if (isset($assoc['coverageA']) && strlen($assoc['coverageA']) > 1){	
 			$vacGraph[$i][$assoc['userid']]['covererUserId'] = getSingle($selStr, 'UserID', $handle);
 			$vacGraph[$i][$assoc['userid']]['covererageA_UserKey'] = $assoc['coverageA' ];
@@ -90,9 +91,16 @@ function getMDtAs(){
 		}
 		else if ((isset($assoc['coverageA']) && strlen($assoc['coverageA']) == 0)){
 			$vacGraph[$i][$assoc['userid']]['covererDetails']['LastName'] = 'TBD';
+		
+	
 		}
+		
+	
 		$i++;
 	//	fwrite($fp, "\r\n ".$vacGraph[$i][$assoc['userid']]['startDate']." daysTillStart is ". $vacGraph[$i][$assoc['userid']]['daysTillStartDate'] );
+
+	}
+
 
 	}
 //	$std = print_r($serviceGroup, true); fwrite($fp, "\r\n ServiceGroup is \r\n". $std);

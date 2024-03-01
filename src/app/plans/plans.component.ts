@@ -44,6 +44,14 @@ interface calParams {
   daysInSecondMonth: number,
   lastDateOnCal: Date,
 }
+interface CompCovParams {
+  idx: number,
+  vidx: number,
+  CovererUserKey: number,
+  date: string,
+  deleted: number,
+  accepter: number
+}
 
 @Component({
   selector: 'app-plans',
@@ -55,6 +63,7 @@ interface calParams {
 export class PlansComponent implements OnInit {
   userid: string;
   vidxToSee: number;                               // used by AcceptCoverage control
+  CompCovParamsArray: CompCovParams[]
   //vidxToSeeData: object;
   isLoggedInUserCoverer: boolean = false;
   monthInc:number = 0;
@@ -192,6 +201,7 @@ export class PlansComponent implements OnInit {
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
+        console.log("195195 toSeeParams is %o", this .toSeeParams)
     for (var key in this .toSeeParams.Coverage) {
       if (this .toSeeParams['loggedInUserKey'] == this .toSeeParams.Coverage[key]['CovererUserKey'])
         this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
@@ -208,13 +218,24 @@ export class PlansComponent implements OnInit {
         this .showEditFunc(this .toSeeParams)
     })
   }
+gotCompCov:boolean = false
   /**
  * Used when user clicks on her tA, to show the edit controls. 
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
   this .toSeeParams = vacEdit
-    console.log("190190 toSeeParams %o", this .toSeeParams)    
+
+    console.log("190190 toSeeParams %o", this .toSeeParams)   
+    let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getCompCov.php?vidx='+ vacEdit['vidx']
+    this.CompCovParamsArray = []
+    this .http.get(url).subscribe(res =>{
+      Object.keys(res).forEach(key => {
+        this .CompCovParamsArray.push(res[key])
+      })
+      this .gotCompCov = true
+        console.log("195195 toSeeParams is %o", this .CompCovParamsArray) 
+    })
     this .tAparams ={} as tAparams;
      this .selectedOption = "1";
     let isUserGoAwayer = false

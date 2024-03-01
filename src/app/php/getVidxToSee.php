@@ -19,6 +19,7 @@ $handle = connectDB_FL();
 	$assoc = $dB->getAssoc();
 
 	$selStr2 = "SELECT idx,vidx,CovererUserKey,date,deleted, accepted FROM MD_TA_Coverage WHERE vidx = ".$assoc['vidx'];
+	fwrite($fp, "\r\n $selStr2");
 	$dB2 = new getDBData($selStr2, $handle);
 	$ind2 = 0;
 	while ($assoc2 = $dB2->getAssoc())
@@ -51,7 +52,7 @@ $handle = connectDB_FL();
 	else if ($assoc['coverageA'] == 0){
 		$assoc['CovererLastName'] = 'TBD';
 	}
-	$ss = print_r($assoc, true); fwrite($fp, $ss);
+	$ss = print_r($assoc, true); fwrite($fp,"\r\n5555 \r\n"); fwrite($fp, $ss);
 	$jData = json_encode($assoc);
 	echo $jData;
 	exit();
