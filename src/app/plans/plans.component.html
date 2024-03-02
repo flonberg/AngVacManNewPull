@@ -262,7 +262,7 @@
          <td>
             <div class='center' >
               <mat-form-field >
-                <mat-label *ngIf = "vacEdit.covererDetails "> {{ vacEdit.covererDetails.LastName }} </mat-label>
+                <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
                 <mat-select (selectionChange) ="editTaParams('coverageA', $event)"   >
                   <mat-option *ngFor="let MD of serviceMDs "
                   [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
@@ -307,14 +307,13 @@
         <th> Covering Physician</th> <th  *ngIf = 'vacEdit.WTM_Change_Needed == 1' >WTM Coverer</th><th  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > WTM-Date</th> 
         <th *ngIf = "vacEdit.WTMnote && vacEdit.WTMnote.length > 2">WTM Note </th>
       </tr>
-      <tr>
-        <td *ngIf = "vacEdit.covererDetails"> Dr. {{ vacEdit.covererDetails.LastName }} </td>
+      <tr  *ngIf = "!gotCompCov">  
+        <td *ngIf = "vacEdit.covererDetails !compoundCoverageBool"> Dr. {{ vacEdit.covererDetails.LastName }} </td>
         <td *ngIf = "!vacEdit.covererDetails" > TBD </td>
         <td *ngIf = " vacEdit.WTM_self == 0  && vacEdit.covererDetails"> Dr. {{ vacEdit.covererDetails.LastName }}</td>
         <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
         <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> Dr. {{ vacEdit.goAwayerLastName }}</td>
         <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"> Dr. {{ vacEdit.LastName }}</td>
-   
         <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > {{ toSeeParams.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}}  </td>
       </tr>
       <ng-container  *ngIf = 'gotCompCov'>

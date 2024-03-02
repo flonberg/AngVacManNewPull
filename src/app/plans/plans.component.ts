@@ -226,14 +226,16 @@ CompCovArray:any
  */
  private showEditFunc(vacEdit){
   this .toSeeParams = vacEdit
-
     console.log("190190 toSeeParams %o", this .toSeeParams)   
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getCompCov.php?vidx='+ vacEdit['vidx']
     this.CompCovParamsArray = []
     this .http.get(url).subscribe(res =>{
       this.CompCovArray = res
       console.log("245245 %o", this.CompCovArray)
-      this .gotCompCov = true
+      if (Object.keys(this.CompCovArray).length > 0)
+        this .gotCompCov = true
+      else
+        this .gotCompCov = false
         console.log("195195 toSeeParams is %o", this .CompCovParamsArray) 
     })
     this .tAparams ={} as tAparams;
