@@ -317,9 +317,10 @@
    
         <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > {{ toSeeParams.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}}  </td>
       </tr>
-      <ng-container  *ngIf = ' gotCompCov'>
-        <tr  *ngFor = "let ind of CompCovArray; let i = index">
-          <td >       </td>
+      <ng-container  *ngIf = 'gotCompCov'>
+        <tr *ngFor="let item of CompCovArray | keyvalue" style="font-weight:bold">
+         Dr.  {{item.key}} 
+          <td *ngFor="let item2 of item.value| keyvalue" >  {{item2.value.date}} </td> 
         </tr>
       </ng-container>
       
