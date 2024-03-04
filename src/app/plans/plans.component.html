@@ -74,7 +74,7 @@
 <!--       Enter tA  Panel      -->
 <div *ngIf = "isUserAnMD && !CovererView " > 
   <div class='raised' *ngIf = 'serviceMDs'>
-    <table class='centerSmall'>
+  <table class='centerSmall'>
         <caption> Enter a Time Away  </caption>
     <tr>
       <td>
@@ -111,26 +111,19 @@
         </div>    
       </td>
     </tr>
-    <tr> 
-      <td *ngIf = '!compoundCoverageBool'> 
-        <div class='center'> 
-          <mat-form-field >
-            <mat-label> Single Coverer </mat-label>
-            <mat-select (selectionChange) ="covererSelect($event)" >
-              <mat-option *ngFor="let MD of serviceMDs "
-              [value]="MD ">{{ MD.LastName }}</mat-option>
-            </mat-select>
-          </mat-form-field> 
-        </div>  
-      </td>
- 
-    </tr>
-     <!-- WTM  Change -->
-     <tr> 
+    </table>
+    <div class="line"></div>
+    <table 
+    >
+    <tr style="height:100px;" > 
+      <td style="padding-left:100px;"  >
+        <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')" [checked] = 'WTM_NoChange_Def' >No WTM Change</mat-checkbox>
+     </td> 
       <td>
-           <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')"  >WTM Change Needed</mat-checkbox>
-      </td> 
-      <td *ngIf = "tAparams.WTMchange == 1" >
+        <mat-checkbox [(ngModel)]="checked" (change) = "WTMparam($event, 'WTMdateChange')" [checked] = 'tAparams.WTMchange' >WTM Change Needed</mat-checkbox>
+     </td> 
+ 
+      <td *ngIf = "tAparams.WTMchange == 1"  style="padding-left:30px; ">        Who Covers WTM:
         <mat-radio-group aria-label="Select an option">
           <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
           <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
@@ -144,14 +137,27 @@
           <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
       </td>
-      <td>
-        <mat-checkbox [(ngModel)]="checked" (change) = "setCompoundCoverage()"  >Compound Coverage</mat-checkbox>
-      </td> 
     </tr>
+  </table>
+  <table >
+    <tr>
+    <td *ngIf = '!compoundCoverageBool'  style="padding-left:80px;"> 
+      <div class='center'> 
+        <mat-form-field >
+          <mat-label> Single Coverer </mat-label>
+          <mat-select (selectionChange) ="covererSelect($event)" >
+            <mat-option *ngFor="let MD of serviceMDs "
+            [value]="MD ">{{ MD.LastName }}</mat-option>
+          </mat-select>
+        </mat-form-field> 
+      </div>  
+    <td>
+      <mat-checkbox [(ngModel)]="checked" (change) = "setCompoundCoverage()"  >Compound Coverage</mat-checkbox>
+    </td> 
    <!--   Compound Coverage --> 
     <ng-container *ngIf = 'compoundCoverageBool'>
       <tr *ngFor = "let index of compCovLoops">
-        <td> 
+        <td > 
           <div class='center'> 
             <mat-form-field >
               <mat-label> Compound Coverer </mat-label>
@@ -165,7 +171,7 @@
         <td colspan="3">
           <table>
             <tr *ngIf = "isCovSelected(index)"> 
-              <td *ngFor = "let ind of TAdates; let i = index">
+              <td *ngFor = "let ind of TAdates; let i = index" style="padding-right:10px">
                 <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(index, i, $event)' value="angular" ></mat-checkbox>
                 {{ ind }} 
               </td>
@@ -184,7 +190,7 @@
             <button class='Button' (click) = "submitTA()">Submit </button>
         </td>
       </tr>
-      </table>
+  </table>
       <div *ngIf = "showError > 0 "  class='warning'> {{ errorTxt }} </div>
       <div *ngIf = "overlap"  class='warning'  > This Time Away overlaps an already scheduled Time Away therefore  cannot be added to the data base. </div>
     </div>
@@ -270,9 +276,9 @@
               </mat-form-field>
             </div>  
       </td>
-      <td  *ngIf = " vacEdit.WTM_Change_Needed == 1" >
+      <td  *ngIf = " vacEdit.WTM_Change_Needed == 1" > Who Covers WTM:
         <mat-radio-group aria-label="Select an option">
-          <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   >Self </mat-radio-button>
+          <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   >  </mat-radio-button>
           <mat-radio-button value="2"  [checked]="!isWTM_self()"  (click) = "editTaParams( 'NOT_WTM_Self', $event )" >Covering MD </mat-radio-button>
         </mat-radio-group>
       </td> 

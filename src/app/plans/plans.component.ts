@@ -106,7 +106,7 @@ export class PlansComponent implements OnInit {
   queryParams:{}
   showAcceptor: boolean = false;
   now: Date
-  compCovLoops: number[] = [0,1,2,3]
+  compCovLoops: number[] = [0,1,2]
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this.now = new Date()
     if ( this .checkWorkingDir() == 'prod')                    
@@ -555,6 +555,8 @@ private editCovParams(param, value){
       }
   }
 }
+
+
 private isWTM_self(){
   if (this .vacEdit.WTM_self == 1)
     return true;
@@ -955,10 +957,14 @@ isChecked(index: number){
  // console.log(" 862862 %o", index)
   return this .TAdatesBool[index]
 }
+WTM_NoChange_Def: boolean = true
 WTMparam(ev, pName){
   console.log("101 %o --- %o ", ev, pName)
-  if (pName == 'WTMdateChange')
+  if (pName == 'WTMdateChange'){
     this .tAparams.WTMchange = ev.checked ? 1 : 0
+    if (ev.checked == 1)
+      this.WTM_NoChange_Def = false
+  }
   if (pName == 'WTM_Self'){
     this .tAparams.WTM_self = 1
     
