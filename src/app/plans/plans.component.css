@@ -19,7 +19,13 @@
 	left: 420px;
 	width:500px;
 
-  }    
+  } 
+caption {
+	font-weight: bold;
+} 
+th {
+	padding-right:10px;
+}    
 table.toFit {
 	table-layout: fixed;;
 	width: 100%

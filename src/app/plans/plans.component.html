@@ -295,42 +295,45 @@
   <div class='raised' *ngIf = 'showReadOnly ' >
     <table class='toFit' *ngIf = showReadOnly>
       <caption *ngIf = "vacEdit.goAwayerLastName"> Time-Away for Dr. {{ vacEdit.goAwayerLastName}}  </caption>
-      <tr >
-          <th> Start- Date</th><th> End Date</th> <th> Reason   </th> <th> Note </th>
-      </tr> 
       <tr>
-          <td>  {{ toSeeParams.startDate }} </td> <td>  {{ toSeeParams.endDate }} </td> <td>{{ reasonArr[toSeeParams.reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
+          <td> <b> Start Date:</b>  {{ toSeeParams.startDate }} </td> <td> <b> End Date: </b> {{ toSeeParams.endDate }} </td>
+             <td> <b> Reason </b> {{ reasonArr[toSeeParams.reasonIdx] }} </td> <td> Note:  <b></b> {{ vacEdit['note'] }} </td>
       </tr>
-    </table> 
-    <table class = 'toFit' style="border-collapse: collapse;" >
+
       <tr>
-        <th> Covering Physician</th> 
         <th *ngIf = "vacEdit.WTMnote && vacEdit.WTMnote.length > 2">WTM Note </th>
       </tr>
       <tr  *ngIf = "!gotCompCov">  
-        <td *ngIf = "vacEdit.covererDetails !compoundCoverageBool"> Dr. --{{ vacEdit.covererDetails.LastName }} </td>
-        <td *ngIf = "!vacEdit.covererDetails" > TBD </td>
-
+        <td *ngIf = "vacEdit.covererDetails !compoundCoverageBool" style="padding-right:25px"> <b> Covering Physician:</b> Dr. {{ vacEdit.covererDetails.LastName }} </td>
+        <td *ngIf = "!vacEdit.covererDetails" > <b> Coverage: </b> TBD </td>
         <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
         <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> Dr. {{ vacEdit.goAwayerLastName }}</td>
         <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"> Dr. {{ vacEdit.LastName }}</td>
-        <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > {{ toSeeParams.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}}  </td>
+        <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  >  <b> WTM Date: </b>  {{ toSeeParams.WTMdate }}</td> 
+         <td> {{ vacEdit.WTMnote}}  </td>
       </tr>
-      <ng-container  *ngIf = 'gotCompCov'>
-        <tr *ngFor="let item of CompCovArray | keyvalue" style="border:solid">
-        <th> Dr.  {{toTBD(item.key)}} </th>
-          <td *ngFor="let item2 of item.value| keyvalue" >  {{item2.value.date}} </td> 
-        </tr>
-      </ng-container>
-      <ng-container  *ngIf = 'vacEdit.WTM_Change_Needed == 1'>
-        <table>
-          <tr>
-            <th> WTM Coverer</th><th *ngIf = 'vacEdit.WTM_Change_Needed == 1' > WTM Date </th>
-          </tr>
-        </table>
-      </ng-container>
-      
-    </table>
+      </table>
+      <table  *ngIf = 'gotCompCov'>
+          <caption  *ngIf = 'gotCompCov'> Compound Coverage</caption>
+            <ng-container  *ngIf = 'gotCompCov'>
+              <tr *ngFor="let item of CompCovArray | keyvalue" style="border:solid">
+              <th> Dr.  {{toTBD(item.key)}} </th>
+                <td *ngFor="let item2 of item.value| keyvalue" style="padding-right:10px" >  {{item2.value.date}} </td> 
+              </tr>
+            </ng-container>
+            <ng-container  *ngIf = 'vacEdit.WTM_Change_Needed == 1  && gotCompCov' >
+              <table>
+                <tr>
+                  <th> WTM Coverer</th>  <td> {{ toSeeParams.WTM_Coverer_LastName }}</td>
+                  </tr>
+                  <tr>
+                  <th *ngIf = 'vacEdit.WTM_Change_Needed == 1 && gotCompCov' > WTM Date </th><td>{{ toSeeParams.WTMdate }}</td>
+                </tr>
+                <tr>    
+                </tr>
+              </table>
+            </ng-container>
+      </table>
    </div> 
  
 
