@@ -291,6 +291,11 @@ CompCovArray:any
       }  
     })
   }  
+  private toTBD(inp:string){
+    if (inp == 'Unknown')
+      return 'TBD'
+    return inp
+  }
   private sortByService(){
     let byServArr = Array();
     for(let i=0; i< this .vacData.length; i++){

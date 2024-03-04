@@ -302,25 +302,32 @@
           <td>  {{ toSeeParams.startDate }} </td> <td>  {{ toSeeParams.endDate }} </td> <td>{{ reasonArr[toSeeParams.reasonIdx] }} </td> <td>{{ vacEdit['note'] }} </td>
       </tr>
     </table> 
-    <table class = 'toFit' >
+    <table class = 'toFit' style="border-collapse: collapse;" >
       <tr>
-        <th> Covering Physician</th> <th  *ngIf = 'vacEdit.WTM_Change_Needed == 1' >WTM Coverer</th><th  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > WTM-Date</th> 
+        <th> Covering Physician</th> 
         <th *ngIf = "vacEdit.WTMnote && vacEdit.WTMnote.length > 2">WTM Note </th>
       </tr>
       <tr  *ngIf = "!gotCompCov">  
-        <td *ngIf = "vacEdit.covererDetails !compoundCoverageBool"> Dr. {{ vacEdit.covererDetails.LastName }} </td>
+        <td *ngIf = "vacEdit.covererDetails !compoundCoverageBool"> Dr. --{{ vacEdit.covererDetails.LastName }} </td>
         <td *ngIf = "!vacEdit.covererDetails" > TBD </td>
-        <td *ngIf = " vacEdit.WTM_self == 0  && vacEdit.covererDetails"> Dr. {{ vacEdit.covererDetails.LastName }}</td>
+
         <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
         <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> Dr. {{ vacEdit.goAwayerLastName }}</td>
         <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"> Dr. {{ vacEdit.LastName }}</td>
         <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  > {{ toSeeParams.WTMdate }}</td>  <td> {{ vacEdit.WTMnote}}  </td>
       </tr>
       <ng-container  *ngIf = 'gotCompCov'>
-        <tr *ngFor="let item of CompCovArray | keyvalue" style="font-weight:bold">
-         Dr.  {{item.key}} 
+        <tr *ngFor="let item of CompCovArray | keyvalue" style="border:solid">
+        <th> Dr.  {{toTBD(item.key)}} </th>
           <td *ngFor="let item2 of item.value| keyvalue" >  {{item2.value.date}} </td> 
         </tr>
+      </ng-container>
+      <ng-container  *ngIf = 'vacEdit.WTM_Change_Needed == 1'>
+        <table>
+          <tr>
+            <th> WTM Coverer</th><th *ngIf = 'vacEdit.WTM_Change_Needed == 1' > WTM Date </th>
+          </tr>
+        </table>
       </ng-container>
       
     </table>

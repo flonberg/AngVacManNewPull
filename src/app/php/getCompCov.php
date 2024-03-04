@@ -20,8 +20,6 @@ $handle = connectDB_FL();
     $row = Array();
     $dB = new getDBData( $selStr, $handle);
     while ($assoc = $dB->getAssoc()){
-        if ($assoc['LastName'] == "Unknown")
-         $assoc['LastName'] == "TBD";
         $row[$assoc['LastName']][$assoc['idx']] = $assoc;
     }
     echo json_encode($row);
