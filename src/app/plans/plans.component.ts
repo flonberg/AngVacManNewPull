@@ -941,14 +941,14 @@ checkOffDate(index: number,theCovDay:number, state: any){
   else {                                                             // remove the covDay
     let toBeRemoved: number = -1                                      // define a number
     for (let i=0; i < this .tAparams['CoverDays'].length; i++){       // go thru the covDays
-      if (this .tAparams['CoverDays'][i]['date']== this.TAdates[index]){    
+      if (this .tAparams['CoverDays'][i]['date']== this.TAdates[theCovDay]){    
         toBeRemoved= i                                                // set element to be removed
         break 
       }
     }
     this .tAparams['CoverDays'].splice(toBeRemoved,1)                 // remove element
   }
- 
+ console.log("951951 %o", this.tAparams['CoverDays'])
 }
 setWTMcoverer(index: number, state: any){
   this .tAparams.WTMcovererUserKey = this .tAparams['CompoundCoverers'][index]
