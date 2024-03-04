@@ -139,6 +139,7 @@
       </td>
     </tr>
   </table>
+  <div class="line"></div>
   <table >
     <tr>
     <td *ngIf = '!compoundCoverageBool'  style="padding-left:80px;"> 
@@ -159,8 +160,8 @@
       <tr *ngFor = "let index of compCovLoops">
         <td > 
           <div class='center'> 
-            <mat-form-field >
-              <mat-label> Compound Coverer </mat-label>
+            <mat-form-field style="width:100px" >
+              <mat-label>  Coverer </mat-label>
               <mat-select (selectionChange) ="covererSelect($event,index)" >
                 <mat-option *ngFor="let MD of serviceMDs "
                 [value]="MD ">{{ MD.LastName }}</mat-option>
@@ -258,27 +259,11 @@
             </div>
         </td>
       </tr>
-      <tr>
-        <th> Coverer </th> 
-        <th *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" > WTM-Coverer </th> 
-        <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>
-        <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
-       </tr>
-       <tr>
-         <td>
-            <div class='center' >
-              <mat-form-field >
-                <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
-                <mat-select (selectionChange) ="editTaParams('coverageA', $event)"   >
-                  <mat-option *ngFor="let MD of serviceMDs "
-                  [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>  
-      </td>
-      <td  *ngIf = " vacEdit.WTM_Change_Needed == 1" > Who Covers WTM:
+    <tr>
+  
+      <td  *ngIf = " vacEdit.WTM_Change_Needed == 1"  colspan="2"> Who Covers WTM:
         <mat-radio-group aria-label="Select an option">
-          <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   >  </mat-radio-button>
+          <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   > Self </mat-radio-button>
           <mat-radio-button value="2"  [checked]="!isWTM_self()"  (click) = "editTaParams( 'NOT_WTM_Self', $event )" >Covering MD </mat-radio-button>
         </mat-radio-group>
       </td> 
@@ -293,6 +278,23 @@
       </td>
       <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"> {{ vacEdit.WTMdate}}  </td>
       <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"   > {{ vacEdit.WTMnote}} </td>
+      <th> Coverer </th> 
+      <th *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" > WTM-Coverer </th> 
+      <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>
+      <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
+     </tr>
+     <tr>
+       <td>
+          <div class='center' >
+            <mat-form-field >
+              <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
+              <mat-select (selectionChange) ="editTaParams('coverageA', $event)"   >
+                <mat-option *ngFor="let MD of serviceMDs "
+                [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>  
+    </td>
     </tr>
    </table>
   </div>

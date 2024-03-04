@@ -225,6 +225,7 @@ CompCovArray:any
  * @param vacEdit 
  */
  private showEditFunc(vacEdit){
+  this.CovererView = true
   this .toSeeParams = vacEdit
     console.log("190190 toSeeParams %o", this .toSeeParams)   
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getCompCov.php?vidx='+ vacEdit['vidx']
