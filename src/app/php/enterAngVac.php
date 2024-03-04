@@ -382,8 +382,35 @@ function getNomCovLastName($data){
 	$ret =  getSingle($selStr, 'LastName', $handle);
 	return $ret;
 }
+function getSimpleCovData($CovUserKey){
+	global $handle;
+	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians 
+			WHERE  UserKey = $CovUserKey";
+	$dB = new getDBData($selStr, $handle);
+	return $assoc = $dB->getAssoc();
+}
 
 function getNeededParams($data){
+	global $handle, $fp;
+	$userid = isset($data->useridStr) ? $data->useridStr : $data->userid;
+	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$userid."'", "UserKey", $handle);			// get name of GoAwayer
+	$data->CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $data->coverageA,  "UserID", $handle);			// get name of GoAwayer
+	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians WHERE UserKey = '".$data->goAwayerUserKey ."' OR UserKey ='".$data->coverageA ."'"; 
+	fwrite($fp, "\r\n getNeededParams selStr \r\n $selStr");
+	$dB = new getDBData($selStr, $handle);
+	while ($assoc = $dB->getAssoc()){
+		if ($assoc['UserKey'] == $data->goAwayerUserKey){
+			$data->goAwayerLastName = $assoc['LastName'];
+			$data->service = $assoc['service'];
+		}
+		if ($assoc['UserKey'] == $data->coverageA){
+			$data->CovererLastName = $assoc['LastName'];
+			$data->CovererEmail = $assoc['Email'];
+		}	
+	}
+	return $data; 
+}
+function getNeededParamsXX($data){
 	global $handle, $fp, $debug;
 	$userid = isset($data->useridStr) ? $data->useridStr : $data->userid;
 	$data->goAwayerUserKey = getSingle("SELECT UserKey FROM users WHERE UserID = '".$userid."'", "UserKey", $handle);			// get name of GoAwayer

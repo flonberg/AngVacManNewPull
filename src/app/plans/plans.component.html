@@ -246,6 +246,7 @@
               </mat-form-field>
             </div>
         </td>
+  
         <td class='h50' >
             <div class='center'>
               <table>
@@ -260,7 +261,6 @@
         </td>
       </tr>
     <tr>
-  
       <td  *ngIf = " vacEdit.WTM_Change_Needed == 1"  colspan="2"> Who Covers WTM:
         <mat-radio-group aria-label="Select an option">
           <mat-radio-button value="1" [checked]="isWTM_self()"   (click) = "editTaParams('WTM_Self', $event  )"   > Self </mat-radio-button>
@@ -278,13 +278,16 @@
       </td>
       <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"> {{ vacEdit.WTMdate}}  </td>
       <td *ngIf = "tAparams.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1"   > {{ vacEdit.WTMnote}} </td>
-      <th> Coverer </th> 
+  
       <th *ngIf = "vacEdit.WTM_self == 0 && vacEdit.WTM_Change_Needed == 1" > WTM-Coverer </th> 
       <th   *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1 " > WTM Coverer </th>
       <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
      </tr>
      <tr>
-       <td>
+      <div class="line"></div>
+     </tr>
+     <tr *ngIf =  'vacEdit.CompoundCoverage == 0' >
+         <td> Simple Coverage
           <div class='center' >
             <mat-form-field >
               <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
@@ -294,8 +297,11 @@
               </mat-select>
             </mat-form-field>
           </div>  
-    </td>
-    </tr>
+        </td>
+      </tr>
+      <tr *ngIf = 'vacEdit.CompoundCoverage == 1'>
+        <th> Compound Coverage </th>
+      </tr>
    </table>
   </div>
 

@@ -237,7 +237,6 @@ CompCovArray:any
         this .gotCompCov = true
       else
         this .gotCompCov = false
-        console.log("195195 toSeeParams is %o", this .CompCovParamsArray) 
     })
     this .tAparams ={} as tAparams;
      this .selectedOption = "1";
