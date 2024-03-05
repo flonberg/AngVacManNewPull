@@ -483,6 +483,15 @@ private makeTillEndBoxes(vac){
  */
 private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
+    let vidx = this.tAparams.vidx
+    var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/EditParam.php?vidx='+vidx+'&name='+type+'&value='+dateString
+    console.log('420 url is %o', url);
+      this .http.get(url).subscribe(res =>{                     // do the http.post
+        this .getTheData();   
+        let result = res
+  console.log("492492 result is %o", result)                                              // refresh the data to show the edits. 
+
+    })
     if (type.indexOf("start") >= 0)
       this .tAparams.startDate = dateString;
     if (type.indexOf("end") >= 0)
