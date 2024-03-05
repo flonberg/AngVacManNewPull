@@ -271,9 +271,14 @@ CompCovArray:any
     }
    return 
    } 
+   getCompCov(num: number){
+      let test = Object.keys(this .CompCovArray)[num]
+      return test
+   }
   /**
    * Get tA data from 242.  The URL has GET params det'ing the monthInc, which det's the 2-month data acquisition interval
    */  
+  CompCov: any
   gotData:boolean = false
   private getTheData(){
     console.log("68 url is %o", this .getVacURL)
@@ -290,6 +295,13 @@ CompCovArray:any
     //    this .vacData[tRow][10] = (this .dayArray);            // dayArray is array of dayNumbers used to det the TODAY box      
       }  
     })
+    let URL = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this.wkDev+'/getAllCompCov.php';
+    this .http.get(URL).subscribe(res =>{
+      this .CompCov = res
+      console.log("297297 %o", this .CompCov)
+    })
+    
+
   }  
   private toTBD(inp:string){
     if (inp == 'Unknown')
@@ -481,10 +493,17 @@ private makeTillEndBoxes(vac){
  * @param type 
  * @param ev 
  */
-private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
-    let dateString = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
+private  editParam(type: string, ev: any) {
+    let newParam: any
+    if (typeof ev ==='string')
+      newParam = ev
+    else if  (typeof ev.value ==='number') // returns true or false )
+      newParam = ev.value
+    else
+      newParam = this.datePipe.transform(ev.value, 'yyyy-MM-dd')
+      console.log("490490 %o", ev)
     let vidx = this.tAparams.vidx
-    var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/EditParam.php?vidx='+vidx+'&name='+type+'&value='+dateString
+    var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/EditParam.php?vidx='+vidx+'&name='+type+'&value='+newParam
     console.log('420 url is %o', url);
       this .http.get(url).subscribe(res =>{                     // do the http.post
         this .getTheData();   
@@ -492,6 +511,7 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
   console.log("492492 result is %o", result)                                              // refresh the data to show the edits. 
 
     })
+    /*
     if (type.indexOf("start") >= 0)
       this .tAparams.startDate = dateString;
     if (type.indexOf("end") >= 0)
@@ -499,6 +519,7 @@ private  editDate(type: string, ev: MatDatepickerInputEvent<Date>) {
     if (type.indexOf("WTM") >= 0)
       this .tAparams.WTMdate = dateString;  
     this .changesSavedShow = false;
+    */
 }
 
 private deleteTa(ev){
@@ -905,7 +926,7 @@ console.log("848848 %o", this.tAparams)
     this .showError  = 0;
 }
 isCovSelected(index: number){
-  if (isDefined(this.tAparams.CompoundCoverers[index]))
+  if (isDefined(this.tAparams.CompoundCoverers) && isDefined(this.tAparams.CompoundCoverers[index]))
     return true
   else
     return false

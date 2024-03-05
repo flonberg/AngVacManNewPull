@@ -213,7 +213,7 @@
         <td class='h50'>
           <div class='center'>
             <mat-form-field appearance="fill" *ngIf = showEdit  class='h50'  >
-              <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (dateChange)="editDate('startDate', $event)" placeholder=" {{ startDateConvent }}">
+              <input matInput [(ngModel)]="startDate" [matDatepicker]="picker" (dateChange)="editParam('startDate', $event)" placeholder=" {{ startDateConvent }}">
               <mat-datepicker-toggle matSuffix [for]="picker"    ></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
@@ -222,7 +222,7 @@
         <td class='h50' >
           <div class='center'>
             <mat-form-field appearance="fill" *ngIf = showEdit  class='h50'  >
-              <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="editDate('endDate', $event)" placeholder=" {{ endDateConvent}}">
+              <input matInput [(ngModel)]="startDate" [matDatepicker]="picker2" (dateChange)="editParam('endDate', $event)" placeholder=" {{ endDateConvent}}">
               <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
               <mat-datepicker #picker2></mat-datepicker>
             </mat-form-field>
@@ -242,7 +242,7 @@
             <div class='center'>
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Note</mat-label>
-                <input matInput [value] = "vacEdit['note']" (change) = "editTaParams('note', $event.target.value)" >
+                <input matInput [value] = "vacEdit['note']" (change) = "editParam('note', $event.target.value)" >
               </mat-form-field>
             </div>
         </td>
@@ -291,7 +291,7 @@
           <div class='center' >
             <mat-form-field >
               <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
-              <mat-select (selectionChange) ="editTaParams('coverageA', $event)"   >
+              <mat-select (selectionChange) ="editParam('coverageA', $event)"   >
                 <mat-option *ngFor="let MD of serviceMDs "
                 [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
               </mat-select>
@@ -301,6 +301,36 @@
       </tr>
       <tr *ngIf = 'vacEdit.CompoundCoverage == 1'>
         <th> Compound Coverage </th>
+        <ng-container >
+          <tr *ngFor = "let index of compCovLoops">
+            <td > 
+              <div class='center'> 
+                <mat-form-field style="width:100px" >
+                  <mat-label *ngIf = 'CompCovArray'> {{  getCompCov(index) }} </mat-label>
+                  <mat-select (selectionChange) ="covererSelect($event,index)" >
+                    <mat-option *ngIf = 'CompCovArray'> {{  getCompCov(index)}}</mat-option>
+                    <mat-option *ngFor="let MD of serviceMDs "
+                    [value]="MD ">{{ MD.LastName }}</mat-option>
+                  </mat-select>
+                </mat-form-field> 
+              </div>  
+            </td>
+            <td colspan="3">
+              <table>
+                <tr *ngIf = "isCovSelected(index)"> 
+                  <td *ngFor = "let ind of TAdates; let i = index" style="padding-right:10px">
+                    <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(index, i, $event)' value="angular" ></mat-checkbox>
+                    {{ ind }} 
+                  </td>
+                  <td *ngIf = "tAparams.WTM_self==0">
+                    <mat-checkbox [(ngModel)]="isChecked" (change) = 'setWTMcoverer(index, $event)' value="angular" ></mat-checkbox>
+                    Cover WTM
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </ng-container>
       </tr>
    </table>
   </div>

@@ -12,9 +12,10 @@ if (strpos(getcwd(), 'dev') !== FALSE)
     $level = 'dev';
 else 
     $level = 'prod';	
-$fp = fopen("./log/editParam    Log.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
+$fp = fopen("./log/editParamLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 $std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 $updateStr = "UPDATE TOP(1) MDtimeAway SET ".$_GET['name']."='".$_GET['value']."' WHERE vidx = ".$_GET['vidx'];
+fwrite($fp, "\r\n $updateStr");
 $res = sqlsrv_query($handle, $updateStr);
 if ($res == FALSE){
     $dstr = print_r($res, true);
@@ -22,3 +23,10 @@ if ($res == FALSE){
 }
 $res = json_encode($_GET);
 echo $res;
+exit();
+
+function getMDlastName($userkey){
+    global $handle;
+   $selStr = "SELECT LastName FROM physicians WHERE UserKey = $userkey";
+   return getSingle($selStr, 'LastName', $handle );
+}

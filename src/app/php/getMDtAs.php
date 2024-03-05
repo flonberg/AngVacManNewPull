@@ -1,9 +1,7 @@
 <?php
 
 require_once 'H:\inetpub\lib\sqlsrvLibFL.php';
-require_once('workdays.inc');
-require_once('dosimetristList.php');
-include('isHollidayLib.php');
+
 $handle = connectDB_FL();
 $handleBB = connectBB();
 	$tableName = 'MDtimeAway';
@@ -13,12 +11,23 @@ $handleBB = connectBB();
 	$s =  print_r($_GET, true); fwrite($fp, $s); 
 	//$MDtAs = getMDtAs();
 	$MDtAs['tAs'] = getMDtAs();
+//	$MDtAs['covs'] = getFromMD_TA_Coverage();
 //	$MDtAs['coverers'] = getServiceOfGoAwayer();
 	$jData = json_encode($MDtAs);
 	//fwrite($fp, $jData);
 //	echo "<br> 14 <br>"; echo "<pre>"; print_r($MDtAs); echo "</pre>"; 
 	echo $jData;
  exit();
+
+function getFromMD_TA_Coverage(){
+	global $handle;
+	$selStr = "SELECT  * FROM MD_TA_Coverage ORDER BY idx DESC";
+	$dB = new getDBData($handle, $selStr);
+	while ($assoc = $dB->getAssoc){
+		$row[$assoc['vidx']] = $assoc;
+	}
+	return $row; 
+} 
 
 function getMDtAs(){
 	global $handle, $fp, $tableName;
