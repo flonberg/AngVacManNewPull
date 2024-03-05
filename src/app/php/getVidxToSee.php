@@ -17,6 +17,7 @@ $handle = connectDB_FL();
 	$selStr = "SELECT * FROM $tableName WHERE vidx = ".$_GET['vidxToSee'];
 	$dB = new getDBData($selStr, $handle);
 	$assoc = $dB->getAssoc();
+$dstr = print_r($assoc, true); fwrite($fp, $dstr);	
 
 	$selStr2 = "SELECT idx,vidx,CovererUserKey,date,deleted, accepted FROM MD_TA_Coverage WHERE vidx = ".$assoc['vidx'];
 	fwrite($fp, "\r\n $selStr2");
@@ -60,7 +61,7 @@ $handle = connectDB_FL();
 		global $fp;
 		if (is_object($dt))
 			try  {
-				return $dt->format('m/d/Y');
+				return $dt->format('Y-m-d');
 			}
 			catch(Exception $e){
 			fwrite($fp,  $e->getMessage());

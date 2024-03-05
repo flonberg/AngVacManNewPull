@@ -232,13 +232,19 @@ CompCovArray:any
     this.CompCovParamsArray = []
     this .http.get(url).subscribe(res =>{
       this.CompCovArray = res
-      console.log("245245 %o", this.CompCovArray)
-      if (Object.keys(this.CompCovArray).length > 0)
+      console.log("245245 CompCovArray %o", this.CompCovArray)
+      if (Object.keys(this.CompCovArray).length > 0){
         this .gotCompCov = true
+        this .makeTAdates()
+        this .makeEditTAdates(this.CompCovArray)
+      }
       else
         this .gotCompCov = false
+
     })
     this .tAparams ={} as tAparams;
+
+console.log("243243 TAdates if %o", this.TAdates)    
      this .selectedOption = "1";
     let isUserGoAwayer = false
     if (this.userid && this. userid.includes(vacEdit['userid']))
@@ -932,14 +938,23 @@ isCovSelected(index: number){
     return false
 }
 TAdates:string[]
+ClassTAdates:CoverDay[]
 TAdatesBool: boolean[]
 TAdatesFirst: number
 CompoundCoverers: number[]
-makeTAdates(){
+makeTAdates(startDateInp?:string,endDateInp?: string){
   this.TAdates = []
   this .TAdatesBool = []
-  let startDateString = this.tAparams['startDate'] +"T12:00:00"
-  let endDateString = this.tAparams['endDate'] +"T12:00:00"
+  let startDateString = ''
+  let endDateString = ''
+  if ( this.tAparams['startDate']){
+    startDateString = this.tAparams['startDate'] +"T12:00:00"
+    endDateString = this.tAparams['endDate'] +"T12:00:00"
+  }
+  else if ( this.toSeeParams['startDate']){
+    startDateString = this.toSeeParams['startDate'] +"T12:00:00"
+    endDateString = this.toSeeParams['endDate'] +"T12:00:00"
+  }
   let startDate = new Date(startDateString)
   let endDate = new Date(endDateString)
   let theDate = new Date(startDateString)
@@ -949,12 +964,22 @@ makeTAdates(){
     if(theDate.getDay() != 6 && theDate.getDay() != 0) {
       this .TAdatesBool[j] = false
       this .TAdates[j++] = this.datePipe.transform(theDate, 'MM-dd ')
-
     }
     theDate.setDate(theDate.getDate() + 1);
     if (theDate > endDate)
       break
   }
+}
+makeEditTAdates(data: any){
+  this .TAdates.forEach(function(value){
+    console.log("971971 %o", value)
+
+    {
+    for (const key in data){
+      console.log("974974 %o   --- %o", key, data.key )
+    }
+  }
+  })
 }
 /**
  * If Checked create a covDay class element and add it to tAparams covDay array, if UnCheck remove the covDay 
@@ -983,7 +1008,7 @@ setWTMcoverer(index: number, state: any){
   this .tAparams.WTMcovererUserKey = this .tAparams['CompoundCoverers'][index]
   console.log("898898 %o", this.tAparams) 
 }
-isChecked(index: number){
+isChecked(index: any, i:number){
  // console.log(" 862862 %o", index)
   return this .TAdatesBool[index]
 }
@@ -1071,6 +1096,7 @@ goToPhysStaffAvail(){
 class CoverDay {
   CovererUserKey:number
   date: string
+  checked: boolean
   constructor( CovererUserKey, date){
     this .CovererUserKey = CovererUserKey
     this .date = date
