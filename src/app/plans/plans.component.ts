@@ -196,7 +196,7 @@ export class PlansComponent implements OnInit {
         return 'prod'
     }
     unsorted() { }                                                      // user by alphabetization of the data by service 
-  loggedInUserCoverage: number[] = [] 
+  loggedInUserCoverage: number[] =  [] 
   private getTheVidxToSee(){
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
@@ -206,7 +206,6 @@ export class PlansComponent implements OnInit {
       if (this .toSeeParams['loggedInUserKey'] == this .toSeeParams.Coverage[key]['CovererUserKey'])
         this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
     }
-   console.log("200200 %o", this .loggedInUserCoverage) 
         this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
         if (+this .toSeeParams['loggedInUserKey'] == this .toSeeParams['coverageA'])
           this .isLoggedInUserCoverer = true;
@@ -235,7 +234,7 @@ CompCovArray:any
       if (Object.keys(this.CompCovArray).length > 0){
         this .gotCompCov = true
         this .makeTAdates()
-        this .makeCompCovDates(this.CompCovArray, this.TAdates)
+   //     this .makeCompCovDates(this.CompCovArray, this.TAdates)
       }
       else
         this .gotCompCov = false
@@ -966,7 +965,8 @@ makeTAdates(startDateInp?:string,endDateInp?: string){
     let test = theDate.getDay()
     if(theDate.getDay() != 6 && theDate.getDay() != 0) {
       this .TAdatesBool[j] = false
-      this .TAdates[j++] = this.datePipe.transform(theDate, 'MM-dd ')
+      if (theDate !== null)
+        this .TAdates[j++] = this.datePipe.transform(theDate, 'MM-dd ')
     }
     theDate.setDate(theDate.getDate() + 1);
     if (theDate > endDate)
@@ -1085,8 +1085,10 @@ WTMparam(ev, pName){
     if (this .showError == 5)
       this .showError  = 0;
   }
-  if (pName == 'WTMdate')
+  if (pName == 'WTMdate'){
+    console.log("1089 %o", ev.value)
    this. tAparams.WTMdate = this .datePipe.transform(new Date(ev.value), 'MM/dd/yyyy')  
+  }
 }
 postRes: any;
 overlap: boolean
