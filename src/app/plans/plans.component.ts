@@ -514,7 +514,6 @@ private  editParam(type: string, ev: any) {
         this .getTheData();   
         let result = res
   console.log("492492 result is %o", result)                                              // refresh the data to show the edits. 
-
     })
     /*
     if (type.indexOf("start") >= 0)
@@ -1037,6 +1036,11 @@ editCompCovDate(index, i, ev){
   let idxToEdit = firstIdx + i
   var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editCompCov.php?idx='+idxToEdit+'&verdict='+ev.checked+'&userkey='+toEditUserKey
   console.log('420 url is %o', url);
+  this .http.get(url).subscribe(res =>{                     // do the http.post
+   // this .getTheData();   
+    let result = res
+console.log("492492 result is %o", result)                                              // refresh the data to show the edits. 
+})
 }
 
 setWTMcoverer(index: number, state: any){
