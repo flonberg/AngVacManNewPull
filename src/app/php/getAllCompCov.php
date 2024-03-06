@@ -11,6 +11,7 @@ $handle = connectDB_FL();
 	fwrite($fp, "\r\n $todayString");
     $selStr = "SELECT TOP(200) idx,vidx,CovererUserKey,date,deleted,accepted 
         FROM  MD_TA_Coverage 
+        WHERE deleted = 0
         ORDER BY idx DESC";
    
     fwrite($fp, "\r\n ".$selStr);

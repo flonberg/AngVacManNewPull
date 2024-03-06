@@ -328,12 +328,28 @@
                   </td>
                 </tr>
               </table>
-            </td>
+          
+            
           </tr>
         </ng-container>
+        <th></th><th *ngIf = 'showMDlist'> Select Physician for this Cover Date 
+          <div class='center'> 
+            <mat-form-field style="width:100px" >
+              <mat-label *ngIf = 'CompCovArray'> {{  getCompCov(index) }} </mat-label>
+              <mat-select (selectionChange) ="covererSelect($event,index)" >
+                <mat-option *ngIf = 'CompCovArray'> {{  getCompCov(index)}}</mat-option>
+                <mat-option *ngFor="let MD of serviceMDs "
+                [value]="MD ">{{ MD.LastName }}</mat-option>
+              </mat-select>
+            </mat-form-field> 
+          </div>  
+
+        </th>
       </tr>
    </table>
+   <div> test</div>
   </div>
+
 
   <!--   THIRD PARTY   view-->
   <div class='raised' *ngIf = 'showReadOnly ' >

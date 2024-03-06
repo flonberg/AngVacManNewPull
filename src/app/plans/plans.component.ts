@@ -235,7 +235,7 @@ CompCovArray:any
       if (Object.keys(this.CompCovArray).length > 0){
         this .gotCompCov = true
         this .makeTAdates()
-     //   this .makeEditTAdates(this.CompCovArray)
+        this .makeCompCovDates(this.CompCovArray, this.TAdates)
       }
       else
         this .gotCompCov = false
@@ -973,6 +973,16 @@ makeTAdates(startDateInp?:string,endDateInp?: string){
       break
   }
 }
+makeCompCovDates(covs: any, dates: any){
+  console.log("977 %o", covs)
+  console.log("977 %o", dates)
+  for (let el in dates){
+    console.log("980 %o", dates[el])
+    for (let el2 in covs){
+      console.log("982982 %o", covs[el2])
+    }
+  }
+}
 /**
  * @param index  row number of the CompCov Checkbox array 
  * @param ind     the date of this checkbox
@@ -1016,31 +1026,39 @@ checkOffDate(index: number,theCovDay:number, state: any){
   }
  console.log("951951 %o", this.tAparams['CoverDays'])
 }
+showMDlist:boolean = false
 editCompCovDate(index, i, ev){
   console.log("1021 index %o ----i %o --- ev %o", index, i, ev.checked)
   console.log("1022 %o", this.CompCovArray)
   let firstIdx: number = 0
   let toEditUserKey: number = 0
   let count: number = 0
-  for (let el in this.CompCovArray){
-      console.log("1023 %o", this.CompCovArray[el])
-      for (let el2 in this.CompCovArray[el] ){
-        console.log("1028 %o",this.CompCovArray[el][el2]['CovererUserKey'])
-        if (count == 0)
-          firstIdx = +el2
-        if (count == i)
-          toEditUserKey = this.CompCovArray[el][el2]['CovererUserKey']
-        count++
+  let test:number = 0
+  if (ev === false){
+      for (let el in this.CompCovArray){
+          console.log("1023 %o", this.CompCovArray[el])
+          for (let el2 in this.CompCovArray[el] ){
+            console.log("1028 %o",this.CompCovArray[el][el2]['CovererUserKey'])
+            test = this.CompCovArray[el][el2]['CovererUserKey']
+            if (count == 0)
+              firstIdx = +el2
+            if (count == i)
+              toEditUserKey = this.CompCovArray[el][el2]['CovererUserKey']
+            count++
+          }
       }
+      let idxToEdit = firstIdx + i
+      var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editCompCov.php?idx='+idxToEdit+'&verdict='+ev.checked+'&userkey='+toEditUserKey
+      console.log('420 url is %o', url);
+      this .http.get(url).subscribe(res =>{                     // do the http.post
+      // this .getTheData();   
+        let result = res
+    console.log("492492 result is %o", result)                                              // refresh the data to show the edits. 
+    } )
   }
-  let idxToEdit = firstIdx + i
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editCompCov.php?idx='+idxToEdit+'&verdict='+ev.checked+'&userkey='+toEditUserKey
-  console.log('420 url is %o', url);
-  this .http.get(url).subscribe(res =>{                     // do the http.post
-   // this .getTheData();   
-    let result = res
-console.log("492492 result is %o", result)                                              // refresh the data to show the edits. 
-})
+  else {
+    this .showMDlist = true
+  }
 }
 
 setWTMcoverer(index: number, state: any){

@@ -15,7 +15,7 @@ $handle = connectDB_FL();
     $res = Array("vidx"=> $_GET['vidx']);
     $selStr = "SELECT idx,vidx,CovererUserKey,date,deleted,accepted, physicians.LastName FROM MD_TA_Coverage
     JOIN physicians on MD_TA_Coverage.CovererUserKey=physicians.UserKey
-    WHERE vidx = ".$_GET['vidx'];
+    WHERE vidx = ".$_GET['vidx'] ." AND deleted = 0";
     fwrite($fp, "\r\n ".$selStr);
     $row = Array();
     $dB = new getDBData( $selStr, $handle);
