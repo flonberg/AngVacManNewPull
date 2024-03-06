@@ -232,11 +232,10 @@ CompCovArray:any
     this.CompCovParamsArray = []
     this .http.get(url).subscribe(res =>{
       this.CompCovArray = res
-      console.log("245245 CompCovArray %o", this.CompCovArray)
       if (Object.keys(this.CompCovArray).length > 0){
         this .gotCompCov = true
         this .makeTAdates()
-        this .makeEditTAdates(this.CompCovArray)
+     //   this .makeEditTAdates(this.CompCovArray)
       }
       else
         this .gotCompCov = false
@@ -942,6 +941,11 @@ ClassTAdates:CoverDay[]
 TAdatesBool: boolean[]
 TAdatesFirst: number
 CompoundCoverers: number[]
+/**
+ * Make the array of dates for Comp Cov Checkbox array
+ * @param startDateInp 
+ * @param endDateInp 
+ */
 makeTAdates(startDateInp?:string,endDateInp?: string){
   this.TAdates = []
   this .TAdatesBool = []
@@ -970,18 +974,17 @@ makeTAdates(startDateInp?:string,endDateInp?: string){
       break
   }
 }
-isItChecked(index: any,ind:any, i:number){
-   console.log(" 862862  index %o --- ind %o---   i %o",  index, ind, i)
-   let key = Object.keys(this .CompCovArray)[index]
-  // console.log(this .CompCovArray[key])
-   for (let el in this .CompCovArray[key] ){
-    console.log("978 %o   ", this .CompCovArray[key][el]['date'])
-    if (ind ==  this .CompCovArray[key][el]['date'])
+/**
+ * @param index  row number of the CompCov Checkbox array 
+ * @param ind     the date of this checkbox
+ * @returns 
+ */
+isItChecked(index: any,ind:any ){                // index is the row of the Comp Cov checkboxes
+   let key = Object.keys(this .CompCovArray)[index]       // get element of CompCovArray for the 'index' coverer
+   for (let el in this .CompCovArray[key] ){              // go thru the dates for that coverer
+    if (ind ==  this .CompCovArray[key][el]['date'])      // if find a date matching the date of the checkbox
       return true
    }
-   let res = false
-   let key2:string = ''
-
    return false
  }
 makeEditTAdates(data: any){
@@ -1014,6 +1017,28 @@ checkOffDate(index: number,theCovDay:number, state: any){
   }
  console.log("951951 %o", this.tAparams['CoverDays'])
 }
+editCompCovDate(index, i, ev){
+  console.log("1021 index %o ----i %o --- ev %o", index, i, ev.checked)
+  console.log("1022 %o", this.CompCovArray)
+  let firstIdx: number = 0
+  let toEditUserKey: number = 0
+  let count: number = 0
+  for (let el in this.CompCovArray){
+      console.log("1023 %o", this.CompCovArray[el])
+      for (let el2 in this.CompCovArray[el] ){
+        console.log("1028 %o",this.CompCovArray[el][el2]['CovererUserKey'])
+        if (count == 0)
+          firstIdx = +el2
+        if (count == i)
+          toEditUserKey = this.CompCovArray[el][el2]['CovererUserKey']
+        count++
+      }
+  }
+  let idxToEdit = firstIdx + i
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editCompCov.php?idx='+idxToEdit+'&verdict='+ev.checked+'&userkey='+toEditUserKey
+  console.log('420 url is %o', url);
+}
+
 setWTMcoverer(index: number, state: any){
   this .tAparams.WTMcovererUserKey = this .tAparams['CompoundCoverers'][index]
   console.log("898898 %o", this.tAparams) 
