@@ -970,15 +970,25 @@ makeTAdates(startDateInp?:string,endDateInp?: string){
       break
   }
 }
+isItChecked(index: any,ind:any, i:number){
+   console.log(" 862862  index %o --- ind %o---   i %o",  index, ind, i)
+   let key = Object.keys(this .CompCovArray)[index]
+  // console.log(this .CompCovArray[key])
+   for (let el in this .CompCovArray[key] ){
+    console.log("978 %o   ", this .CompCovArray[key][el]['date'])
+    if (ind ==  this .CompCovArray[key][el]['date'])
+      return true
+   }
+   let res = false
+   let key2:string = ''
+
+   return false
+ }
 makeEditTAdates(data: any){
   this .TAdates.forEach(function(value){
-    console.log("971971 %o", value)
-
-    {
     for (const key in data){
-      console.log("974974 %o   --- %o", key, data.key )
+      console.log("974974 %o   --- %o", key, data[key] )
     }
-  }
   })
 }
 /**
@@ -1008,10 +1018,7 @@ setWTMcoverer(index: number, state: any){
   this .tAparams.WTMcovererUserKey = this .tAparams['CompoundCoverers'][index]
   console.log("898898 %o", this.tAparams) 
 }
-isChecked(index: any, i:number){
- // console.log(" 862862 %o", index)
-  return this .TAdatesBool[index]
-}
+
 WTM_NoChange_Def: boolean = true
 WTMparam(ev, pName){
   console.log("101 %o --- %o ", ev, pName)

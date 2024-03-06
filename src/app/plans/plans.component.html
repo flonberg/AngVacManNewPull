@@ -319,7 +319,7 @@
               <table>
                 <tr > 
                   <td *ngFor = "let ind of TAdates; let i = index" style="padding-right:10px">
-                    <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(index, i, $event)' [checked] = 'isChecked(ind, i)' value="angular" ></mat-checkbox>
+                    <mat-checkbox [(ngModel)]="isChecked" (change) = 'checkOffDate(index, i, $event)' [checked] = 'isItChecked(index, ind, i)' value="angular" ></mat-checkbox>
                     {{ ind }}
                   </td>
                   <td *ngIf = "tAparams.WTM_self==0">
