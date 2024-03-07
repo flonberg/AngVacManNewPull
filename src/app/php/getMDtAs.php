@@ -19,12 +19,14 @@ $handleBB = connectBB();
 	echo $jData;
  exit();
 
-function getFromMD_TA_Coverage(){
-	global $handle;
-	$selStr = "SELECT  * FROM MD_TA_Coverage ORDER BY idx DESC";
+function getFromMD_TA_Coverage($vidx){
+	global $handle, $fp;
+	$selStr = "SELECT  * FROM MD_TA_Coverage WHERE vidx = $vidx ORDER BY idx DESC";
+	fwrite($fp, "\r\n $selStr \r\n");
 	$dB = new getDBData($handle, $selStr);
+	$i = 0; 
 	while ($assoc = $dB->getAssoc){
-		$row[$assoc['vidx']] = $assoc;
+		$row[$i++] = $assoc;
 	}
 	return $row; 
 } 
@@ -56,6 +58,7 @@ function getMDtAs(){
 	$index = 0;															// use to keep track of number of tA's in each service
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['index'] = $i;
+		
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['service'] = $MDs[$UserKeys[$assoc['userid']]]['service'];
 		if (!isset($serviceGroup[$MDs[$UserKeys[$assoc['userid']]]['service']][$assoc['userid']]))				// if there is NOT tA in this serviceGroup
@@ -107,6 +110,7 @@ function getMDtAs(){
 	//	fwrite($fp, "\r\n ".$vacGraph[$i][$assoc['userid']]['startDate']." daysTillStart is ". $vacGraph[$i][$assoc['userid']]['daysTillStartDate'] );
 
 	}
+
 //	$std = print_r($serviceGroup, true); fwrite($fp, "\r\n ServiceGroup is \r\n". $std);
 	foreach ($serviceGroup as $key => $val){
 		$c = count($val);

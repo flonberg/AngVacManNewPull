@@ -543,7 +543,8 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
   {
     this. acknowlegeEdits = 'Edits Saved'
     this. CovParams.vidx = this .vidxToSee  
-    this .CovParams.toSeeParams = this .toSeeParams       
+    this .CovParams.toSeeParams = this .toSeeParams    
+console.log("547 covParams %o", this .CovParams)       
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
   if (detail){  
@@ -559,7 +560,7 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
     this .http.post(url, jData).subscribe(res =>{                     // do the http.post
       this .getTheData();                                           // refresh the data to show the edits. 
       if (ev == 1)
-        location.reload(true);
+        location.reload();
   })
   this .changesSavedShow = true;
   this .ngOnInit();
@@ -575,7 +576,7 @@ private editCovParams(param, value){
         this.toSeeParams.Coverage[index]['accepted'] = 1                                    // set the to 'accepted' 
     }
   }
-  else{
+  {
     if (param == 'CovAccepted'){
         this .CovParams.accepted = value;
       //  this .showAcceptor = false;
@@ -688,11 +689,24 @@ goAwayerLastName2: string = ''
   }
 
   getNameClass(d){
-   // console.log("565 in getNameClass %o", d);
+    let allAccepted = true;
+    if (typeof(this .CompCov[d['vidx']]) !== 'undefined'){
+      console.log("565 in getNameClass %o",this .CompCov[d['vidx']]);
+      for (let elem in this .CompCov[d['vidx']]){
+        if ( this .CompCov[d['vidx']][elem]['accepted'] == 0){
+          allAccepted = false
+        }
+      }
+      if (allAccepted)
+        return 'green'
+    }
+    
+
     if (d['overlap'] == 1 && d['class'] == 'orange')
       return "orangeOverlap";
     if (d['overlap'] == 1 && d['class'] == 'green')
       return "greenOverlap";  
+
     return d['class'];
   }
 

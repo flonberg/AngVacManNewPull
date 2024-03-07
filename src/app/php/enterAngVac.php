@@ -185,7 +185,7 @@ function sendAskForCoverage($vidx, $data)
 	$subj .= " to ". $data->CovererEmail;					
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$subj .= "  to  ".$data->CovererEmail;	
-	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover. ";
+	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate .", and would like you to cover. ";
 	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
 		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
 	$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
@@ -227,11 +227,11 @@ function sendMultiAskForCoverage($vidx, $data){
 		$subj .= " to ". $val['Email'];	
 		$mailAddress = $val['Email'];	
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$msg =    "<p>Dr. ".$val['LastName'].": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover.</p> ";
+		$msg =    "<p>Dr. ".$val['LastName'].": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover part of this Time Away.</p> ";
 	
 		if ($val['UserKey'] == $data->WTMcovererUserKey) 															// The Coverer is the WTM Coverer
 			$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
-		$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
+		$msg .= "<p> To see you requested coverage, and accept or decline this coverage click on the below link. </p>";
 		$message = '
 			   <html>
 				   <head>

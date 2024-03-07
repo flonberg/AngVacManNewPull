@@ -19,7 +19,7 @@ $handle = connectDB_FL();
     $i = 0;
     $dB = new getDBData( $selStr, $handle);
     while ($assoc = $dB->getAssoc()){
-        $row[$assoc['vidx']] = $assoc;
+        $row[$assoc['vidx']][$i++] = $assoc;
     }
   //  echo "<pre>"; print_r($row); echo "</pre>";
     echo json_encode($row);

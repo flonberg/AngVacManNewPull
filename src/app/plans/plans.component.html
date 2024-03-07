@@ -357,7 +357,7 @@
       <caption *ngIf = "vacEdit.goAwayerLastName"> Time-Away for Dr. {{ vacEdit.goAwayerLastName}}  </caption>
       <tr>
           <td> <b> Start Date:</b>  {{ toSeeParams.startDate }} </td> <td> <b> End Date: </b> {{ toSeeParams.endDate }} </td>
-             <td> <b> Reason </b> {{ reasonArr[toSeeParams.reasonIdx] }} </td> <td> Note:  <b></b> {{ vacEdit['note'] }} </td>
+             <td> <b> Reason </b> {{ reasonArr[toSeeParams.reasonIdx] }} </td> <td> <b>Note:  </b> {{ vacEdit['note'] }} </td>
       </tr>
 
       <tr>
@@ -386,7 +386,7 @@
           </ng-container>
         </td>
         <td>
-          <table>
+          <table *ngIf = "vacEdit.WTM_Change_Needed > 0 ">
             <caption> WTM Coverage </caption>
             <tr>
               <th> WTM Coverer</th>  <td> {{ toSeeParams.WTM_Coverer_LastName }}</td>

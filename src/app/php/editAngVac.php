@@ -51,6 +51,7 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "note = '". $data['note']."',";
 	if ( isset( $data['coverageA'] ) &&    $data['coverageA'] > 1)
 		$upDtStr .= "coverageA = '". $data['coverageA']."',";
+	/*
 	if ($data['toSeeParams']['CompoundCoverage'] == 0){
 		if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){					// Coverer has accepted coverage
 			$upDtStr .= "CovAccepted = '". $data['accepted']."',";
@@ -71,6 +72,7 @@ $IAP = new InsertAndUpdates();
 			}	
 		}
 	}
+	*/
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
 		if (isset( $data['WTM_self'] ))
@@ -98,7 +100,7 @@ $IAP = new InsertAndUpdates();
 			sendTaChangedMail($data,0);							// send ordinary 'param changed' email. 
 		}
 	//elseif ($_GET['email'] == 2)
-		sendFinalEmail($data);		
+	//	sendFinalEmail($data);		
 	exit();
 
 	function sendDeleteTaEmail($data){
