@@ -11,7 +11,11 @@
 .center {
 	margin: auto;
 	width: 120px;
-
+	padding: 10px;
+  }
+  .centerWide {
+	margin: auto;
+	width: 720px;
 	padding: 10px;
   }
   div.relative {
