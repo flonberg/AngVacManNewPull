@@ -19,7 +19,7 @@ else
 $handle = connectDB_FL();
 $handleBB = connectBB();
 $debug = $_GET['debug'] == '1' ? true : false;
-
+$testMail = TRUE;
 $IAP = new InsertAndUpdates();
 $admins = getAdmins();
 $today = date('Y-m-d');
@@ -106,7 +106,7 @@ do {																			// put index in case of permission failure
 function enterCompoundCoverage($data, $vidx){
 	global $handle, $fp;
 	fwrite($fp, "\r\n 101 \r\n");
-	ob_start(); var_dump($data);$data1 = ob_get_clean();fwrite($fp, "\r\n ". $data1);
+//	ob_start(); var_dump($data);$data1 = ob_get_clean();fwrite($fp, "\r\n ". $data1);
 	foreach ($data as $key=>$val){
 		if (isset($val->CovererUserKey)){
 			$insStr = "INSERT INTO MD_TA_Coverage (vidx, CovererUserKey, date,accepted, deleted) values (".$vidx.",'".$val->CovererUserKey."','".$val->date."',0,0)";
@@ -221,8 +221,7 @@ function sendMultiAskForCoverage($vidx, $data){
 	}
 	$dsrt = print_r($toSendParams, true); fwrite($fp, "12345 ". $dsrt);
 	foreach ($toSendParams as $key=>$val){
-		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$key."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
-		$mailAddress = $val['Email'];		
+		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$key."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021		
 		$subj = "Coverage for Time Away";	
 		$subj .= " to ". $val['Email'];	
 		$mailAddress = $val['Email'];	
@@ -338,23 +337,21 @@ function sendStaff($vidx, $newTa){
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
 	$covMsg = "<p> The coverage for this Time Away is to be determines </p>";
 	$mailAddress = 'flonberg@mgh.harvard.edu';
+	$mailAddressProd = 'flonberg@mgh.harvard.edu';
+	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;						// store real address for fowarding
 	while ($assoc = $dB->getAssoc()){
+		$mailAddressProd .= $assoc['Email'];
+		$subj .= ",".$assoc['Email'];
 		$mailAddress .= ",flonberg@gmail.com";
-		$dstr = print_r($assoc, true);  fwrite($fp, "\r\n ". $dstr);
 		$row[$i] = $assoc;
 	}
+	fwrite($fp, "\r\n ". $mailAddressProd);
+		//	$dstr = print_r($assoc, true);  fwrite($fp, "\r\n  mailAddres is \r\n". $dstr);
 	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	
-//	$mailAddress = $assoc['Email'];
 
-	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;
-	$subj .= " -- to   " .$assoc['Email'];								// store real address for fowarding
 	$msg = "<p> Greetings,<p>";
 	$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
-//	if ($newTa->coverageA == 0)
-//		$msg.= "The cover for this time away is to be determined";
-//	else
-//		$msg.= "<p>Dr. ". $newTa->CovererLastName ." has been nominated to cover. </p>";
 	$msg .= "<p> To see details of this Time click on the below link. </p>";
 	$message = '
 		<html>
@@ -371,6 +368,7 @@ function sendStaff($vidx, $newTa){
 		</html>
 		'; 
 	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $message,$link);	
+	//$sendMail = new sendMailClassLibLoc($mailAddressProd,  $subj, $message,$link);	
 	//if (!$debug)
 		$sendMail->send();		
 	}

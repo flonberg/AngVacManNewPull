@@ -83,6 +83,8 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['WTM_CovererUserKey'] = $assoc['WTM_CovererUserKey'];
 		$vacGraph[$i][$assoc['userid']]['WTM_Coverer_UserId'] =getSingle( "SELECT UserID from users WHERE UserKey = '".$assoc['WTM_CovererUserKey']."'", 'UserID', $handle);
 		$vacGraph[$i][$assoc['userid']]['WTM_Coverer_LastName'] = $MDs[$UserKeys[$vacGraph[$i][$assoc['userid']]['WTM_Coverer_UserId']]]['LastName'];
+		if ($assoc['WTM_CovererUserKey'] == 0)
+			$vacGraph[$i][$assoc['userid']]['WTM_Coverer_LastName'] = $vacGraph[$i][$assoc['userid']]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['class']=  'orange' ;
 		if ($assoc['coverageA'] ==0 ) 
 			$vacGraph[$i][$assoc['userid']]['class']= 'red';
@@ -102,6 +104,7 @@ function getMDtAs(){
 			$vacGraph[$i][$assoc['userid']]['covererUserId'] = getSingle($selStr, 'UserID', $handle);
 			$vacGraph[$i][$assoc['userid']]['covererageA_UserKey'] = $assoc['coverageA' ];
 			$vacGraph[$i][$assoc['userid']]['covererDetails'] = $MDs[$assoc['coverageA']];
+			$vacGraph[$i][$assoc['userid']]['CovAccepted'] = $assoc['CovAccepted'];
 		}
 		else if ((isset($assoc['coverageA']) && strlen($assoc['coverageA']) == 0)){
 			$vacGraph[$i][$assoc['userid']]['covererDetails']['LastName'] = 'TBD';

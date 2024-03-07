@@ -88,7 +88,7 @@ export class PlansComponent implements OnInit {
   WTMnote: string;
   v1: number;
   numDaysOnCal: number;
-  calParams: calParams;                             // e.g daysInSecondMonth, firstMonthName
+  calParams: calParams;                               // e.g daysInSecondMonth, firstMonthName
   dayNum: number = 1;
   vidxToEdit: number = 0;                           // for debugging
   acknowlegeEdits: string = '-';
@@ -107,6 +107,7 @@ export class PlansComponent implements OnInit {
   showAcceptor: boolean = false;
   now: Date
   compCovLoops: number[] = [0,1,2]
+  realEmails: boolean = false
   constructor(private http: HttpClient, private datePipe: DatePipe , private activatedRoute: ActivatedRoute) {
     this.now = new Date()
     if ( this .checkWorkingDir() == 'prod')                    
@@ -343,7 +344,6 @@ console.log("243243 TAdates if %o", this.TAdates)
   }
   Message: Object
   private getMessage(){
-console.log("290290")    
     //let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
     let url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMessage.php';
       this .http.get(url).subscribe(res =>{
@@ -690,15 +690,22 @@ goAwayerLastName2: string = ''
 
   getNameClass(d){
     let allAccepted = true;
-    if (typeof(this .CompCov[d['vidx']]) !== 'undefined'){
-      console.log("565 in getNameClass %o",this .CompCov[d['vidx']]);
-      for (let elem in this .CompCov[d['vidx']]){
-        if ( this .CompCov[d['vidx']][elem]['accepted'] == 0){
-          allAccepted = false
+    if (d['CompoundSoverage'] == 1){
+      if (this.CompCov && typeof(this .CompCov[d['vidx']]) !== 'undefined'){
+        for (let elem in this .CompCov[d['vidx']]){
+          if ( this .CompCov[d['vidx']][elem]['accepted'] == 0){
+            allAccepted = false
+          }
         }
+        if (allAccepted)
+          return 'green'
       }
-      if (allAccepted)
+    }
+    else {
+      if (d['CovAccepted'] == 1)
         return 'green'
+      else
+        return 'orange'
     }
     
 

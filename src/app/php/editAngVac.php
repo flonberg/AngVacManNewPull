@@ -51,13 +51,13 @@ $IAP = new InsertAndUpdates();
 		$upDtStr .= "note = '". $data['note']."',";
 	if ( isset( $data['coverageA'] ) &&    $data['coverageA'] > 1)
 		$upDtStr .= "coverageA = '". $data['coverageA']."',";
-	/*
+	
 	if ($data['toSeeParams']['CompoundCoverage'] == 0){
 		if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){					// Coverer has accepted coverage
 			$upDtStr .= "CovAccepted = '". $data['accepted']."',";
-			$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
+			//$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
 		//	if ($CovAcceptedEmail == 0)
-			{										// No email communicating CovAccepted has yet been sent
+		/*	{										// No email communicating CovAccepted has yet been sent
 				$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx']; 
 				safeSQL($updateStr, $handle);
 				if ($data['accepted'] == 1)
@@ -70,9 +70,10 @@ $IAP = new InsertAndUpdates();
 					sendToGoAwayer($data, 2);	
 				}
 			}	
+			*/
 		}
 	}
-	*/
+	
 	if (isset( $data['WTMdate'] ) &&    strlen($data['WTMdate']) > 0)
 		$upDtStr .= "WTMdate = '". $data['WTMdate']."',";
 		if (isset( $data['WTM_self'] ))
