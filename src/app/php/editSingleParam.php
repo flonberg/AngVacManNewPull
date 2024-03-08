@@ -22,3 +22,33 @@ $IAP = new InsertAndUpdates();
         $dstr =  print_r( sqlsrv_errors(), true);
         fwrite($fp, "\r\n $dstr \r\n ");
     }
+    if ($_GET['name'] == 'coverageA'){
+        $email = getSingle("SELECT Email FROM physicians WHERE UserKey = '".$_GET['value']."'", 'Email', $handle);
+        $LastName = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$_GET['value']."'", 'LastName', $handle);
+        fwrite($fp, "\r\n email is $email \r\n");
+        $userid = getSingle("SELECT UserID FROM users WHERE UserKey = '".$_GET['value']."'", 'UserID', $handle);
+        fwrite($fp, "\r\n UserID is $userid");
+        $link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?userid=".$userid."&vidxToSee=".$_GET['vidx']."&acceptor=1";	
+        fwrite($fp, "\r\n ". $link);
+		$mailAddress = $email;	
+		$subj = "Coverage for Time Away";
+		$subj .= " to ".$email;							
+		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+		$msg = "Dr.".$LastName.": <br> Dr.". $_GET['goAwayerLastName'] ." would like you to cover a Time Away. ";
+		$msg .= "<p> To see details and accept or decline this altered coverage click on the below link.</p>";
+		$message = '
+			<html>
+				<head>
+					<title> Time Away Coverage </title>
+						<body>
+							<p>'. $msg .'</p>
+							<p>
+								<a href='.$link .'> Accept Coverage. </a>
+						</body>
+				</head>	
+			</html>
+				'; 
+			$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
+	//		$sendMail->setHeaders($headers);	
+			$sendMail->send();
+    }

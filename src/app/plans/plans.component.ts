@@ -534,9 +534,9 @@ console.log("390 in deleteTa tAparams is %o", this .tAparams)
 //  location.reload();
 
 }
-private changeSimpleCoverer(name, vidx, ev){
+private changeSimpleCoverer(name, vidx, ev, goAwayerLastName){
   console.log("5538 %o  --- %o   ---- %o  ",name , vidx,  ev)
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editSingleParam.php?name='+name+'&vidx='+vidx+'&value='+ev.value;  // set endPoint for dev
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editSingleParam.php?name='+name+'&vidx='+vidx+'&value='+ev.value+'&goAwayerLastName='+goAwayerLastName;  // set endPoint for dev
   console.log('420 url is %o', url);
   this .http.get(url).subscribe(res =>{                     // do the http.post
     this .getTheData();                                           // refresh the data to show the edits. 

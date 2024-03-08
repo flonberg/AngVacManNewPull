@@ -291,7 +291,7 @@
           <div class='center' >
             <mat-form-field >
               <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
-              <mat-select (selectionChange) ="changeSimpleCoverer('coverageA',vacEdit.vidx, $event)"   >
+              <mat-select (selectionChange) ="changeSimpleCoverer('coverageA',vacEdit.vidx, $event,vacEdit.LastName )"   >
                 <mat-option *ngFor="let MD of serviceMDs "
                 [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
               </mat-select>
