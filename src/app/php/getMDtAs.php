@@ -74,6 +74,7 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['vidx'] = $assoc['vidx'];
 		$vacGraph[$i][$assoc['userid']]['CompoundCoverage'] = $assoc['CompoundCoverage'];
 		$vacGraph[$i][$assoc['userid']]['coverageA'] = $assoc['coverageA'];
+		$vacGraph[$i][$assoc['userid']]['CovAccepted'] = $assoc['CovAccepted'];
 //		$assoc['startDate']->modify("+ 1 day");
 //		$assoc['endDate']->modify("+ 1 day");
 		$vacGraph[$i][$assoc['userid']]['startDate'] = $assoc['startDate']->format('Y-m-d');
@@ -105,7 +106,7 @@ function getMDtAs(){
 			$vacGraph[$i][$assoc['userid']]['covererUserId'] = getSingle($selStr, 'UserID', $handle);
 			$vacGraph[$i][$assoc['userid']]['covererageA_UserKey'] = $assoc['coverageA' ];
 			$vacGraph[$i][$assoc['userid']]['covererDetails'] = $MDs[$assoc['coverageA']];
-			$vacGraph[$i][$assoc['userid']]['CovAccepted'] = $assoc['CovAccepted'];
+
 		}
 		else if ((isset($assoc['coverageA']) && strlen($assoc['coverageA']) == 0)){
 			$vacGraph[$i][$assoc['userid']]['covererDetails']['LastName'] = 'TBD';

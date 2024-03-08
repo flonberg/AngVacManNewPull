@@ -291,7 +291,7 @@
           <div class='center' >
             <mat-form-field >
               <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
-              <mat-select (selectionChange) ="changeSimpleCoverer('coverageA',vacEdit.vidx, $event,vacEdit.LastName )"   >
+              <mat-select (selectionChange) ="changeSingleParam('coverageA',vacEdit.vidx, $event,vacEdit.LastName )"   >
                 <mat-option *ngFor="let MD of serviceMDs "
                 [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
               </mat-select>
@@ -434,8 +434,8 @@
         </ng-container>
             <td >   
                 <mat-radio-group>
-                  <mat-radio-button class="example-margin" value="accept" (click) = "editCovParams('CovAccepted', 1)" >Accept</mat-radio-button>
-                  <mat-radio-button class="example-margin" value="decline"  (click) = "editCovParams('CovAccepted', 0)" >Decline</mat-radio-button>
+                  <mat-radio-button class="example-margin" value="accept" (click) = "changeSingleParam('CovAccepted',toSeeParams['vidx'], 1,'')" >Accept</mat-radio-button>
+                  <mat-radio-button class="example-margin" value="decline"  (click) =  "changeSingleParam('CovAccepted',toSeeParams['vidx'], 0,'')"  >Decline</mat-radio-button>
                 </mat-radio-group>
             </td> 
             <ng-container *ngIf = "toSeeParams['WTM_CovererUserKey'] == toSeeParams['loggedInUserKey']"  >
@@ -459,8 +459,9 @@
             </td>
           </ng-container>  
             <td>
+                 <!--
               <button class='Button' (click) = "saveEdits($event, 'CovAccept')">Submit</button>
-              <!--
+           
               <table>
                  <tr><td><button class='Button' (click) = "saveEdits($event, 'CovAccept')">Submit </button></td></tr>
                  <tr ><td> {{ acknowlegeEdits }}</td></tr>
