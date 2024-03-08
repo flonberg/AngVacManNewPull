@@ -13,15 +13,15 @@ $IAP = new InsertAndUpdates();
 		$level = 'dev';
 	else 
 		$level = 'prod';	
-	$fp = fopen("./log/editAngVacLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
+	$fp = fopen("./Alog/editAngVacLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 
  	$body = @file_get_contents('php://input');     	$data = json_decode($body, true);       // Get parameters from calling cURL POST;
 	$std = print_r($data, true); fwrite($fp, "\r\n data from POST has \r\n". $std);
 	$data = getNeededParams($data);															// get additional param needed
 	$std = print_r($data, true); fwrite($fp, "\r\n data is \r\n". $std);
-	if ($data['toSeeParams']['CompoundCoverage'] == 1 ){									// edit Compound Coverage
-		foreach ($data['toSeeParams']['Coverage'] as $key => $val){
+	if ($data['CompoundCoverage'] == 1 ){									// edit Compound Coverage
+		foreach ($data['Coverage'] as $key => $val){
 			if ($val['accepted'] == 1){
 				$updateStr = "UPDATE TOP(1) MD_TA_Coverage SET accepted = 1 WHERE idx = '".$val['idx']."'";
 				fwrite($fp, "\r\n $updateStr");
@@ -52,12 +52,12 @@ $IAP = new InsertAndUpdates();
 	if ( isset( $data['coverageA'] ) &&    $data['coverageA'] > 1)
 		$upDtStr .= "coverageA = '". $data['coverageA']."',";
 	
-	if ($data['toSeeParams']['CompoundCoverage'] == 0){
+	if ($data['CompoundCoverage'] == 0){
 		if (isset( $data['accepted'] )  && strlen($data['accepted']) >= 0){					// Coverer has accepted coverage
 			$upDtStr .= "CovAccepted = '". $data['accepted']."',";
-			//$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
-		//	if ($CovAcceptedEmail == 0)
-		/*	{										// No email communicating CovAccepted has yet been sent
+			$CovAcceptedEmail = getSingle("SELECT CovAcceptEmail FROM MDtimeAway WHERE vidx = ".$data['vidx'], 'CovAcceptEmail', $handle);
+			if ($CovAcceptedEmail == 0)
+			{										// No email communicating CovAccepted has yet been sent
 				$updateStr = "UPDATE TOP(1) MDtimeAway SET CovAcceptEmail = 1 WHERE vidx = ".$data['vidx']; 
 				safeSQL($updateStr, $handle);
 				if ($data['accepted'] == 1)
@@ -70,7 +70,7 @@ $IAP = new InsertAndUpdates();
 					sendToGoAwayer($data, 2);	
 				}
 			}	
-			*/
+			
 		}
 	}
 	

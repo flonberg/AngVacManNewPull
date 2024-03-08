@@ -73,6 +73,7 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['reasonIdx'] = $assoc['reasonIdx'];
 		$vacGraph[$i][$assoc['userid']]['vidx'] = $assoc['vidx'];
 		$vacGraph[$i][$assoc['userid']]['CompoundCoverage'] = $assoc['CompoundCoverage'];
+		$vacGraph[$i][$assoc['userid']]['coverageA'] = $assoc['coverageA'];
 //		$assoc['startDate']->modify("+ 1 day");
 //		$assoc['endDate']->modify("+ 1 day");
 		$vacGraph[$i][$assoc['userid']]['startDate'] = $assoc['startDate']->format('Y-m-d');

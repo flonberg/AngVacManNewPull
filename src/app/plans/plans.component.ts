@@ -534,6 +534,14 @@ console.log("390 in deleteTa tAparams is %o", this .tAparams)
 //  location.reload();
 
 }
+private changeSimpleCoverer(name, vidx, ev){
+  console.log("5538 %o  --- %o   ---- %o  ",name , vidx,  ev)
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editSingleParam.php?name='+name+'&vidx='+vidx+'&value='+ev.value;  // set endPoint for dev
+  console.log('420 url is %o', url);
+  this .http.get(url).subscribe(res =>{                     // do the http.post
+    this .getTheData();                                           // refresh the data to show the edits. 
+  })
+}
 private saveEdits(ev, detail?) {
   this .tAparams.vidx = +this .vidxToEdit;
 console.log("396 in saveEdits tAparams is %o", this .tAparams)  
@@ -543,7 +551,8 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
   {
     this. acknowlegeEdits = 'Edits Saved'
     this. CovParams.vidx = this .vidxToSee  
-    this .CovParams.toSeeParams = this .toSeeParams    
+   // this .CovParams.toSeeParams = this .toSeeParams    
+    this .CovParams = this .toSeeParams    
 console.log("547 covParams %o", this .CovParams)       
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
@@ -690,7 +699,7 @@ goAwayerLastName2: string = ''
 
   getNameClass(d){
     let allAccepted = true;
-    if (d['CompoundSoverage'] == 1){
+    if (d['CompoundCoverage'] == 1){
       if (this.CompCov && typeof(this .CompCov[d['vidx']]) !== 'undefined'){
         for (let elem in this .CompCov[d['vidx']]){
           if ( this .CompCov[d['vidx']][elem]['accepted'] == 0){
@@ -704,6 +713,8 @@ goAwayerLastName2: string = ''
     else {
       if (d['CovAccepted'] == 1)
         return 'green'
+      if (d['coverageA'] == 0)
+        return 'red'
       else
         return 'orange'
     }

@@ -15,7 +15,7 @@
   }
   .centerWide {
 	margin: auto;
-	width: 720px;
+	width: 920px;
 	padding: 10px;
   }
   div.relative {
@@ -36,6 +36,7 @@ caption {
 } 
 th {
 	padding-right:10px;
+
 }    
 table.toFit {
 	table-layout: fixed;;
