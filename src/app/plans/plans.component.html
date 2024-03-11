@@ -72,7 +72,7 @@
 </table>
 <br><br>
 <!--       Enter tA  Panel      -->
-<div *ngIf = "isUserAnMD " > 
+<div *ngIf = "isUserAnMD && !showAcceptor" > 
   <div class='raised' *ngIf = 'serviceMDs'>
   <table class='centerSmall'>
         <caption> Enter a Time Away  </caption>
@@ -126,7 +126,7 @@
       <td *ngIf = "tAparams.WTMchange == 1"  style="padding-left:30px; ">        Who Covers WTM:
         <mat-radio-group aria-label="Select an option">
           <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
-          <mat-radio-button value="0"   (click) = "WTMparam($event, 'WTM_Self' )" >Covering MD </mat-radio-button>
+          <mat-radio-button value="0"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
         </mat-radio-group>
       </td>
       <td *ngIf = "tAparams.WTM_self == 1"  >
