@@ -105,6 +105,7 @@ export class PlansComponent implements OnInit {
   wkDev = "dev";
   queryParams:{}
   showAcceptor: boolean = false;
+  responseSaved: boolean = false;
   now: Date
   compCovLoops: number[] = [0,1,2]
   realEmails: boolean = false
@@ -534,16 +535,16 @@ console.log("390 in deleteTa tAparams is %o", this .tAparams)
 //  location.reload();
 
 }
-private changeSingleParam(name, vidx, ev, goAwayerLastName){
+private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
   console.log("5538 %o  --- %o   ---- %o  ",name , vidx,  ev)
   let toEditVal : any = ''
   if (Number.isFinite(ev))
     toEditVal = ev
   else 
     toEditVal = ev.value
-  
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editSingleParam.php?name='+name+'&vidx='+vidx+'&value='+toEditVal+'&goAwayerLastName='+goAwayerLastName;  // set endPoint for dev
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editSingleParam.php?name='+name+'&tableName='+tableName+'&vidx='+vidx+'&value='+toEditVal+'&goAwayerLastName='+goAwayerLastName;  // set endPoint for dev
   console.log('420 url is %o', url);
+  this.responseSaved = true;
   this .http.get(url).subscribe(res =>{                     // do the http.post
     this .getTheData();                                           // refresh the data to show the edits. 
   })

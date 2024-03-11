@@ -181,10 +181,9 @@ function sendAskForCoverage($vidx, $data)
 	}
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
 	$mailAddress = $data->CovererEmail;		
-	$subj = "Coverage for Time Away";	
-	$subj .= " to ". $data->CovererEmail;					
+	$subj = "Coverage for Time Away";							
+	$subj .= " to ". $data->CovererEmail;					/////////   for testing \\\\\\\\\
 	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-	$subj .= "  to  ".$data->CovererEmail;	
 	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate .", and would like you to cover. ";
 	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
 		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
@@ -208,6 +207,7 @@ function sendAskForCoverage($vidx, $data)
 		$jData = json_encode($rData);
 	//	if (!$debug)
 			$sendMail->send();	
+		fwrite($fp, "\r\n mail address for AskForCoverage is ". $data->CovererEmail);	
 }
 function sendMultiAskForCoverage($vidx, $data){
 	global $handle, $fp;
@@ -225,6 +225,7 @@ function sendMultiAskForCoverage($vidx, $data){
 		$subj = "Coverage for Time Away";	
 		$subj .= " to ". $val['Email'];	
 		$mailAddress = $val['Email'];	
+		fwrite($fp, "\r\n mail address for AskForCoverage is ".  $val['Email']);	
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 		$msg =    "<p>Dr. ".$val['LastName'].": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover part of this Time Away.</p> ";
 	
@@ -345,7 +346,7 @@ function sendStaff($vidx, $newTa){
 		$mailAddress .= ",flonberg@gmail.com";
 		$row[$i] = $assoc;
 	}
-	fwrite($fp, "\r\n ". $mailAddressProd);
+	fwrite($fp, "\r\n emails for SendStaff is \r\n". $mailAddressProd);
 		//	$dstr = print_r($assoc, true);  fwrite($fp, "\r\n  mailAddres is \r\n". $dstr);
 	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	
