@@ -126,7 +126,7 @@
       <td *ngIf = "tAparams.WTMchange == 1"  style="padding-left:30px; ">        Who Covers WTM:
         <mat-radio-group aria-label="Select an option">
           <mat-radio-button value="1"   (click) = "WTMparam($event, 'WTM_Self' )"   >Self </mat-radio-button>
-          <mat-radio-button value="2"   (click) = "WTMparam($event, 'WTM_CoveringMD' )" >Covering MD </mat-radio-button>
+          <mat-radio-button value="0"   (click) = "WTMparam($event, 'WTM_Self' )" >Covering MD </mat-radio-button>
         </mat-radio-group>
       </td>
       <td *ngIf = "tAparams.WTM_self == 1"  >
@@ -367,8 +367,8 @@
             <td *ngIf = "vacEdit.covererDetails !compoundCoverageBool" style="padding-right:25px"> <b> Covering Physician:</b> Dr. {{ vacEdit.covererDetails.LastName }} </td>
             <td *ngIf = "!vacEdit.covererDetails" > <b> Coverage: </b> TBD </td>
             <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
-            <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> Dr. {{ vacEdit.goAwayerLastName }}</td>
-            <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"> Dr. {{ vacEdit.LastName }}</td>
+            <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> <b> WTM Coverer</b>   Dr. {{ vacEdit.goAwayerLastName }}</td>
+            <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"><b> WTM Coverer</b>  Dr. {{ vacEdit.LastName }}</td>
             <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  >  <b> WTM Date: </b>  {{ toSeeParams.WTMdate }}</td> 
             <td> {{ vacEdit.WTMnote}}  </td>
           </tr>
