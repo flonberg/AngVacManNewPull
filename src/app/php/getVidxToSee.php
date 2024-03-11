@@ -30,12 +30,16 @@ $dstr = print_r($assoc, true); fwrite($fp, $dstr);
 	$assoc['endDate'] = formatDate($assoc['endDate']);
 	//$assoc['startDateConvent'] = formatDate($assoc['startDate']);
 	$assoc['WTMnote'] = $assoc['WTMnote'];
-	if ($assoc['WTMdate'])
-		if (@strpos($assoc['WTMdate'], '1900') === FALSE)
-			$assoc['WTMdate'] = formatDate($assoc['WTMdate']);
+	if (isset($assoc['WTMdate'])){
+		if (is_object($assoc['WTMdate'])){
+			$dateString = formatDate($assoc['WTMdate']);
+		if (@strpos($dateString, '1900') === FALSE)
+			$assoc['WTMdate'] = $dateString;
 		else {
 			$assoc['WTMdate'] = "";
 		}
+		}
+	}
 	$selStr = "SELECT UserKey from users WHERE UserID = '".$_GET['userid']."'";
 	$assoc['loggedInUserKey'] = getSingle($selStr, 'UserKey', $handle);
 	$selStr = "SELECT UserKey from users WHERE UserID = '".$assoc['userid']."'";

@@ -18,6 +18,7 @@ else
 //$handle = $connDB->handle242;
 $handle = connectDB_FL();
 $handleBB = connectBB();
+$realEmails = FALSE;
 $debug = $_GET['debug'] == '1' ? true : false;
 $testMail = TRUE;
 $IAP = new InsertAndUpdates();
@@ -174,7 +175,7 @@ function checkOverlap($data){
 
 function sendAskForCoverage($vidx, $data)
 {
-	global $handle, $fp, $level, $debug;
+	global $handle, $fp, $level, $debug, $realEmails;
 	if ($data->coverageA == 0){
 		fwrite($fp, "150 coverageA == 0 so not sending AskForCoverage Email");
 		return;
@@ -183,7 +184,8 @@ function sendAskForCoverage($vidx, $data)
 	$mailAddress = $data->CovererEmail;		
 	$subj = "Coverage for Time Away";							
 	$subj .= " to ". $data->CovererEmail;					/////////   for testing \\\\\\\\\
-	$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+	//if ($realEmails == FALSE)										// uncomment this line for real emails
+		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
 	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate .", and would like you to cover. ";
 	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
 		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
