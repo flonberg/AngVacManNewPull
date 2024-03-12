@@ -26,7 +26,7 @@ $admins = getAdmins();
 $today = date('Y-m-d');
 $in = 0;
 do {																			// put index in case of permission failure
-	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "w+");			
+	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "a+");			
 	if ($in++ > 5)
 		break;
 	}
@@ -79,9 +79,9 @@ do {																			// put index in case of permission failure
 		fwrite($fp, "\r\n No userid \r\n");
 		exit();
 	}
-	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey, createWhen)
+	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey,dev, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
-				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage,$data->WTMcovererUserKey, getdate()); SELECT @@IDENTITY as id";
+				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage,$data->WTMcovererUserKey, $data->dev,getdate()); SELECT @@IDENTITY as id";
 
 	if ($debug) 
 		fwrite($fp, "\r\n $insStr");

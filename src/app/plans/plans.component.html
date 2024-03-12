@@ -1,6 +1,6 @@
 <div class='relative2'>
   <h1> Physicians Time Away Schedule  </h1>
-<h3 *ngIf = "Message"> {{ Message['message'] }}  </h3>
+<h3 > This page is in Pilot phase </h3>
 
 </div>
 
@@ -446,26 +446,26 @@
                 <mat-radio-button class="example-margin" value="decline"  (click) =  "changeSingleParam('accepted',toSeeParams['vidx'], 0,'')"  >Decline</mat-radio-button>
               </mat-radio-group>
           </td> 
-            <ng-container *ngIf = "toSeeParams['WTM_CovererUserKey'] == toSeeParams['loggedInUserKey']"  >
-            <td style="text-align:right;"  *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 " >WTM Date</td>
-            <td class='h50' *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
-              <mat-form-field  appearance="fill"  class='h50'  >
-                <input matInput [(ngModel)]="WTMdate" [matDatepicker]="picker5" (dateChange)="changeSingleParam('WTMdate','MDtimeAway',toSeeParams['vidx'],$event.value, loggedInUserKey)"
-                   placeholder= "{{toSeeParams['WTM_Date']}}">
-                <mat-datepicker-toggle matSuffix [for]="picker5"    ></mat-datepicker-toggle>
-                <mat-datepicker #picker5></mat-datepicker>
-              </mat-form-field>
-            </td>
-       
-            <td   >
-              <div class='center'>
-                <mat-form-field >
-                    <mat-label>WTM Note</mat-label>
-                    <textarea matInput (change) ="changeSingleParam('WTMnote','MDtimeAway',toSeeParams['vidx'],$event.target, loggedInUserKey)" class='note'> </textarea>
-                </mat-form-field>    
-              </div>    
-            </td>
-          </ng-container>  
+          <!-- WTM Coverer is Simple Coverer     -->
+            <ng-container *ngIf = "simpleShowWTM_DateEntry()"  >
+              <td style="text-align:right;"  >WTM Date</td>
+              <td class='h50' *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
+                <mat-form-field  appearance="fill"  class='h50'  >
+                  <input matInput [(ngModel)]="WTMdate" [matDatepicker]="picker5" (dateChange)="changeSingleParam('WTMdate','MDtimeAway',toSeeParams['vidx'],$event.value, loggedInUserKey)"
+                    placeholder= "{{toSeeParams['WTM_Date']}}">
+                  <mat-datepicker-toggle matSuffix [for]="picker5"    ></mat-datepicker-toggle>
+                  <mat-datepicker #picker5></mat-datepicker>
+                </mat-form-field>
+              </td>
+              <td    >
+                <div class='center'>
+                  <mat-form-field >
+                      <mat-label>WTM Note</mat-label>
+                      <textarea matInput (change) ="changeSingleParam('WTMnote','MDtimeAway',toSeeParams['vidx'],$event.target, loggedInUserKey)" class='note'> </textarea>
+                  </mat-form-field>    
+                </div>    
+              </td>
+            </ng-container>  
             <td *ngIf = "!responseSaved"></td>
             <td *ngIf = "responseSaved" style="color:green"> Response Saved.
             </td>

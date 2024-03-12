@@ -1,7 +1,7 @@
 import { AppComponent } from './../app.component';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe, NumberSymbol } from '@angular/common';
-import { analyzeAndValidateNgModules, templateSourceUrl } from '@angular/compiler';
+import { TmplAstRecursiveVisitor, analyzeAndValidateNgModules, templateSourceUrl } from '@angular/compiler';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { throwError } from 'rxjs';
@@ -210,7 +210,7 @@ export class PlansComponent implements OnInit {
         this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
     }
 
-    this .toSeeParams['WTM_Coverer_LastName']= this .toSeeParams.Coverage[key]['CovererUserKey']
+   // this .toSeeParams['WTM_Coverer_LastName']= this .toSeeParams.Coverage[key]['CovererUserKey']
     console.log("213213 %o", this.toSeeParams['WTM_CovererUserKey'])
     for (let key in this.serviceMDs){
       if (this.serviceMDs[key]['UserKey'] == this.toSeeParams['WTM_CovererUserKey']){
@@ -317,12 +317,18 @@ console.log("243243 TAdates if %o", this.TAdates)
       console.log("297297 %o", this .CompCov)
     })
     
-
   }  
   private toTBD(inp:string){
     if (inp == 'Unknown')
       return 'TBD'
     return inp
+  }
+  private simpleShowWTM_DateEntery(){
+    if (this. toSeeParams['WTM_Change_Needed'] == 1 && this.toSeeParams['WTM_self'] == 0 )
+      if (this. toSeeParams['coverageA'] == this.toSeeParams['loggedInUserKey'])
+        return true 
+      else  
+        return false
   }
   private sortByService(){
     let byServArr = Array();
@@ -1149,6 +1155,8 @@ console.log("949940 %o", this .tAparams)
   this .gotData = false                                                             // need to put in full error checking. 
   this .faultMessage = "t";
   if (this .checkTAparams()){
+    this .tAparams['dev'] = this.wkDev == 'prod' && 1 || 0;
+    console.log("949940 %o", this .tAparams)  
       var jData = JSON.stringify(this .tAparams)
       var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/enterAngVac.php?debug=1';
       this .http.post(url, jData).subscribe(ret=>{
