@@ -367,6 +367,7 @@
             <td *ngIf = "vacEdit.covererDetails !compoundCoverageBool" style="padding-right:25px"> <b> Covering Physician:</b> Dr. {{ vacEdit.covererDetails.LastName }} </td>
             <td *ngIf = "!vacEdit.covererDetails" > <b> Coverage: </b> TBD </td>
             <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
+    
             <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> <b> WTM Coverer</b>   Dr. {{ vacEdit.goAwayerLastName }}</td>
             <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"><b> WTM Coverer</b>  Dr. {{ vacEdit.LastName }}</td>
             <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  >  <b> WTM Date: </b>  {{ toSeeParams.WTMdate }}</td> 
@@ -449,18 +450,18 @@
             <td style="text-align:right;"  *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 " >WTM Date</td>
             <td class='h50' *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 "> 
               <mat-form-field  appearance="fill"  class='h50'  >
-                <input matInput [(ngModel)]="WTMdate" [matDatepicker]="picker5" (dateChange)="editCovParams('WTMdate', $event)"
+                <input matInput [(ngModel)]="WTMdate" [matDatepicker]="picker5" (dateChange)="changeSingleParam('WTMdate','MDtimeAway',toSeeParams['vidx'],$event.value, loggedInUserKey)"
                    placeholder= "{{toSeeParams['WTM_Date']}}">
                 <mat-datepicker-toggle matSuffix [for]="picker5"    ></mat-datepicker-toggle>
                 <mat-datepicker #picker5></mat-datepicker>
               </mat-form-field>
             </td>
        
-            <td  *ngIf =  "toSeeParams['WTM_Change_Needed'] == 1 && toSeeParams['WTM_self'] == 0 && CovParams.accepted == 1"  >
+            <td   >
               <div class='center'>
                 <mat-form-field >
                     <mat-label>WTM Note</mat-label>
-                    <textarea matInput (change) = "editCovParams('WTMnote', $event)" class='note'> </textarea>
+                    <textarea matInput (change) ="changeSingleParam('WTMnote','MDtimeAway',toSeeParams['vidx'],$event.target, loggedInUserKey)" class='note'> </textarea>
                 </mat-form-field>    
               </div>    
             </td>

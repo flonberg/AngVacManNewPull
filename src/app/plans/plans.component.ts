@@ -128,6 +128,7 @@ export class PlansComponent implements OnInit {
       this .vidxToSee = params['vidxToSee']          // used by Coverer to Accept Coverage and Select WTM date
       if (params['vidxToSee']){
         this .getTheVidxToSee();
+        this .getServiceMDs(this .userid)
         this .CovererView = true; 
       }
       this .getTheData();
@@ -208,15 +209,24 @@ export class PlansComponent implements OnInit {
       if (this .toSeeParams['loggedInUserKey'] == this .toSeeParams.Coverage[key]['CovererUserKey'])
         this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
     }
-        this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
-        if (+this .toSeeParams['loggedInUserKey'] == this .toSeeParams['coverageA'])
-          this .isLoggedInUserCoverer = true;
-        if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
-          this .WTMDateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'M-d-yyyy')
-        if (this .toSeeParams['CovAccepted'] == 1)
-          this .covAccepted = true;  
-        this. WTMnote = this .toSeeParams['WTMnote']    
-        this .showEditFunc(this .toSeeParams)
+
+    this .toSeeParams['WTM_Coverer_LastName']= this .toSeeParams.Coverage[key]['CovererUserKey']
+    console.log("213213 %o", this.toSeeParams['WTM_CovererUserKey'])
+    for (let key in this.serviceMDs){
+      if (this.serviceMDs[key]['UserKey'] == this.toSeeParams['WTM_CovererUserKey']){
+        console.log("215215  %o  --- %o  ", this.serviceMDs[key]['UserKey'], this.toSeeParams['WTM_CovererUserKey'] )
+        console.log("218218 %o",this.serviceMDs[key]['LastName']  )
+      }
+    }
+    this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
+    if (+this .toSeeParams['loggedInUserKey'] == this .toSeeParams['coverageA'])
+      this .isLoggedInUserCoverer = true;
+    if (this. toSeeParams['WTMdate']  && this .toSeeParams['WTMdate'].length > 4 )
+      this .WTMDateConvent = this.datePipe.transform(this. toSeeParams['WTMdate'].date, 'M-d-yyyy')
+    if (this .toSeeParams['CovAccepted'] == 1)
+      this .covAccepted = true;  
+    this. WTMnote = this .toSeeParams['WTMnote']    
+    this .showEditFunc(this .toSeeParams)
     })
   }
 gotCompCov:boolean = false
@@ -538,7 +548,9 @@ console.log("390 in deleteTa tAparams is %o", this .tAparams)
 private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
   console.log("5538 %o  --- %o   ---- %o  ",name , vidx,  ev)
   let toEditVal : any = ''
-  if (Number.isFinite(ev))
+  if (name == 'WTMdate')
+      toEditVal =ev.toISOString().split('T')[0]
+  else if (Number.isFinite(ev))
     toEditVal = ev
   else 
     toEditVal = ev.value
