@@ -1,6 +1,4 @@
 <?php
-//require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
-//require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
 require_once 'H:\inetpub\lib\ESB\_dev_\sqlsrvLibFL.php';
 require_once './mailLib.php';
 header("Content-Type: application/json; charset=UTF-8");
@@ -26,7 +24,7 @@ $admins = getAdmins();
 $today = date('Y-m-d');
 $in = 0;
 do {																			// put index in case of permission failure
-	$fp = @fopen("./log/enterAngVacLog".$today."_".$in.".txt", "a+");			
+	$fp = @fopen("./Alog/enterAngVacLog".$today."_".$in.".txt", "a+");			
 	if ($in++ > 5)
 		break;
 	}
@@ -184,8 +182,11 @@ function sendAskForCoverage($vidx, $data)
 	$mailAddress = $data->CovererEmail;		
 	$subj = "Coverage for Time Away";							
 	$subj .= " to ". $data->CovererEmail;					/////////   for testing \\\\\\\\\
-	//if ($realEmails == FALSE)										// uncomment this line for real emails
+	//if ($level == 'dev')
+	{
 		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
+		$subj .= " to ". $data->CovererEmail;					/////////   for testing \\\\\\\\\
+	}
 	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate .", and would like you to cover. ";
 	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
 		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
@@ -209,7 +210,7 @@ function sendAskForCoverage($vidx, $data)
 		$jData = json_encode($rData);
 	//	if (!$debug)
 			$sendMail->send();	
-		fwrite($fp, "\r\n mail address for AskForCoverage is ". $data->CovererEmail);	
+		fwrite($fp, "\r\n sent mail address for AskForCoverage is ". $data->CovererEmail."\r\n");	
 }
 function sendMultiAskForCoverage($vidx, $data){
 	global $handle, $fp;
@@ -348,7 +349,7 @@ function sendStaff($vidx, $newTa){
 		$mailAddress .= ",flonberg@gmail.com";
 		$row[$i] = $assoc;
 	}
-	fwrite($fp, "\r\n emails for SendStaff is \r\n". $mailAddressProd);
+	fwrite($fp, "\r\n emails for SendStaff is \r\n". $mailAddressProd ."\r\n");
 		//	$dstr = print_r($assoc, true);  fwrite($fp, "\r\n  mailAddres is \r\n". $dstr);
 	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	

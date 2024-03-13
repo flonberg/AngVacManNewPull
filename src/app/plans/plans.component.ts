@@ -216,6 +216,7 @@ export class PlansComponent implements OnInit {
       if (this.serviceMDs[key]['UserKey'] == this.toSeeParams['WTM_CovererUserKey']){
         console.log("215215  %o  --- %o  ", this.serviceMDs[key]['UserKey'], this.toSeeParams['WTM_CovererUserKey'] )
         console.log("218218 %o",this.serviceMDs[key]['LastName']  )
+     //   this .vacEdit['LastName'] = this.serviceMDs[key]['LastName'] 
       }
     }
     this .goAwayerLastName2 = this.toSeeParams.goAwayerLastName
@@ -323,7 +324,8 @@ console.log("243243 TAdates if %o", this.TAdates)
       return 'TBD'
     return inp
   }
-  private simpleShowWTM_DateEntery(){
+  
+  simpleShowWTM_DateEntry(){
     if (this. toSeeParams['WTM_Change_Needed'] == 1 && this.toSeeParams['WTM_self'] == 0 )
       if (this. toSeeParams['coverageA'] == this.toSeeParams['loggedInUserKey'])
         return true 
@@ -1155,12 +1157,13 @@ console.log("949940 %o", this .tAparams)
   this .gotData = false                                                             // need to put in full error checking. 
   this .faultMessage = "t";
   if (this .checkTAparams()){
-    this .tAparams['dev'] = this.wkDev == 'prod' && 1 || 0;
+    this .tAparams['dev'] = this.wkDev == 'prod' && 0 || 1;
     console.log("949940 %o", this .tAparams)  
       var jData = JSON.stringify(this .tAparams)
       var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/enterAngVac.php?debug=1';
       this .http.post(url, jData).subscribe(ret=>{
           this .postRes = (ret)                                         // php returns 0 for overlap and 1 for clean
+  console.log("1164 postRes is %o", this .postRes)    
           if (this.postRes)
             this .overlap = this. postRes['result'] == 'selfOverlap' ? true : false;    // turn on Warning message. 
             {
