@@ -134,7 +134,7 @@ export class PlansComponent implements OnInit {
       this .getTheData();
       this .getServiceMDs(this .userid)
       this. getMDService();
-      this .getMessage();
+      this .getMessage(0);
     })
    }
 
@@ -362,12 +362,12 @@ console.log("243243 TAdates if %o", this.TAdates)
           })
   }
   Message: Object
-  private getMessage(){
+  private getMessage(mode: number){
     //let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
     let url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMessage.php';
       this .http.get(url).subscribe(res =>{
         this. Message = res;
-        console.log("293293 %o", this .Message)
+console.log("370370 message %o", this .Message)        
             })           
     }
 
@@ -1207,7 +1207,7 @@ goToLink(){
   window.open(url, "_blank");
   }
 goToPhysStaffAvail(){
-  var url ='https://whiteboard.partners.org/esb/FLwbe/vacation/indexPHP.php?userid='+this.userid+'&vidx=0&first=vN&func=0'
+  var url ='https://whiteboard.partners.org/esb/FLwbe/vacation/indexPHP.php?userid='+this.userid+'&vidx=0&first=vN&func=0&noReDir=1'
   window.open(url, "_blank");
   }  
 }

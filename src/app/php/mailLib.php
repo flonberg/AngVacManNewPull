@@ -113,9 +113,9 @@ class sendMailClassLibLoc
 	 	$this->headers .= 'Cc: flonberg@partners.org'. "\r\n";
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
+		$nowString = $now->format("Y-m-d H:i:s");   fwrite($this->logFp, "\r\n $nowString");
 		$this->logFp = fopen("H:\\inetpub\\esblogs\\_dev_\\sendMail".$todayStr.".log", "a+");
 		$this->logFp = fopen("./log/sendmail".$todayStr.".txt","a+");
-		$nowString = $now->format("Y-m-d H:i:s");   fwrite($this->logFp, "\r\n $nowString");
 		fwrite($this->logFp, $this->address);
 		$this->message = '
 		<html>
@@ -147,5 +147,33 @@ class sendMailClassLibLoc
 	}
 	public function addToHeader($txt){
 		$this->headers .= $txt ."\r\n";
+	}
+}
+/**
+ * $msg is Array
+ */
+class basicHTMLMail
+{
+	var $address;
+	var $subject;
+	var $msg;
+	var $headers;
+	var $logFp;
+	var $message;
+	public function __construct($address, $subject, $msg, $title=null){
+		$this->address = $address;
+		$this->subject = $subject; 
+		$this->msg = $msg;
+		$this->headers="";
+		$this->headers = 'MIME-Version: 1.0' . "\r\n";
+		$this->headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+	 	$this->headers .= 'From: whiteboard@partners.org' . "\r\n";
+	}
+	private function openLogFile(){
+		$now = new DateTime(); 
+		$todayStr = $now->format("Y-m-d");
+		$fp = fopen("./Alog/MD_VacMan_Mail".$todayStr.".txt", "a+");
+		$nowString = $now->format("Y-m-d H:i:s");
+		fwrite($this->logFp, "\r\n $nowString");
 	}
 }

@@ -1,6 +1,7 @@
 <div class='relative2'>
   <h1> Physicians Time Away Schedule  </h1>
-<h3 > This page is in Pilot phase </h3>
+<h3 >{{ Message['message']}} </h3>
+<p> {{ Message['sub'] }}</p>
 
 </div>
 
@@ -437,7 +438,7 @@
             <td *ngIf = "toSeeParams['CompoundCoverage'] == 0">   
                 <mat-radio-group>
                   <mat-radio-button class="example-margin" value="accept" (click) = "changeSingleParam('CovAccepted','MDtimeAway',toSeeParams['vidx'], 1,'')" >Accept</mat-radio-button>
-                  <mat-radio-button class="example-margin" value="decline"  (click) =  "changeSingleParam('CovAccepted',toSeeParams['vidx'], 0,'')"  >Decline</mat-radio-button>
+                  <mat-radio-button class="example-margin" value="decline"  (click) =  "changeSingleParam('CovAccepted','MDtimeAway',toSeeParams['vidx'], 0,'')"  >Decline</mat-radio-button>
                 </mat-radio-group>
             </td> 
             <td *ngIf = "toSeeParams['CompoundCoverage'] == 1">   

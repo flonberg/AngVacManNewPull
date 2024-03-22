@@ -27,8 +27,8 @@ do {																			// put index in case of permission failure
 	$fp = @fopen("./Alog/enterAngVacLog".$today."_".$in.".txt", "a+");			
 	if ($in++ > 5)
 		break;
-	}
-	while ($fp ===FALSE);
+		}
+		while ($fp ===FALSE);
 	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
 	$tableName = 'MDtimeAway';													// where the data is
 //		$tableName = 'MDtimeAway2BB';
@@ -77,7 +77,7 @@ do {																			// put index in case of permission failure
 		fwrite($fp, "\r\n No userid \r\n");
 		exit();
 	}
-	$insStr = "INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey,dev, createWhen)
+	$insStr = "  INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey,dev, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
 				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage,$data->WTMcovererUserKey, $data->dev,getdate()); SELECT @@IDENTITY as id";
 
@@ -324,25 +324,27 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 }
 function sendStaff($vidx, $newTa){
 	global $fp, $handleBB, $handle, $debug, $level;
-	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;
-	$dB = new getDBData($selStr, $handle);
-	$assoc = $dB->getAssoc();
-	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 
-	FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
-	foreach ($assoc as $key=>$val){
+	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	 // use inactive WB users as userid for group Email
+	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;						// store real address for fowarding
+	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;							// get all staff for the MD GoAwayer
+		$dB = new getDBData($selStr, $handle);
+		$assoc = $dB->getAssoc();
+																														// start SelStr to get Emails of Staff
+	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 						
+		FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
+	foreach ($assoc as $key=>$val){																						// add the UserKey of each Staff
 		if ($val > 0)
 			$selStr .= " $val,";
 	}
-	$selStr = substr($selStr, 0, -1);
+	$selStr = substr($selStr, 0, -1);																					// elim the trailing comma
 	$selStr .= ")";
 	fwrite($fp, "\r\n 264 staff Query SelStr is \r\n". $selStr);
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/angVac6/dist/MDModality/index.html?vidxToSee=".$vidx;	
 	$covMsg = "<p> The coverage for this Time Away is to be determines </p>";
 	$mailAddress = 'flonberg@mgh.harvard.edu';
 	$mailAddressProd = 'flonberg@mgh.harvard.edu';
-	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;						// store real address for fowarding
+
 	while ($assoc = $dB->getAssoc()){
 		$mailAddressProd .= $assoc['Email'];
 		$subj .= ",".$assoc['Email'];
@@ -350,10 +352,6 @@ function sendStaff($vidx, $newTa){
 		$row[$i] = $assoc;
 	}
 	fwrite($fp, "\r\n emails for SendStaff is \r\n". $mailAddressProd ."\r\n");
-		//	$dstr = print_r($assoc, true);  fwrite($fp, "\r\n  mailAddres is \r\n". $dstr);
-	//$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$row[$i]['UserID']."&vidxToSee=".$vidx;	
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	
-
 	$msg = "<p> Greetings,<p>";
 	$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
 	$msg .= "<p> To see details of this Time click on the below link. </p>";
@@ -371,6 +369,8 @@ function sendStaff($vidx, $newTa){
 			</head>	
 		</html>
 		'; 
+	if ($level == 'prod')
+		$mailAddress = $mailAddressProd;	
 	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $message,$link);	
 	//$sendMail = new sendMailClassLibLoc($mailAddressProd,  $subj, $message,$link);	
 	//if (!$debug)
