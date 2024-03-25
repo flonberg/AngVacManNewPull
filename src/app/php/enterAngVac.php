@@ -1,11 +1,11 @@
 <?php
 require_once 'H:\inetpub\lib\ESB\_dev_\sqlsrvLibFL.php';
-require_once './mailLib.php';
+require_once './mailLib2.php';
 header("Content-Type: application/json; charset=UTF-8");
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-ini_set("error_log", "./log/enterAngVacError.txt");
+ini_set("error_log", "./Alog/enterAngVacError.txt");
 //header("Access-Control-Allow-Origin: *");	
 //$handle = connectDB_FL()	;
 if (strpos(getcwd(), 'dev') !== FALSE)
@@ -30,6 +30,7 @@ do {																			// put index in case of permission failure
 		}
 		while ($fp ===FALSE);
 	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
+	ob_start(); var_dump($handle);$data = ob_get_clean();fwrite($fp, "\r\n handle \r\n ". $data);
 	$tableName = 'MDtimeAway';													// where the data is
 //		$tableName = 'MDtimeAway2BB';
  	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
@@ -77,13 +78,14 @@ do {																			// put index in case of permission failure
 		fwrite($fp, "\r\n No userid \r\n");
 		exit();
 	}
-	$insStr = "  INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey,dev, createWhen)
+	$insStr = " INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey,dev, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
 				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage,$data->WTMcovererUserKey, $data->dev,getdate()); SELECT @@IDENTITY as id";
 
 	if ($debug) 
 		fwrite($fp, "\r\n $insStr");
 	$stmt=sqlsrv_query($handle, $insStr);
+	if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);}
 	$next_result = sqlsrv_next_result($stmt); 
 	$row = sqlsrv_fetch_array($stmt);
 	$lastVidx = $row['id'];
@@ -324,6 +326,7 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 }
 function sendStaff($vidx, $newTa){
 	global $fp, $handleBB, $handle, $debug, $level;
+	$CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $newTa->coverageA,  "UserID", $handle);			// get name of GoAwayer
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	 // use inactive WB users as userid for group Email
 	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;						// store real address for fowarding
 	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;							// get all staff for the MD GoAwayer
@@ -339,9 +342,20 @@ function sendStaff($vidx, $newTa){
 	$selStr = substr($selStr, 0, -1);																					// elim the trailing comma
 	$selStr .= ")";
 	fwrite($fp, "\r\n 264 staff Query SelStr is \r\n". $selStr);
+	$staffMembers = Array();
 	$dB = new getDBData($selStr, $handle);
+	while ($assoc = $dB->getAssoc())											// load array form CC 
+		array_push($staffMembers, ($assoc['Email']));
+	$lines[0] = "Greetiongs";
+	$lines[1] = "Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate."'";
+	$lines[2] = "<p> To see details of this Time click on the below link. </p>";
+	$lines[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
+	$bHML = new basicHTMLMail($staffMembers[0], "Physician Time Away", $lines,'Physician Time Away', 'StaffCoverage', $handle );	
+	foreach ($staffMembers as $key=>$val)
+		$bHML->addHeaders($val);
+	$bHML->send();
 	$i = 0;
-	$covMsg = "<p> The coverage for this Time Away is to be determines </p>";
+	$covMsg = "<p> The coverage for this Time Away is to be determined </p>";
 	$mailAddress = 'flonberg@mgh.harvard.edu';
 	$mailAddressProd = 'flonberg@mgh.harvard.edu';
 
@@ -371,10 +385,10 @@ function sendStaff($vidx, $newTa){
 		'; 
 	if ($level == 'prod')
 		$mailAddress = $mailAddressProd;	
-	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $message,$link);	
+//	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $message,$link);	
 	//$sendMail = new sendMailClassLibLoc($mailAddressProd,  $subj, $message,$link);	
 	//if (!$debug)
-		$sendMail->send();		
+	//	$sendMail->send();		
 	}
 	//$dstr = print_r($row, true); fwrite($fp, $dstr);
 
