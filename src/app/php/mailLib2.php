@@ -14,8 +14,8 @@ class basicHTMLMail
 	public function __construct($address, $subject, array $msg, $title=null, $messageType, $handle){
         $this->fp = $this->openLogFile();
         $this->title = $title;
-		$this->address = $address;
-        if (strpos(getcwd(), 'dev') !== FALSE)
+	//	$this->address = $address;
+    //    if (strpos(getcwd(), 'dev') !== FALSE)
             $this->address = 'flonberg@mgh.harvard.edu';
 		$this->subject = $subject; 
         $this->messageType = $messageType;
@@ -37,7 +37,8 @@ class basicHTMLMail
         return $fp;
 	}
     public function addHeaders($addr){
-        $this->headers.= 'Cc: '. $addr;
+        $this->headers.= ', flonberg@mgh.harvard.edu';
+       // $this->headers.= ','. $addr;
         $str = print_r($this->headers, true); fwrite($this->fp, $str);
     }
     private function createMessage(){

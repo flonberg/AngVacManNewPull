@@ -362,6 +362,10 @@ console.log("243243 TAdates if %o", this.TAdates)
           })
   }
   Message: Object
+  /**
+   * 
+   * @param mode get message to display under title of the page
+   */
   private getMessage(mode: number){
     //let url = 'https://whiteboard.partners.org/esb/FLwbe/vacation/getMDService.php'
     let url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMessage.php';

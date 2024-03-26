@@ -24,13 +24,12 @@ $admins = getAdmins();
 $today = date('Y-m-d');
 $in = 0;
 do {																			// put index in case of permission failure
-	$fp = @fopen("./Alog/enterAngVacLog".$today."_".$in.".txt", "a+");			
+	$fp = @fopen("./Alog/enterAngVacLog".$today."_".$in.".txt", "w+");			
 	if ($in++ > 5)
 		break;
 		}
 		while ($fp ===FALSE);
 	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
-	ob_start(); var_dump($handle);$data = ob_get_clean();fwrite($fp, "\r\n handle \r\n ". $data);
 	$tableName = 'MDtimeAway';													// where the data is
 //		$tableName = 'MDtimeAway2BB';
  	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
@@ -107,7 +106,6 @@ do {																			// put index in case of permission failure
 function enterCompoundCoverage($data, $vidx){
 	global $handle, $fp;
 	fwrite($fp, "\r\n 101 \r\n");
-//	ob_start(); var_dump($data);$data1 = ob_get_clean();fwrite($fp, "\r\n ". $data1);
 	foreach ($data as $key=>$val){
 		if (isset($val->CovererUserKey)){
 			$insStr = "INSERT INTO MD_TA_Coverage (vidx, CovererUserKey, date,accepted, deleted) values (".$vidx.",'".$val->CovererUserKey."','".$val->date."',0,0)";
@@ -329,30 +327,42 @@ function sendStaff($vidx, $newTa){
 	$CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $newTa->coverageA,  "UserID", $handle);			// get name of GoAwayer
 	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	 // use inactive WB users as userid for group Email
 	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;						// store real address for fowarding
-	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;							// get all staff for the MD GoAwayer
+	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;							// get all staff UserKeys for the MD GoAwayer
 		$dB = new getDBData($selStr, $handle);
 		$assoc = $dB->getAssoc();
-																														// start SelStr to get Emails of Staff
-	$selStr = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 						
+	// compose the  SelStr to get Emails of Staff
+	$selStr2 = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 						
 		FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
+	
 	foreach ($assoc as $key=>$val){																						// add the UserKey of each Staff
 		if ($val > 0)
-			$selStr .= " $val,";
+			$selStr2 .= " $val,";
 	}
-	$selStr = substr($selStr, 0, -1);																					// elim the trailing comma
-	$selStr .= ")";
-	fwrite($fp, "\r\n 264 staff Query SelStr is \r\n". $selStr);
-	$staffMembers = Array();
-	$dB = new getDBData($selStr, $handle);
-	while ($assoc = $dB->getAssoc())											// load array form CC 
-		array_push($staffMembers, ($assoc['Email']));
-	$lines[0] = "Greetiongs";
+	$selStr2 = substr($selStr2, 0, -1);																					// elim the trailing comma
+	$selStr2 .= ")";
+	fwrite($fp, "\r\n 343 staff Query SelStr  8888 is \r\n". $selStr2);
+	$staffMembersEmail = Array();
+	$dB = new getDBData($selStr2, $handle);
+	$i = 0;
+	$address= Array();
+
+		while ($assoc = $dB->getAssoc()){																					// load address, comma seperated
+			if ($i++ == 0)																									// First address
+				$address = $assoc['Email'];
+			else
+				$address .= ", ". $assoc['Email'];	
+		}	
+	fwrite($fp, "\r\n prod address is \r\n $address");		
+		if ($level =='dev')
+			$address = "flonberg@mgh.harvard.edu, flonberg@gmail.com";
+	fwrite($fp, "\r\n used address if \r\n $address");	
+			
+	fwrite($fp, "\r\n address is \r\n  $address");
+	$lines[0] = "Greetings";
 	$lines[1] = "Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate."'";
 	$lines[2] = "<p> To see details of this Time click on the below link. </p>";
 	$lines[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
-	$bHML = new basicHTMLMail($staffMembers[0], "Physician Time Away", $lines,'Physician Time Away', 'StaffCoverage', $handle );	
-	foreach ($staffMembers as $key=>$val)
-		$bHML->addHeaders($val);
+	$bHML = new basicHTMLMail($address, "Physician Time Away", $lines,'Physician Time Away', 'StaffCoverage', $handle );	
 	$bHML->send();
 	$i = 0;
 	$covMsg = "<p> The coverage for this Time Away is to be determined </p>";
