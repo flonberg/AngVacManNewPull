@@ -98,7 +98,8 @@ do {																			// put index in case of permission failure
 
 	$selStr = "SELECT *  FROM $tableName WHERE vidx = $lastVidx";
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
-	sendStaff($lastVidx, $data);
+	$StaffEmailClass = new StaffEmailClass($data, $lastVidx, $handle);
+	//sendStaff($lastVidx, $data);
 
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
@@ -345,7 +346,6 @@ function sendStaff($vidx, $newTa){
 	$dB = new getDBData($selStr2, $handle);
 	$i = 0;
 	$address= Array();
-
 		while ($assoc = $dB->getAssoc()){																					// load address, comma seperated
 			if ($i++ == 0)																									// First address
 				$address = $assoc['Email'];
@@ -375,7 +375,6 @@ function sendStaff($vidx, $newTa){
 		$mailAddress .= ",flonberg@gmail.com";
 		$row[$i] = $assoc;
 	}
-	fwrite($fp, "\r\n emails for SendStaff is \r\n". $mailAddressProd ."\r\n");
 	$msg = "<p> Greetings,<p>";
 	$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
 	$msg .= "<p> To see details of this Time click on the below link. </p>";
@@ -461,7 +460,6 @@ function getCompoundCoverers($data){
 		if (!in_array($val->CovererUserKey, $CompoundCovUserKeys))
 			$CompoundCovUserKeys[$ind++]= $val->CovererUserKey;
 	}
-	$dstr = print_r($CompoundCovUserKeys, true); fwrite($fp, "\r\n CompoundUserKey is ". $dstr);	
 	$selStr = "SELECT UserKey, LastName, Email,  service FROM physicians 
 			WHERE  UserKey IN (" . implode(',', $CompoundCovUserKeys) . ")";
 	$dB = new getDBData($selStr, $handle);

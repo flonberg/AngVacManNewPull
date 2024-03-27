@@ -78,15 +78,42 @@ class CovererEmail
         $bHM->send();
     }   
 }
-class StaffEmail
+class StaffEmailClass
 {
-    public function __construct($GoAwayerLastName, $StartDate, $EndDate, $staff, $vidx){
-        $pars[0] = "Greetings;";
+    var $fp;
+    var $data;                                                   // data from MD_TimeAway table
+    var $vidx;
+    var $handle;
+    var $SQL;
+    public function __construct($data,$vidx,$handle){
+        $this->data = $data;
+        $this->handle = $handle;
+        $this->fp = $this->openLogFile();
+        $dstr = print_r($this->data, true); fwrite($this->fp, "\r\n input data is ". $dstr);
+        $this->SQL = new SQL($handle);
+        $selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $data->goAwayerUserKey;	
+ 
+        $this->SQL->doSQL($selStr);
+        $staffByUserKey = $this->SQL->getAssoc();
+        ob_start(); var_dump($staffByUserKey);$data = ob_get_clean();fwrite($this->fp, "\r\n 969696". $data);
+     /*   $pars[0] = "Greetings;";
         $pars[1] = "Dr. ".$GoAwayerLastName ." is going away from ". $StartDate ." to  ". $EndDate;
         $pars[2] = "To see the details of this Time Away click on the below link.";
         $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?&vidxToSee='.$vidx.' target="_blank">Accept Coverage</a>';
-        $bHM = new basicHTMLMail($staff[0], "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff");
-   
+    */
+        //  $bHM = new basicHTMLMail($staff[0], "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff");
+
+    }
+    private function openLogFile(){
+		$now = new DateTime(); 
+		$todayStr = $now->format("Y-m-d");
+		$fp = fopen("./Alog/MD_VacManStaffEmail".$todayStr.".txt", "a+");
+		$nowString = $now->format("Y-m-d H:i:s");
+		fwrite($fp, "\r\n $nowString");
+        return $fp;
+	}
+    function composeStaffAddresses($vidx){
+
     }
 }
 class CoverageNotAcceptedEmail
@@ -97,4 +124,36 @@ class CoverageNotAcceptedEmail
         $bHM = new basicHTMLMail($CovererEmail, "Time Away Coverage",$pars, "Coverage for Physician Time Away","CoverageNotAccepted", $handle);
         $bHM->send();
     }
+}
+class SQL {
+    var $handle;
+    var $fp;
+    var $thisSql;
+    var $sqlRes;
+    public function __construct($handle){
+        $this->handle = $handle;
+        $this->openLogFile();
+    }
+    public function doSQL($qStr){
+        $this->sqlRes = sqlsrv_query( $this->handle, $qStr);
+            fwrite($this->fp, "\r\n 95959 \r\n $selStr");   
+        if( $this->sqlRes === false ) 
+           { $dstr = print_r( sqlsrv_errors(), true); fwrite($this->fp, "\r\n $dstr \r\n");}   
+    }
+    public function getAssoc($ind = null){
+        if (is_null($ind))
+           {$ind = 0;  $rowIndex = $ind;}
+        while( $row[$ind++] = sqlsrv_fetch_array( $this->sqlRes, SQLSRV_FETCH_ASSOC) ) {
+            return $row;
+        }
+    }
+    
+    private function openLogFile(){
+		$now = new DateTime(); 
+		$todayStr = $now->format("Y-m-d");
+		$this->fp = fopen("./Alog/SQL_log".$todayStr.".txt", "a+");
+		$nowString = $now->format("Y-m-d H:i:s");
+		fwrite($this->fp, "\r\n $nowString");
+        return $fp;
+	}
 }

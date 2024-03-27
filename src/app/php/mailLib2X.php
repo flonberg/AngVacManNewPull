@@ -1,39 +1,4 @@
 <?php
-require_once 'H:\inetpub\lib\esb\_dev_\sqlsrvLibFL.php';
-header("Content-Type: application/json; charset=UTF-8");
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-ini_set("error_log", "./log/enterAngVacError.txt");
-$handle = connectDB_FL();
-$fp = openLogFile();
-$msg = Array("paragraph 1", "paragraph2");
-//$test1 = new basicHTMLMail("flonberg@mgh.harvard.edu","Physician Time Away", $msg);
-//$test2 = new CovererEmail("Hong", "flonberg@mgh.harvard.edu","Chan",'chan','2024-02-02','2024-02-10', 24);
-$selStr = "SELECT vidx, userkey, startDate, endDate, coverageA, physicians.LastName FROM MDtimeAway
-    INNER JOIN physicians on MDtimeAway.coverageA=physicians.UserKey WHERE vidx= ".$_GET['vidx'];
-    $stmt = sqlsrv_query( $handle, $selStr);
-    if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);}
-
-$dB = new getDBData($selStr, $handle);
-$assoc = $dB->getAssoc();
-var_dump($assoc);
-$goAwayerAddress = getSingle("SELECT Email FROM physicians WHERE UserKey =".$assoc['userkey'], 'Email', $handle);
-$goAwayerAddress = 'flonberg@mgh.harvard.edu';
-$ml = new CoverageNotAcceptedEmail( $assoc['startDate']->format('Y-m-d'), $assoc['endtDate']->format('Y-m-d'), $assoc['LastName'],$goAwayerAddress);
-exit();
-function openLogFile(){
-    $today = date('Y-m-d');
-    $in = 0;
-    do {																			// put index in case of permission failure
-        $fp = fopen("./Alog/mailLib2Log".$today."_".$in.".txt", "w+");			
-        if ($in++ > 5)
-            break;
-        }
-	while ($fp ===FALSE);
-    return $fp; 
-}
-//$test1->send();
 class basicHTMLMail
 {
 	var $address;
@@ -42,12 +7,19 @@ class basicHTMLMail
 	var $headers;
 	var $logFp;
 	var $message;
+    var $messageType;
     var $title;
-	public function __construct($address, $subject, array $msg, $messageType, $title=null){
-        $this->openLogFile();
+    var $handle;
+    var $fp;
+	public function __construct($address, $subject, array $msg, $title=null, $messageType, $handle){
+        $this->fp = $this->openLogFile();
         $this->title = $title;
-		$this->address = $address;
+	//	$this->address = $address;
+    //    if (strpos(getcwd(), 'dev') !== FALSE)
+            $this->address = 'flonberg@mgh.harvard.edu';
 		$this->subject = $subject; 
+        $this->messageType = $messageType;
+        $this->handle = $handle;
 		$this->msg = $msg;
 		$this->headers="";
 		$this->headers = 'MIME-Version: 1.0' . "\r\n";
@@ -61,10 +33,13 @@ class basicHTMLMail
 		$todayStr = $now->format("Y-m-d");
 		$fp = fopen("./Alog/MD_VacMan_Mail".$todayStr.".txt", "a+");
 		$nowString = $now->format("Y-m-d H:i:s");
-		fwrite($this->logFp, "\r\n $nowString");
+		fwrite($fp, "\r\n $nowString");
+        return $fp;
 	}
     public function addHeaders($addr){
-        $this->headers.= 'Cc: '. $addr;
+        $this->headers.= ', flonberg@mgh.harvard.edu';
+       // $this->headers.= ','. $addr;
+        $str = print_r($this->headers, true); fwrite($this->fp, $str);
     }
     private function createMessage(){
         $this->message = "
@@ -84,9 +59,12 @@ class basicHTMLMail
         </html>";    
     }
     public function send(){
-        insStr = "INSERT INTO MD_TimeAwayMail (address,date,messageType) 
-                values ($this->address,GETDATE(), $this->messageType)"
+        fwrite($this->fp, "\r\n address is ".$this->address);
         mail($this->address,$this->subject,$this->message, $this->headers);
+        $insStr = "INSERT INTO MD_TimeAwayMail (address, date, messageType) values ('".$this->address."', GETDATE(), '".$this->messageType."')";
+        $stmt = sqlsrv_query( $this->handle, $insStr);
+      //  echo "<br> $insStr <br>";
+        if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($this->fp, $dtr); echo "<br> $dtr <br>";}
    }
 }
 class CovererEmail 
@@ -100,25 +78,85 @@ class CovererEmail
         $bHM->send();
     }   
 }
-class StaffEmail
+class StaffEmailClass
 {
-    public function __construct($GoAwayerLastName, $StartDate, $EndDate, $staff, $vidx){
-        $pars[0] = "Greetings;";
+    var $fp;
+    var $data;                                                   // data from MD_TimeAway table
+    var $vidx;
+    var $handle;
+    public function __construct($data,$vidx, $handle){
+        $this->data = $data;
+        $this->vidx = $vidx;
+        $this->handle = $handle;
+        $this->fp = $this->openLogFile();
+        $dstr = print_r($this->data, true); fwrite($this->fp, "\r\n input data is ". $dstr); fwrite($this->fp, "\r\n vidx is ". $this->vidx);
+        $this->composeStaffAddresses();
+     /*   $pars[0] = "Greetings;";
         $pars[1] = "Dr. ".$GoAwayerLastName ." is going away from ". $StartDate ." to  ". $EndDate;
-        $pars[2] = "To see the details of thie Time Away click on the below link.";
+        $pars[2] = "To see the details of this Time Away click on the below link.";
         $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?&vidxToSee='.$vidx.' target="_blank">Accept Coverage</a>';
-        $bHM = new basicHTMLMail($staff[0], "Time Away Coverage",$pars, "Coverage for Physician Time Away", "StaffEmail");
-        foreach ($staff as $key => $val){
+    */
+        //  $bHM = new basicHTMLMail($staff[0], "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff");
 
-        }
+    }
+    private function openLogFile(){
+		$now = new DateTime(); 
+		$todayStr = $now->format("Y-m-d");
+		$fp = fopen("./Alog/MD_VacManStaffEmail".$todayStr.".txt", "a+");
+		$nowString = $now->format("Y-m-d H:i:s");
+		fwrite($fp, "\r\n $nowString");
+        return $fp;
+	}
+    function composeStaffAddresses(){
+        $selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $this->data>['goAwayerUserKey'];							// get all staff UserKeys for the MD GoAwayer
+        $SQL = new SQL($this->handle);
+        /*	$dB = new getDBData($selStr, $this->handle);
+		$assoc = $dB->getAssoc();                                   // get the data from MD_TimeAwayStaff
+        $selStr2 = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 					
+		FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";                        // form first part of SELECT Qurey to get LastName and Emails of Staff
+        foreach ($assoc as $key=>$val){																						// add the UserKey of each Staff
+                if ($val > 0)
+                    $selStr2 .= " $val,";
+            }
+        $selStr2 = substr($selStr2, 0, -1);		$selStr2 .= ")"; 										            // elim the trailing comma and finish the SELECT String
+        $staffMembersEmail = Array();
+        $dB = new getDBData($selStr2, $this->handle);
+        $i = 0;
+        $address= Array();
+            while ($assoc = $dB->getAssoc()){																					// load address, comma seperated
+                if ($i++ == 0)																									// First address
+                    $address = $assoc['Email'];
+                else
+                    $address .= ", ". $assoc['Email'];	
+            }	 
+            */    
     }
 }
 class CoverageNotAcceptedEmail
 {
-    public function __construct($StartDate, $EndDate, $CovererLastName, $CovererEmail){
+    public function __construct($StartDate, $EndDate, $CovererLastName, $CovererEmail, $handle){
         $pars[0] = "Hello;";
         $pars[1] = "Dr. ".$CovererLastName ." has not accepted coverage for your Time Away from ". $StartDate ." to  ". $EndDate;
-        $bHM = new basicHTMLMail($CovererEmail, "Time Away Coverage",$pars, "Coverage for Physician Time Away","CoverageNotAccepted");
+        $bHM = new basicHTMLMail($CovererEmail, "Time Away Coverage",$pars, "Coverage for Physician Time Away","CoverageNotAccepted", $handle);
         $bHM->send();
     }
+}
+class SQL {
+    var $handle;
+    var $fp;
+    public function __construct($handle){
+        $this->handle = $handle;
+    }
+    public function getData($selStr, $handle){
+        $this->openLogFile();
+
+    }
+    private function openLogFile(){
+		$now = new DateTime(); 
+		$todayStr = $now->format("Y-m-d");
+		$fp = fopen("./Alog/SQL_log".$todayStr.".txt", "a+");
+		$nowString = $now->format("Y-m-d H:i:s");
+		fwrite($fp, "\r\n $nowString");
+        return $fp;
+	}
 }
