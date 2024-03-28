@@ -8,7 +8,7 @@ error_reporting(E_ALL);
 ini_set("error_log", "./Alog/enterAngVacError.txt");
 //header("Access-Control-Allow-Origin: *");	
 //$handle = connectDB_FL()	;
-if (strpos(getcwd(), 'dev') !== FALSE)
+if (strpos(getcwd(), 'dev') !== FALSE)     
 	$level = 'dev';
 else 
 	$level = 'prod';	
@@ -93,13 +93,11 @@ do {																			// put index in case of permission failure
 		enterCompoundCoverage($data->CoverDays,$lastVidx);
 		sendMultiAskForCoverage($lastVidx,$data);
 	}
-	if ($data->CompoundCoverage == 0)
-		sendAskForCoverage($lastVidx, $data);
-
 	$selStr = "SELECT *  FROM $tableName WHERE vidx = $lastVidx";
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
 	$StaffEmailClass = new StaffEmailClass($data, $lastVidx, $handle);
-	//sendStaff($lastVidx, $data);
+	if ($data->CompoundCoverage == 0)
+		$CovererEmail = new CovererEmail($data, $lastVidx, $handle);
 
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
@@ -172,47 +170,7 @@ function checkOverlap($data){
 		return 0;				// there is NOT an overlap
 	}
 
-function sendAskForCoverage($vidx, $data)
-{
-	global $handle, $fp, $level, $debug, $realEmails;
-	if ($data->coverageA == 0){
-		fwrite($fp, "150 coverageA == 0 so not sending AskForCoverage Email");
-		return;
-	}
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$data->CovererUserId."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021
-	$mailAddress = $data->CovererEmail;		
-	$subj = "Coverage for Time Away";							
-	$subj .= " to ". $data->CovererEmail;					/////////   for testing \\\\\\\\\
-	//if ($level == 'dev')
-	{
-		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$subj .= " to ". $data->CovererEmail;					/////////   for testing \\\\\\\\\
-	}
-	$msg =    "Dr. ".$data->CovererLastName.": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate .", and would like you to cover. ";
-	if ($data->WTM_self == 0)															// The Coverer is the WTM Coverer
-		$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
-	$msg .= "<p> To accept or decline this coverage click on the below link. </p>";
-	$message = '
-       	<html>
-       		<head>
-       			 <title> Time Away Coverage </title>
-					<body>
-					<p>
-					'. $msg .'
-					</p>
-					<p>
-					<a href='.$link .'> Accept Coverage. </a>
-				</body>
-			</head>	
-		</html>
-			'; 
-		$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-		$rData = array("result"=>"pending");
-		$jData = json_encode($rData);
-	//	if (!$debug)
-			$sendMail->send();	
-		fwrite($fp, "\r\n sent mail address for AskForCoverage is ". $data->CovererEmail."\r\n");	
-}
+
 function sendMultiAskForCoverage($vidx, $data){
 	global $handle, $fp;
 	$toSendParams = Array();
@@ -323,83 +281,6 @@ function sendServiceOverlapEmail($oData, $newTa){												// $oData is ARRAY 
 		if (!$debug)
 			$sendMail->send();	
 }
-function sendStaff($vidx, $newTa){
-	global $fp, $handleBB, $handle, $debug, $level;
-	$CovererUserId =  getSingle("SELECT UserID FROM users WHERE UserKey = ". $newTa->coverageA,  "UserID", $handle);			// get name of GoAwayer
-	$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=ske5&vidxToSee=".$vidx;	 // use inactive WB users as userid for group Email
-	$subj = "Time Away for Dr. ". $newTa->goAwayerLastName;						// store real address for fowarding
-	$selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $newTa->goAwayerUserKey;							// get all staff UserKeys for the MD GoAwayer
-		$dB = new getDBData($selStr, $handle);
-		$assoc = $dB->getAssoc();
-	// compose the  SelStr to get Emails of Staff
-	$selStr2 = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 						
-		FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
-	
-	foreach ($assoc as $key=>$val){																						// add the UserKey of each Staff
-		if ($val > 0)
-			$selStr2 .= " $val,";
-	}
-	$selStr2 = substr($selStr2, 0, -1);																					// elim the trailing comma
-	$selStr2 .= ")";
-	fwrite($fp, "\r\n 343 staff Query SelStr  8888 is \r\n". $selStr2);
-	$staffMembersEmail = Array();
-	$dB = new getDBData($selStr2, $handle);
-	$i = 0;
-	$address= Array();
-		while ($assoc = $dB->getAssoc()){																					// load address, comma seperated
-			if ($i++ == 0)																									// First address
-				$address = $assoc['Email'];
-			else
-				$address .= ", ". $assoc['Email'];	
-		}	
-	fwrite($fp, "\r\n prod address is \r\n $address");		
-		if ($level =='dev')
-			$address = "flonberg@mgh.harvard.edu, flonberg@gmail.com";
-	fwrite($fp, "\r\n used address if \r\n $address");	
-			
-	fwrite($fp, "\r\n address is \r\n  $address");
-	$lines[0] = "Greetings";
-	$lines[1] = "Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate."'";
-	$lines[2] = "<p> To see details of this Time click on the below link. </p>";
-	$lines[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
-	$bHML = new basicHTMLMail($address, "Physician Time Away", $lines,'Physician Time Away', 'StaffCoverage', $handle );	
-	$bHML->send();
-	$i = 0;
-	$covMsg = "<p> The coverage for this Time Away is to be determined </p>";
-	$mailAddress = 'flonberg@mgh.harvard.edu';
-	$mailAddressProd = 'flonberg@mgh.harvard.edu';
-
-	while ($assoc = $dB->getAssoc()){
-		$mailAddressProd .= $assoc['Email'];
-		$subj .= ",".$assoc['Email'];
-		$mailAddress .= ",flonberg@gmail.com";
-		$row[$i] = $assoc;
-	}
-	$msg = "<p> Greetings,<p>";
-	$msg.= "<p>Dr. ". $newTa->goAwayerLastName ." is going to be away from ". $newTa->startDate ." through ". $newTa->endDate ."</p>";
-	$msg .= "<p> To see details of this Time click on the below link. </p>";
-	$message = '
-		<html>
-			<head>
-				<title> Physician Time Away </title>
-				<body>
-				<p>
-				'. $msg .'
-				</p>
-				<p>
-				<a href='.$link .'>View Time Away. </a>
-				</body>
-			</head>	
-		</html>
-		'; 
-	if ($level == 'prod')
-		$mailAddress = $mailAddressProd;	
-//	$sendMail = new sendMailClassLibLoc($mailAddress,  $subj, $message,$link);	
-	//$sendMail = new sendMailClassLibLoc($mailAddressProd,  $subj, $message,$link);	
-	//if (!$debug)
-	//	$sendMail->send();		
-	}
-	//$dstr = print_r($row, true); fwrite($fp, $dstr);
 
 function getNomCovLastName($data){
 	global $handle;

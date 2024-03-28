@@ -12,7 +12,8 @@ class basicHTMLMail
     var $handle;
     var $fp;
 	public function __construct($address, $subject, array $msg, $title=null, $messageType, $handle){
-        $this->fp = $this->openLogFile();
+        $this->fp = $this->openLogFile('Mail2');
+        fwrite($this->fp, "\r\n Prod Adresses are ". $address);
         $this->title = $title;
 	//	$this->address = $address;
     //    if (strpos(getcwd(), 'dev') !== FALSE)
@@ -28,10 +29,10 @@ class basicHTMLMail
 	 	$this->headers .= 'Cc: flonberg@mgh.harvard.edu' . "\r\n";
         $this->createMessage();
 	}
-	private function openLogFile(){
+	public function openLogFile($name){
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
-		$fp = fopen("./Alog/MD_VacMan_Mail".$todayStr.".txt", "a+");
+		$fp = fopen("./Alog/".$name."_".$todayStr.".txt", "a+");
 		$nowString = $now->format("Y-m-d H:i:s");
 		fwrite($fp, "\r\n $nowString");
         return $fp;
@@ -69,13 +70,20 @@ class basicHTMLMail
 }
 class CovererEmail 
 {
-    public function __construct($GoAwayerLastName,$covererAddress,$CovererLastName,$CovererUserId,$StartDate,$EndDate,$vidx){
-        $pars[0] = "Hello Dr. ". $CovererLastName.";";
-        $pars[1] = "Dr. ".$GoAwayerLastName ." is going to be away from ".$StartDate. " to ".$EndDate ." and would like you to cover.";
+    public function __construct($newTA,$vidx, $handle){
+       // $fp = $this->openLogFile();
+       // ob_start(); var_dump($newTA);$data = ob_get_clean();fwrite($fp, "\r\n 75757\r\n ". $data);
+        $pars[0] = "Hello Dr. ". $newTA->CovererLastName.";";
+        $pars[1] = "Dr. ".$newTA->goAwayerLastName ." is going to be away from ".$newTA->startDate. " to ".$newTA->endDate ." and would like you to cover.";
         $pars[2] = "If you can cover, please click this link to see details of the Time Away and accept the coverage";
-        $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
-        $bHM = new basicHTMLMail($covererAddress, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "CoverageRequested");
+        $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$newTA->CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
+        $prodAddress = $newTA->CovererEmail;
+        $devAddress = 'flonberg@mgh.harvard.edu';
+        $bHM = new basicHTMLMail($devAddress, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "CoverageRequested", $handle);
+        $fp = $bHM->openLogFile('AskForCoverage');
+        fwrite($fp, "\r\n prodAddress is ". $prodAddress);
         $bHM->send();
+        
     }   
 }
 class StaffEmailClass
@@ -105,15 +113,14 @@ class StaffEmailClass
             else
                 $addresses .= ", ".$val['Email'];
         }
-        fwrite($this->fp, "\r\n $addresses \r\n");
-
-       // ob_start(); var_dump($addresses);$data = ob_get_clean();fwrite($this->fp, "\r\n addresses \r\n  ". $data);
-     /*   $pars[0] = "Greetings;";
-        $pars[1] = "Dr. ".$GoAwayerLastName ." is going away from ". $StartDate ." to  ". $EndDate;
+        fwrite($this->fp, "\r\n 109 ProdAddresses are  $addresses \r\n");
+        $pars[0] = "Greetings;";
+        $pars[1] = "Dr. ".$data->goAwayerLastName ." is going away from ". $data->startDate ." to  ". $data->endDate;
         $pars[2] = "To see the details of this Time Away click on the below link.";
-        $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?&vidxToSee='.$vidx.' target="_blank">Accept Coverage</a>';
-    */
-        //  $bHM = new basicHTMLMail($staff[0], "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff");
+        $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?&vidxToSee='.$vidx.' target="_blank">See Details</a>';
+        ob_start(); var_dump($pars);$data1 = ob_get_clean();fwrite($this->fp, "\r\n   8989 \r\n ". $data1);
+        $bHM = new basicHTMLMail($addresses, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff Coverage", $this->handle);
+        $bHM->send();
 
     }
     private function openLogFile(){
