@@ -92,10 +92,22 @@ class StaffEmailClass
         $dstr = print_r($this->data, true); fwrite($this->fp, "\r\n input data is ". $dstr);
         $this->SQL = new SQL($handle);
         $selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $data->goAwayerUserKey;	
- 
         $this->SQL->doSQL($selStr);
         $staffByUserKey = $this->SQL->getAssoc();
-        ob_start(); var_dump($staffByUserKey);$data = ob_get_clean();fwrite($this->fp, "\r\n 969696". $data);
+        $selStr2 = $this->composeStaffAddresses($staffByUserKey[0]);
+        fwrite($this->fp, "\r\n 9898 \r\n ". $selStr2);
+        $this->SQL->doSQL($selStr2);
+        $staff = $this->SQL->getAssoc();
+        $addresses = "";
+        foreach ($staff as $key=>$val){
+            if ($key == 0)
+                $addresses = $val['Email'];
+            else
+                $addresses .= ", ".$val['Email'];
+        }
+        fwrite($this->fp, "\r\n $addresses \r\n");
+
+       // ob_start(); var_dump($addresses);$data = ob_get_clean();fwrite($this->fp, "\r\n addresses \r\n  ". $data);
      /*   $pars[0] = "Greetings;";
         $pars[1] = "Dr. ".$GoAwayerLastName ." is going away from ". $StartDate ." to  ". $EndDate;
         $pars[2] = "To see the details of this Time Away click on the below link.";
@@ -107,13 +119,22 @@ class StaffEmailClass
     private function openLogFile(){
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
-		$fp = fopen("./Alog/MD_VacManStaffEmail".$todayStr.".txt", "a+");
+		$fp = fopen("./Alog/MD_VacManStaffEmail".$todayStr.".txt", "w+");
 		$nowString = $now->format("Y-m-d H:i:s");
 		fwrite($fp, "\r\n $nowString");
         return $fp;
 	}
-    function composeStaffAddresses($vidx){
-
+    function composeStaffAddresses($userKeys){
+        ob_start(); var_dump($userKeys);$data = ob_get_clean();fwrite($this->fp, "\r\n 117 \r\n". $data);
+        $roles = Array('NP','NP2','Nurse1','Nurse2','PSC','Admin');
+        $selStr2 = "SELECT other.FirstName, other.LastName, other.Email, other.UserKey, users.UserID 						
+		FROM other LEFT JOIN users on other.UserKey=users.UserKey WHERE other.UserKey IN (";
+        foreach ($roles as $key=>$val)
+            if ($userKeys[$val] > 0)
+                $selStr2 .= $userKeys[$val].",";
+        $selStr2 = substr($selStr2, 0, -1);																					// elim the trailing comma
+        $selStr2 .= ")";
+        return $selStr2;
     }
 }
 class CoverageNotAcceptedEmail
@@ -132,28 +153,29 @@ class SQL {
     var $sqlRes;
     public function __construct($handle){
         $this->handle = $handle;
+ 
         $this->openLogFile();
     }
     public function doSQL($qStr){
         $this->sqlRes = sqlsrv_query( $this->handle, $qStr);
-            fwrite($this->fp, "\r\n 95959 \r\n $selStr");   
+            fwrite($this->fp, "\r\n 95959 \r\n $qStr");   
         if( $this->sqlRes === false ) 
-           { $dstr = print_r( sqlsrv_errors(), true); fwrite($this->fp, "\r\n $dstr \r\n");}   
+           { $dstr = print_r( sqlsrv_errors(), true); fwrite($this->fp, "\r\n $dstr \r\n");}  
     }
     public function getAssoc($ind = null){
         if (is_null($ind))
            {$ind = 0;  $rowIndex = $ind;}
-        while( $row[$ind++] = sqlsrv_fetch_array( $this->sqlRes, SQLSRV_FETCH_ASSOC) ) {
-            return $row;
-        }
+        while( $assoc =  sqlsrv_fetch_array( $this->sqlRes, SQLSRV_FETCH_ASSOC) ) 
+            $row[$rowIndex++] = $assoc;
+        return $row;
     }
     
     private function openLogFile(){
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
-		$this->fp = fopen("./Alog/SQL_log".$todayStr.".txt", "a+");
+		$this->fp = fopen("./Alog/SQL_log".$todayStr.".txt", "w+");
 		$nowString = $now->format("Y-m-d H:i:s");
 		fwrite($this->fp, "\r\n $nowString");
-        return $fp;
+        return $this->fp;
 	}
 }
