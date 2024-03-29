@@ -183,6 +183,11 @@ function sendMultiAskForCoverage($vidx, $data){
 	}
 	$dsrt = print_r($toSendParams, true); fwrite($fp, "12345 ". $dsrt);
 	foreach ($toSendParams as $key=>$val){
+		$data->CovererUserKey = $val['UserKey'];
+		$data->CovererEmail = $val['Email'];
+		$data->CovererLastName = $val['LastName'];
+		$data->CovererUserId = $key;
+		$CovererEmail = new CovererEmail($data,$vidx,1, $handle);
 		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$key."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021		
 		$subj = "Coverage for Time Away";	
 		$subj .= " to ". $val['Email'];	
@@ -212,7 +217,7 @@ function sendMultiAskForCoverage($vidx, $data){
 			$rData = array("result"=>"pending");
 			$jData = json_encode($rData);
 		//	if (!$debug)
-				$sendMail->send();	
+		//		$sendMail->send();	
 	}
 }
 

@@ -71,13 +71,18 @@ class basicHTMLMail
 class CovererEmail 
 {
     public function __construct($newTA,$vidx,$compoundCoverage, $handle){
-       // $fp = $this->openLogFile();
-       // ob_start(); var_dump($newTA);$data = ob_get_clean();fwrite($fp, "\r\n 75757\r\n ". $data);
-       if ($compoundCoverage == 0){
+        $fp = $this->openLogFile();
+        ob_start(); var_dump($newTA);$data = ob_get_clean();fwrite($fp, "\r\n 75757\r\n ". $data);
             $pars[0] = "Hello Dr. ". $newTA->CovererLastName.";";
             $pars[1] = "Dr. ".$newTA->goAwayerLastName ." is going to be away from ".$newTA->startDate. " to ".$newTA->endDate ." and would like you to cover.";
-            $pars[2] = "If you can cover, please click this link to see details of the Time Away and accept the coverage";
-            $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$newTA->CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
+            if ($newTA->CompoundCoverage == 1)
+                $pars[1] = "Dr. ".$newTA->goAwayerLastName ." is going to be away from ".$newTA->startDate. " to ".$newTA->endDate ." and would like you to cover part of this Time Away";
+            if ($newTA->WTM_self == 0)
+                $pars[2] = "You are also being asked to cover WTM for this Time Away";
+            else
+                $par[2] = "";
+            $pars[3] = "If you can cover, please click this link to see details of the Time Away and accept the coverage";
+            $pars[4] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$newTA->CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
             $prodAddress = $newTA->CovererEmail;
             $devAddress = 'flonberg@mgh.harvard.edu';
             $bHM = new basicHTMLMail($devAddress, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "CoverageRequested", $handle);
@@ -85,17 +90,11 @@ class CovererEmail
             fwrite($fp, "\r\n prodAddress is ". $prodAddress);
             ob_start(); var_dump($newTA);$data = ob_get_clean();fwrite($fp, "\r\n 75757\r\n ". $data);
             $bHM->send();
-       }
-       else {
-        $fp = $this->openLogFile();
-        ob_start(); var_dump($newTA);$data = ob_get_clean();fwrite($fp, "\r\n 75757\r\n ". $data);
-       }
-        
     }  
     private function openLogFile(){
 		$now = new DateTime(); 
 		$todayStr = $now->format("Y-m-d");
-		$fp = fopen("./Alog/compoundCov".$todayStr.".txt", "w+");
+		$fp = fopen("./Alog/compoundCov".$todayStr.".txt", "a+");
 		$nowString = $now->format("Y-m-d H:i:s");
 		fwrite($fp, "\r\n $nowString");
         return $fp;
