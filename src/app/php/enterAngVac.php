@@ -97,7 +97,7 @@ do {																			// put index in case of permission failure
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
 	$StaffEmailClass = new StaffEmailClass($data, $lastVidx, $handle);
 	if ($data->CompoundCoverage == 0)
-		$CovererEmail = new CovererEmail($data, $lastVidx, $handle);
+		$CovererEmail = new CovererEmail($data, $lastVidx,$data->CompoundCoverage, $handle);
 
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
