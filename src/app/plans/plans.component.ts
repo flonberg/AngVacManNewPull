@@ -574,8 +574,15 @@ private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
   })
 }
 private saveEdits(ev, detail?) {
-  this .tAparams.vidx = +this .vidxToEdit;
+ let  response: any = null
 console.log("396 in saveEdits tAparams is %o", this .tAparams)  
+var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/emailChange.php?vidx='+this.vidxToEdit;  // set endPoint for dev
+this .http.get(url).subscribe(res =>{                     // do the http.post
+  response = res
+  console.log("582582 response %o", response)
+})
+location.reload();
+  /*
   var jData = JSON.stringify(this .tAparams)                      // the default edit params
   var emailParam = 0;                                             // determines IF and WHICH email 2b sent
 //  if (detail == 'CovAccept')
@@ -587,6 +594,7 @@ console.log("396 in saveEdits tAparams is %o", this .tAparams)
 console.log("547 covParams %o", this .CovParams)       
     jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
   }
+
   if (detail){  
     if (detail =='tAchanged')
       emailParam = 1;
@@ -607,6 +615,7 @@ console.log("547 covParams %o", this .CovParams)
   if (this .wkDev == 'prod')
      location.reload();
    // location.reload(true);
+*/
 }
 private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
