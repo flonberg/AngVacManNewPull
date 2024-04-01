@@ -109,7 +109,10 @@ class StaffEmailClass
     var $handle;
     var $SQL;
     public function __construct($data,$vidx,$handle, $mode=0){          // mode=0 => ENTER TA  mode=1 => EDIT TA
-        $this->data = $data;
+        if (!is_object($data))                                          // some function invocations pass ARRAY
+            $this->data = json_decode(json_encode($data), FALSE);       // so convert to OBJECT
+        else
+            $this->data = $data;
         $this->handle = $handle;
         $this->fp = $this->openLogFile();
         $dstr = print_r($this->data, true); fwrite($this->fp, "\r\n input data is ". $dstr);

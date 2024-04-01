@@ -604,8 +604,8 @@ console.log("547 covParams %o", this .CovParams)
   })
   this .changesSavedShow = true;
   this .ngOnInit();
- // if (this .wkDev == 'prod')
-   // location.reload(true);
+  if (this .wkDev == 'prod')
+     location.reload();
    // location.reload(true);
 }
 private editCovParams(param, value){

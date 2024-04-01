@@ -33,12 +33,15 @@ $IAP = new InsertAndUpdates();
 			}
 		}
 	}
+	$StaffEmailClass = new StaffEmailClass($data, $data['vidx'], $handle, 0);
+	ob_start(); var_dump($StaffEmailClass);$data = ob_get_clean();fwrite($fp, "\r\n 3737 SEM ". $data);
 	$upDtStr = "UPDATE TOP(1) MDtimeAway SET ";
 	if ( isset( $data['startDate'] ) && strlen($data['startDate']) > 2  ){
 		$upDtStr .= "startDate = '". $data['startDate']."',";
 		$upDtStr .= "CovAccepted = '0',";
-		sendTaChangedMail($data,0);
-		sendStaffLib($data,3);
+	
+	//sendTaChangedMail($data,0);
+	//	sendStaffLib($data,3);
 	}
 	if (isset( $data['endDate'] ) &&   strlen($data['endDate']) > 2  ){
 		$upDtStr .= "endDate = '". $data['endDate']."',";
