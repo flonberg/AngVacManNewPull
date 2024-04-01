@@ -361,7 +361,7 @@ console.log("243243 TAdates if %o", this.TAdates)
       console.log("277277 %o", this .serviceMDs)
           })
   }
-  Message: Object
+  Message: Object = null
   /**
    * 
    * @param mode get message to display under title of the page

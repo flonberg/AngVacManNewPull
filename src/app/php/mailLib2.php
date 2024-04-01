@@ -1,4 +1,5 @@
 <?php
+require_once "./SQL_class.php";
 class basicHTMLMail
 {
 	var $address;
@@ -70,7 +71,7 @@ class basicHTMLMail
 }
 class CovererEmail 
 {
-    public function __construct($newTA,$vidx,$compoundCoverage, $handle){
+    public function __construct($newTA,$vidx, $handle){
         $fp = $this->openLogFile();
         ob_start(); var_dump($newTA);$data = ob_get_clean();fwrite($fp, "\r\n 75757\r\n ". $data);
             $pars[0] = "Hello Dr. ". $newTA->CovererLastName.";";
@@ -107,7 +108,7 @@ class StaffEmailClass
     var $vidx;
     var $handle;
     var $SQL;
-    public function __construct($data,$vidx,$handle){
+    public function __construct($data,$vidx,$handle, $mode=0){          // mode=0 => ENTER TA  mode=1 => EDIT TA
         $this->data = $data;
         $this->handle = $handle;
         $this->fp = $this->openLogFile();
@@ -130,6 +131,8 @@ class StaffEmailClass
         fwrite($this->fp, "\r\n 109 ProdAddresses are  $addresses \r\n");
         $pars[0] = "Greetings;";
         $pars[1] = "Dr. ".$data->goAwayerLastName ." is going away from ". $data->startDate ." to  ". $data->endDate;
+        if ($mode == 1)
+            $pars[1]= "Parameters for Dr.  ".$data->goAwayerLastName ." Time Away have changed "; 
         $pars[2] = "To see the details of this Time Away click on the below link.";
         $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?&vidxToSee='.$vidx.' target="_blank">See Details</a>';
         ob_start(); var_dump($pars);$data1 = ob_get_clean();fwrite($this->fp, "\r\n   8989 \r\n ". $data1);
@@ -167,36 +170,4 @@ class CoverageNotAcceptedEmail
         $bHM->send();
     }
 }
-class SQL {
-    var $handle;
-    var $fp;
-    var $thisSql;
-    var $sqlRes;
-    public function __construct($handle){
-        $this->handle = $handle;
- 
-        $this->openLogFile();
-    }
-    public function doSQL($qStr){
-        $this->sqlRes = sqlsrv_query( $this->handle, $qStr);
-            fwrite($this->fp, "\r\n 95959 \r\n $qStr");   
-        if( $this->sqlRes === false ) 
-           { $dstr = print_r( sqlsrv_errors(), true); fwrite($this->fp, "\r\n $dstr \r\n");}  
-    }
-    public function getAssoc($ind = null){
-        if (is_null($ind))
-           {$ind = 0;  $rowIndex = $ind;}
-        while( $assoc =  sqlsrv_fetch_array( $this->sqlRes, SQLSRV_FETCH_ASSOC) ) 
-            $row[$rowIndex++] = $assoc;
-        return $row;
-    }
-    
-    private function openLogFile(){
-		$now = new DateTime(); 
-		$todayStr = $now->format("Y-m-d");
-		$this->fp = fopen("./Alog/SQL_log".$todayStr.".txt", "w+");
-		$nowString = $now->format("Y-m-d H:i:s");
-		fwrite($this->fp, "\r\n $nowString");
-        return $this->fp;
-	}
-}
+

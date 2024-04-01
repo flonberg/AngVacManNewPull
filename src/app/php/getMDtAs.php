@@ -52,13 +52,12 @@ function getMDtAs(){
 	if (strpos(getcwd(), 'dev') !== FALSE)
 		$selStr = "SELECT * FROM $tableName WHERE endDate >= '".$firstDay."' AND startDate < '".$endDateString."' AND reasonIdx < 9 and dev = '1' ORDER BY startDate";
 	fwrite($fp, "\r\n selStr is \r\n $selStr ");
-
+	
 	$dB = new getDBData($selStr, $handle);
 	$i = 0;
 	$servArray = array('1'=>15,'2'=>13,'3'=>3,'4'=>5,'5'=>4,'6'=>14, '7'=>6,'8'=>2,'9'=>1);	// use for showing Service in alphabetical order. 
 	$vacGraph = array();
 	$serviceGroup = array();	
-	
 	$index = 0;															// use to keep track of number of tA's in each service
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['index'] = $i;

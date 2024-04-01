@@ -1,6 +1,7 @@
 <?php
 require_once 'H:\inetpub\lib\ESB\_dev_\sqlsrvLibFL.php';
 require_once './mailLib.php';
+require_once './mailLib2.php';
 require_once './safeSQL.php';
 header("Content-Type: application/json; charset=UTF-8");
 $handle = connectDB_FL();
@@ -153,8 +154,11 @@ $IAP = new InsertAndUpdates();
 		$data['adminEmail'] = $admins['adminEmail'];
 		return $data;
 	}
+
+
 	function sendTaChangedMail($data, $mode){
 		global $handle, $fp, $level;
+		$StaffEmailClass = new StaffEmailClass($data, $data['vidx'], $handle, 1);
 		fwrite($fp, "\r\n vidx is ". $data['vidx']);
 		if ($data['coverageA'] == 0)								// no coverage nominated
 			return;													// do NOT send email

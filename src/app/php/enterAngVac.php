@@ -97,7 +97,7 @@ do {																			// put index in case of permission failure
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
 	$StaffEmailClass = new StaffEmailClass($data, $lastVidx, $handle);
 	if ($data->CompoundCoverage == 0)
-		$CovererEmail = new CovererEmail($data, $lastVidx,$data->CompoundCoverage, $handle);
+		$CovererEmail = new CovererEmail($data, $lastVidx, $handle);
 
 	$res = array("lastVidx"=>$lastVidx); $jD = json_encode($res); echo $jD;
 	exit();
@@ -187,37 +187,7 @@ function sendMultiAskForCoverage($vidx, $data){
 		$data->CovererEmail = $val['Email'];
 		$data->CovererLastName = $val['LastName'];
 		$data->CovererUserId = $key;
-		$CovererEmail = new CovererEmail($data,$vidx,1, $handle);
-		$link = "\n https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid=".$key."&vidxToSee=".$vidx."&acceptor=1";	// No 8 2021		
-		$subj = "Coverage for Time Away";	
-		$subj .= " to ". $val['Email'];	
-		$mailAddress = $val['Email'];	
-		fwrite($fp, "\r\n mail address for AskForCoverage is ".  $val['Email']);	
-		$mailAddress = "flonberg@partners.org";					////// for testing   \\\\\\\\\\\
-		$msg =    "<p>Dr. ".$val['LastName'].": <br> Dr. ". $data->goAwayerLastName ." is going away from ". $data->startDate ." to ". $data->endDate ." and would like you to cover part of this Time Away.</p> ";
-	
-		if ($val['UserKey'] == $data->WTMcovererUserKey) 															// The Coverer is the WTM Coverer
-			$msg.="<p> You are also being asked to cover the WTM, so you need to select a WTM date, and perhaps also specify any additional detail concerning WTM coverage. </p>"; 	
-		$msg .= "<p> To see you requested coverage, and accept or decline this coverage click on the below link. </p>";
-		$message = '
-			   <html>
-				   <head>
-						<title> Time Away Coverage </title>
-						<body>
-						<p>
-						'. $msg .'
-						</p>
-						<p>
-						<a href='.$link .'> Accept Coverage. </a>
-					</body>
-				</head>	
-			</html>
-				'; 
-			$sendMail = new sendMailClassLib($mailAddress,  $subj, $message);	
-			$rData = array("result"=>"pending");
-			$jData = json_encode($rData);
-		//	if (!$debug)
-		//		$sendMail->send();	
+		$CovererEmail = new CovererEmail($data,$vidx, $handle);		
 	}
 }
 
