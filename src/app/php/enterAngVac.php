@@ -8,17 +8,20 @@ error_reporting(E_ALL);
 ini_set("error_log", "./Alog/enterAngVacError.txt");
 //header("Access-Control-Allow-Origin: *");	
 //$handle = connectDB_FL()	;
-if (strpos(getcwd(), 'dev') !== FALSE)     
+if (strpos(getcwd(), 'dev') !== FALSE)  {   
 	$level = 'dev';
-else 
+	$dev = 1;																// creates tAs only visible in DEV
+	$writeOrAppend = "w+";
+}
+else {
 	$level = 'prod';	
-///$connDB = new connDB();
-//$handle = $connDB->handle242;
+	$dev = 0;
+	$writeOrAppend = "a+";
+}
 $handle = connectDB_FL();
 $handleBB = connectBB();
 $realEmails = FALSE;
 $debug = $_GET['debug'] == '1' ? true : false;
-$testMail = TRUE;
 $IAP = new InsertAndUpdates();
 $admins = getAdmins();
 $today = date('Y-m-d');
@@ -29,13 +32,13 @@ do {																			// put index in case of permission failure
 		break;
 		}
 		while ($fp ===FALSE);
-	$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
-	$tableName = 'MDtimeAway';													// where the data is
+$today = new DateTime(); $todayString = $today->format("Y-m-d H:i:s"); fwrite($fp, "\r\n $todayString \r\n ");
+$tableName = 'MDtimeAway';													// where the data is
 //		$tableName = 'MDtimeAway2BB';
- 	$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
-	$data = json_decode($body);													// get the params from the REST call
-	$s = print_r($data, true);   fwrite($fp, "\r\n 36 inputData is \r\n". $s);  // Create pretty form of data to log
-	$ret = array("result"=>"success");											// default response
+$body = @file_get_contents('php://input');            						// Get parameters from calling cURL POST;
+$data = json_decode($body);													// get the params from the REST call
+$s = print_r($data, true);   fwrite($fp, "\r\n 36 inputData is \r\n". $s);  // Create pretty form of data to log
+$ret = array("result"=>"success");											// default response
 	/**
 	 * Check for overlap with same GoAwayer
 	 */
@@ -79,7 +82,7 @@ do {																			// put index in case of permission failure
 	}
 	$insStr = " INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey,dev, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
-				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage,$data->WTMcovererUserKey, $data->dev,getdate()); SELECT @@IDENTITY as id";
+				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage,$data->WTMcovererUserKey, $dev,getdate()); SELECT @@IDENTITY as id";
 
 	if ($debug) 
 		fwrite($fp, "\r\n $insStr");

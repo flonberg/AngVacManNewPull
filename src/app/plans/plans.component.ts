@@ -246,27 +246,25 @@ CompCovArray:any
       this.CompCovArray = res
       if (Object.keys(this.CompCovArray).length > 0){
         this .gotCompCov = true
-        this .makeTAdates()
-   //     this .makeCompCovDates(this.CompCovArray, this.TAdates)
+        this .makeTAdates()                               // make array of dates for Comp Coverage Checkboxes
       }
       else
         this .gotCompCov = false
-
     })
-    this .tAparams ={} as tAparams;
-
-console.log("243243 TAdates if %o", this.TAdates)    
-     this .selectedOption = "1";
+    this .tAparams ={} as tAparams;  
+    this .selectedOption = "1";
     let isUserGoAwayer = false
-    if (this.userid && this. userid.includes(vacEdit['userid']))
+    if (this.userid && this. userid.includes(vacEdit['userid']))              
       isUserGoAwayer = true
-    this .startDateConvent = vacEdit.startDate
+      this .startDateConvent =  this.toMMDDYYYY(vacEdit.startDate)
+      this .endDateConvent =  this.toMMDDYYYY(vacEdit.endDate)
     if (vacEdit.startDate.includes('1900')){
       this .startDateConvent = 'TBD';
       this .toSeeParams.WTMdate = 'TBD';
     }
-    this .endDateConvent = vacEdit.endDate  
-    this .WTMDateConvent = vacEdit.WTMdate
+    if (vacEdit.WTMDate)
+    this .WTMDateConvent =  this.toMMDDYYYY(vacEdit.WTMDate)
+
     this .tAparams.vidx  = vacEdit.vidx;
     this .vidxToEdit = vacEdit.vidx;                   // for debugging
     this .selectedOption = String(vacEdit.reasonIdx)
@@ -537,25 +535,6 @@ private  editParam(type: string, ev: any) {
         let result = res
   console.log("492492 result is %o", result)                                              // refresh the data to show the edits. 
     })
-    /*
-    if (type.indexOf("start") >= 0)
-      this .tAparams.startDate = dateString;
-    if (type.indexOf("end") >= 0)
-      this .tAparams.endDate = dateString;
-    if (type.indexOf("WTM") >= 0)
-      this .tAparams.WTMdate = dateString;  
-    this .changesSavedShow = false;
-    */
-}
-
-private deleteTa(ev){
-  this .tAparams.reasonIdx = 99;
-  this .tAparams. userid = this. vacEdit. userid;
-  this .stDt = ""; 
-console.log("390 in deleteTa tAparams is %o", this .tAparams)  
-  this .saveEdits(1);
-//  location.reload();
-
 }
 private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
   console.log("5538 %o  --- %o   ---- %o  ",name , vidx,  ev)
@@ -573,49 +552,27 @@ private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
     this .getTheData();                                           // refresh the data to show the edits. 
   })
 }
-private saveEdits(ev, detail?) {
- let  response: any = null
-console.log("396 in saveEdits tAparams is %o", this .tAparams)  
-var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/emailChange.php?vidx='+this.vidxToEdit;  // set endPoint for dev
-this .http.get(url).subscribe(res =>{                     // do the http.post
-  response = res
-  console.log("582582 response %o", response)
-})
-location.reload();
-  /*
-  var jData = JSON.stringify(this .tAparams)                      // the default edit params
-  var emailParam = 0;                                             // determines IF and WHICH email 2b sent
-//  if (detail == 'CovAccept')
-  {
-    this. acknowlegeEdits = 'Edits Saved'
-    this. CovParams.vidx = this .vidxToSee  
-   // this .CovParams.toSeeParams = this .toSeeParams    
-    this .CovParams = this .toSeeParams    
-console.log("547 covParams %o", this .CovParams)       
-    jData = JSON.stringify(this. CovParams)                       // params for Coverer/Acceptance. 
-  }
 
-  if (detail){  
-    if (detail =='tAchanged')
-      emailParam = 1;
-    if (detail.includes('Accept'))                                      // Coverer accepted
-      emailParam = 2;   
-  }                                           // signal for Final Email to Nurses and Admins  
-  console.log("341 tAparams is  %o  detail is %o  jData is %o ", this .tAparams, detail, jData)
-  console.log("367 detail is %o emalparam is %o", detail, emailParam)
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editAngVac.php?email='+emailParam;  // set endPoint for dev
-  console.log('420 url is %o', url);
-    this .http.post(url, jData).subscribe(res =>{                     // do the http.post
-      this .getTheData();                                           // refresh the data to show the edits. 
-      if (ev == 1)
-        location.reload();
-  })
-  this .changesSavedShow = true;
-  this .ngOnInit();
-  if (this .wkDev == 'prod')
-     location.reload();
-   // location.reload(true);
-*/
+private deleteTa(ev){
+  this .tAparams.reasonIdx = 99;
+  this .tAparams. userid = this. vacEdit. userid;
+  this .stDt = ""; 
+console.log("390 in deleteTa tAparams is %o", this .tAparams)  
+  this .saveEdits();
+//  location.reload();
+
+}
+
+/**
+ * Sends Emails and reloads to clear input widgets
+ */
+private saveEdits() {
+  let  response: any = null
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/emailChange.php?vidx='+this.vidxToEdit;  
+  this .http.get(url).subscribe(res =>{                     // do the http.post
+    response = res
+    })
+  location.reload();
 }
 private editCovParams(param, value){
   console.log('305 %o --- %o', param, value);
@@ -709,7 +666,7 @@ public daysBeforeCalcStart(vac){
   }
   return 0;
 }
-selectedOption:string
+selectedOption:string                                     // for 'reason'
 goAwayerLastName2: string = ''
 
  /**
@@ -908,8 +865,11 @@ counterE(n){                                            // used for looper in Ca
         if (this .showError == 2)
           this .showError = 0;
         this.makeTAdates()
-  console.log("754754 %o", this .TAdates)      
+  console.log("754754 %o", this .TAdates)       
       }
+ }
+ toMMDDYYYY(dString: string){
+   return dString.substring(5,7) + '/' +  dString.substring(8,10) + '/' + dString.substring(0,4)
  }
  whatMonthIsStartDateIn(startDate){
   let thisMonth = new Date();

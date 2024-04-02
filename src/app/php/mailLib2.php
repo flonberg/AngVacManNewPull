@@ -16,8 +16,8 @@ class basicHTMLMail
         $this->fp = $this->openLogFile('Mail2');
         fwrite($this->fp, "\r\n Prod Adresses are ". $address);
         $this->title = $title;
-	//	$this->address = $address;
-    //    if (strpos(getcwd(), 'dev') !== FALSE)
+	//	$this->address = $address;                                          
+    //    if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
             $this->address = 'flonberg@mgh.harvard.edu';
 		$this->subject = $subject; 
         $this->messageType = $messageType;
@@ -108,7 +108,8 @@ class StaffEmailClass
     var $vidx;
     var $handle;
     var $SQL;
-    public function __construct($data,$vidx,$handle, $mode=0){          // mode=0 => ENTER TA  mode=1 => EDIT TA
+   
+    public function __construct($data,$vidx,$handle, $mode){          // mode=0 => ENTER TA  mode=1 => EDIT TA
         if (!is_object($data))                                          // some function invocations pass ARRAY
             $this->data = json_decode(json_encode($data), FALSE);       // so convert to OBJECT
         else
@@ -116,6 +117,7 @@ class StaffEmailClass
         $this->handle = $handle;
         $this->fp = $this->openLogFile();
         $dstr = print_r($this->data, true); fwrite($this->fp, "\r\n input data is ". $dstr);
+        fwrite($this->fp, "\r\n mode is $mode \r\n");
         $this->SQL = new SQL($handle);
         $selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $data->goAwayerUserKey;	
         $this->SQL->doSQL($selStr);
@@ -136,6 +138,8 @@ class StaffEmailClass
         $pars[1] = "Dr. ".$data->goAwayerLastName ." is going away from ". $data->startDate ." to  ". $data->endDate;
         if ($mode == 1)
             $pars[1]= "Parameters for Dr.  ".$data->goAwayerLastName ." Time Away have changed "; 
+        if ($mode == 2)
+            $pars[1]= "Coverage for Dr.  ".$data->goAwayerLastName ." Time Away has changed "; 
         $pars[2] = "To see the details of this Time Away click on the below link.";
         $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?&vidxToSee='.$vidx.' target="_blank">See Details</a>';
         ob_start(); var_dump($pars);$data1 = ob_get_clean();fwrite($this->fp, "\r\n   8989 \r\n ". $data1);

@@ -254,7 +254,7 @@
             <div class='center'>
               <table>
                 <tr><td>
-               <button class='Button' (click) = "saveEdits($event, 'tAchanged')">Save Changes</button> 
+               <button class='Button' (click) = "saveEdits()">Send Emails </button> 
                 </td><td *ngIf ='changesSavedShow'  class='greenFont'> Changes Saved </td></tr>  
                 <tr><td>
                 <button  class='Button' (click) = "deleteTa($event)">Delete Time Away</button>
@@ -294,7 +294,8 @@
           <div class='center' >
             <mat-form-field >
               <mat-label *ngIf = "vacEdit.covererDetails"> {{ vacEdit.covererDetails.LastName }} </mat-label>
-              <mat-select (selectionChange) ="changeSingleParam('coverageA',vacEdit.vidx, $event,vacEdit.LastName )"   >
+              <mat-select (selectionChange) ="editParam('coverageA', $event)"   >
+            <!--    <mat-select (selectionChange) ="changeSingleParam('coverageA',vacEdit.vidx, $event,vacEdit.LastName )"   > -->
                 <mat-option *ngFor="let MD of serviceMDs "
                 [value]="MD.UserKey ">{{ MD.LastName }}</mat-option>
               </mat-select>

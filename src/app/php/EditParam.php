@@ -18,14 +18,22 @@ $std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 $updateStr = "UPDATE TOP(1) MDtimeAway SET ".$_GET['name']."='".$_GET['value']."' WHERE vidx = ".$_GET['vidx'];
 fwrite($fp, "\r\n $updateStr");
 $res = sqlsrv_query($handle, $updateStr);
-if ($res == FALSE){
-    $dstr = print_r($res, true);
-    fwrite($fp, "\r\n". $dstr);
-}
+if( $res === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);}
+else 
+    fwrite($fp, '\r\n Update suceeded');///
+enterInMD_TimeAwayChanges();
 $vidxParams = getVidxParams($_GET['vidx']);
-new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 0);
+//   new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 2);
 exit();
-
+function enterInMD_TimeAwayChanges(){
+    global $handle, $fp;
+    $insStr = "INSERT INTO MD_TimeAwayChanges (vidx,ColChanged,EmailSent,date) values (".$_GET['vidx'].",'".$_GET['name']."',0,GETDATE())";
+    fwrite($fp, "\r\n $insStr \r\n");
+    $res = sqlsrv_query($handle, $insStr);
+if( $res === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);}
+else 
+    fwrite($fp, '\r\n INSERT suceeded \r\n');
+}
 function getMDlastName($userkey){
     global $handle;
    $selStr = "SELECT LastName FROM physicians WHERE UserKey = $userkey";
