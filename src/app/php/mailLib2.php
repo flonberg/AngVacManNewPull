@@ -68,6 +68,13 @@ class basicHTMLMail
       //  echo "<br> $insStr <br>";
         if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($this->fp, $dtr); echo "<br> $dtr <br>";}
    }
+   private function updateMD_TimeAwayChanges($vidx){
+        if ($this->subject == 'Time Away Coverage')
+            $ColChanged = 'coverageA';
+        $updateStr = "UPDATE TOP(4) MD_TimeAwayChanges SET EmailSent WHERE vidx = $vidx AND ColChanged = '".$ColChanged."'";
+        $res = sqlsrv_query($this->handle, $updateStr);
+        if( $res === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($this->fp, $dtr);} 
+   }
 }
 class CovererEmail 
 {

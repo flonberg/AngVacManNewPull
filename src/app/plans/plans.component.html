@@ -203,7 +203,11 @@
 
 <!--      The Edit tA  view          -->
 <div class='spacer'  >
+
   <div class='raised' *ngIf = showEdit >
+    <div *ngIf = ShowNeedToClick >
+      <span style="font-weight:bold; color:red;"> After making changes click Send Emails button </span>
+    </div>
     <table class='toFit' *ngIf = showEdit >
         <caption> {{ theCaption }} Edit Time Away  {{ vidxToEdit }} </caption>
       <tr *ngIf = !readOnly>
@@ -254,7 +258,14 @@
             <div class='center'>
               <table>
                 <tr><td>
-               <button class='Button' (click) = "saveEdits()">Send Emails </button> 
+               <div *ngIf = ShowNeedToClick >
+               <button class="pushable" (click) = "saveEdits()">
+                <span class="front">
+                  Send Emails
+                </span>
+              </button>
+               </div>
+      
                 </td><td *ngIf ='changesSavedShow'  class='greenFont'> Changes Saved </td></tr>  
                 <tr><td>
                 <button  class='Button' (click) = "deleteTa($event)">Delete Time Away</button>
@@ -287,7 +298,7 @@
       <th  *ngIf =  "vacEdit.WTM_self == 1  && vacEdit.WTM_Change_Needed == 1  "  >WTM Date </th>
      </tr>
      <tr>
-      <div class="line"></div>
+
      </tr>
      <tr *ngIf =  'vacEdit.CompoundCoverage == 0' >
          <td> Simple Coverage

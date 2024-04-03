@@ -513,12 +513,14 @@ private makeTillEndBoxes(vac){
     arr[i] = i;
   return arr;
 }
+ShowNeedToClick: boolean = false
 /**
  * Loads parameters to use when the Save Edits button is clicked
  * @param type 
  * @param ev 
  */
 private  editParam(type: string, ev: any) {
+    this.ShowNeedToClick = true; 
     let newParam: any
     if (typeof ev ==='string')
       newParam = ev

@@ -14,16 +14,24 @@ $fp = fopen("./Alog/emailChangeLog.txt", "w+"); $todayString =  date('Y-m-d H:i:
 $std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 $mode = 0;                                                          // Dr. ___ is going away
 $vidxParams = getVidxParams($_GET['vidx']);
+ob_start(); var_dump($vidxParams);$data = ob_get_clean();fwrite($fp, "\r\n newCoverageA is  ". $data);
 new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 1); 
 $newCoverageA = isCoverageChange($vidxParams->vidx);
+ob_start(); var_dump($newCoverageA);$data = ob_get_clean();fwrite($fp, "\r\n newCoverageA is  ". $data);
+if ($newCoverageA !== FALSE){
+    $covererParams = getCoverageA_Params($vidxParams->coverageA);
+    $vidxParams->CovererLastName = $covererParams->LastName;        //add needed params
+    $vidxParams->CovererEmail = $covererParams->Email;
+    new CovererEmail($vidxParams, $_GET['vidx'], $handle);
+}
   
 function getVidxParams($vidx){
     global $handle, $fp;
     $selStr = "SELECT m.vidx, m.userid, m.userkey, m.endDate, m.startDate, m.coverageA, p.LastName
-    FROM MDtimeAway m
-    LEFT JOIN physicians p
-    on p.UserKey = m.userkey
-    WHERE m.vidx = ".$_GET['vidx'];
+        FROM MDtimeAway m
+        LEFT JOIN physicians p
+        on p.UserKey = m.userkey
+        WHERE m.vidx = ".$_GET['vidx'];
     fwrite($fp, "\r\n $selStr");
     $stmt = sqlsrv_query($handle, $selStr);
     $obj = sqlsrv_fetch_object( $stmt);
@@ -31,7 +39,6 @@ function getVidxParams($vidx){
     $obj->goAwayerLastName = $obj->LastName;
     $obj->startDate = $obj->startDate->format("Y-m-d");
     $obj->endDate = $obj->endDate->format("Y-m-d");
-    ob_start(); var_dump($obj);$data = ob_get_clean();fwrite($fp, "\r\n data is  ". $data);
     return $obj;
 }
 function isCoverageChange($vidx){
@@ -41,7 +48,7 @@ function isCoverageChange($vidx){
     $res = sqlsrv_query($handle, $selStr);
     if( $res === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);}    
     $obj = sqlsrv_fetch_object( $res);
-    if (!is_object($obj))
+    if (is_object($obj))
         return $obj;
     else
         return false;       
@@ -52,6 +59,6 @@ function getCoverageA_Params($userkey){
     $res = sqlsrv_query($handle, $selStr);
     if( $res === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);} 
     $obj = sqlsrv_fetch_object( $res);
-    if (!is_object($obj))
+    if (is_object($obj))
         return $obj;     
 }
