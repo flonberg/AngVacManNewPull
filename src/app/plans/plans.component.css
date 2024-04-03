@@ -150,8 +150,8 @@ td.hd3 {
 	width:100px;
 }  
 .pushable {
-    background: hsl(340deg 100% 32%);
-    border-radius: 12px;
+    background: hsl(340, 13%, 26%);
+    border-radius: 6px;
     border: none;
     padding: 0;
     cursor: pointer;
@@ -160,13 +160,22 @@ td.hd3 {
   .front {
     display: block;
     padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 1.10rem;
-    background: hsl(345deg 100% 47%);
+    border-radius: 6px;
+    font-size: 1.00rem;
+    background: hsl(345, 5%, 67%);
     color: white;
     transform: translateY(-6px);
   }
 
+  .pushable:hover .front {
+    transform: translateY(-6px);
+    transition:
+      transform
+      250ms
+      cubic-bezier(.3, .7, .4, 1.5);
+  }
+
   .pushable:active .front {
     transform: translateY(-2px);
+    transition: transform 34ms;
   }

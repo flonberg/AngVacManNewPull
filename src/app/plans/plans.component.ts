@@ -556,12 +556,14 @@ private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
 }
 
 private deleteTa(ev){
-  this .tAparams.reasonIdx = 99;
+  this .editParam('reasonIdx', '99')
+/*  this .tAparams.reasonIdx = 99;
   this .tAparams. userid = this. vacEdit. userid;
   this .stDt = ""; 
 console.log("390 in deleteTa tAparams is %o", this .tAparams)  
   this .saveEdits();
 //  location.reload();
+*/
 
 }
 

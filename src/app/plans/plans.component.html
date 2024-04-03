@@ -190,8 +190,11 @@
     </ng-container>
 
     <tr>
-        <td>     
-            <button class='Button' (click) = "submitTA()">Submit </button>
+        <td>  
+          <button   class="pushable"  (click) = "submitTA()">
+            <span class="front">Submit </span>
+          </button>   
+
         </td>
       </tr>
   </table>
@@ -199,15 +202,9 @@
       <div *ngIf = "overlap"  class='warning'  > This Time Away overlaps an already scheduled Time Away therefore  cannot be added to the data base. </div>
     </div>
   </div>
-
-
 <!--      The Edit tA  view          -->
 <div class='spacer'  >
-
   <div class='raised' *ngIf = showEdit >
-    <div *ngIf = ShowNeedToClick >
-      <span style="font-weight:bold; color:red;"> After making changes click Send Emails button </span>
-    </div>
     <table class='toFit' *ngIf = showEdit >
         <caption> {{ theCaption }} Edit Time Away  {{ vidxToEdit }} </caption>
       <tr *ngIf = !readOnly>
@@ -257,19 +254,18 @@
         <td class='h50' >
             <div class='center'>
               <table>
-                <tr><td>
-               <div *ngIf = ShowNeedToClick >
-               <button class="pushable" (click) = "saveEdits()">
-                <span class="front">
-                  Send Emails
-                </span>
-              </button>
-               </div>
-      
-                </td><td *ngIf ='changesSavedShow'  class='greenFont'> Changes Saved </td></tr>  
-                <tr><td>
-                <button  class='Button' (click) = "deleteTa($event)">Delete Time Away</button>
-                </td></tr>
+                  <tr><td>
+                <div style="height:50px;" >
+                <button class="pushable" (click) = "saveEdits()">
+                  <span class="front">Save Changes </span>
+                </button>
+                </div>
+                  </td><td *ngIf ='changesSavedShow'  class='greenFont'> Changes Saved </td></tr>  
+                  <tr><td>
+                  <button   class="pushable" (click) = "deleteTa($event)">
+                    <span class="front">Delete Time Away </span>
+                  </button>
+                  </td></tr>
               </table>  
             </div>
         </td>

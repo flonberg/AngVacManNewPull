@@ -98,7 +98,7 @@ $ret = array("result"=>"success");											// default response
 	}
 	$selStr = "SELECT *  FROM $tableName WHERE vidx = $lastVidx";
 	$dB = new getDBData($selStr, $handle); $newTa = $dB->getAssoc();
-	$StaffEmailClass = new StaffEmailClass($data, $lastVidx, $handle);
+	$StaffEmailClass = new StaffEmailClass($data, $lastVidx, $handle, 0);
 	if ($data->CompoundCoverage == 0)
 		$CovererEmail = new CovererEmail($data, $lastVidx, $handle);
 
