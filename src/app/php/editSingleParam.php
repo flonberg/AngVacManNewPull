@@ -12,8 +12,8 @@ $IAP = new InsertAndUpdates();
 	if (strpos(getcwd(), 'dev') !== FALSE)
 		$level = 'dev';
 	else 
-		$level = 'prod';	
-	$fp = fopen("./Alog/editSingleParamLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
+		$level = 'prod';
+	$fp = fopen("./Alog/editSingleParamLog.txt", "a+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
     $updateStr = "UPDATE TOP(1) ".$_GET['tableName']." SET ".$_GET['name']." = '".$_GET['value']."' WHERE vidx = ".$_GET['vidx'];
     if ($_GET['tableName'] == "MD_TA_Coverage")

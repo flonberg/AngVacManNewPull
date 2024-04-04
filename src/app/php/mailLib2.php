@@ -16,8 +16,8 @@ class basicHTMLMail
         $this->fp = $this->openLogFile('Mail2');
         fwrite($this->fp, "\r\n Prod Adresses are ". $address);
         $this->title = $title;
-	//	$this->address = $address;                                          
-    //    if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
+		$this->address = $address;                                          
+        if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
             $this->address = 'flonberg@mgh.harvard.edu';
 		$this->subject = $subject; 
         $this->messageType = $messageType;
@@ -85,10 +85,10 @@ class CovererEmail
             $pars[1] = "Dr. ".$newTA->goAwayerLastName ." is going to be away from ".$newTA->startDate. " to ".$newTA->endDate ." and would like you to cover.";
             if ($newTA->CompoundCoverage == 1)
                 $pars[1] = "Dr. ".$newTA->goAwayerLastName ." is going to be away from ".$newTA->startDate. " to ".$newTA->endDate ." and would like you to cover part of this Time Away";
-            if ($newTA->WTM_self == 0)
-                $pars[2] = "You are also being asked to cover WTM for this Time Away";
-            else
-                $par[2] = "";
+         //   if ($newTA->WTM_self == 0)
+         //       $pars[2] = "You are also being asked to cover WTM for this Time Away";
+         //   else
+         //       $par[2] = "";
             $pars[3] = "If you can cover, please click this link to see details of the Time Away and accept the coverage";
             $pars[4] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$newTA->CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
             $prodAddress = $newTA->CovererEmail;
@@ -143,12 +143,18 @@ class StaffEmailClass
         fwrite($this->fp, "\r\n 109 ProdAddresses are  $addresses \r\n");
         $pars[0] = "Greetings;";
         $pars[1] = "Dr. ".$data->goAwayerLastName ." is going away from ". $data->startDate ." to  ". $data->endDate;
+        if ($mode == 3)
+         $pars[1] = "Dr. ".$data->goAwayerLastName ." Time Away from  ". $data->startDate ." to  ". $data->endDate ." has been deleted";
         if ($mode == 1)
             $pars[1]= "Parameters for Dr.  ".$data->goAwayerLastName ." Time Away have changed "; 
         if ($mode == 2)
             $pars[1]= "Coverage for Dr.  ".$data->goAwayerLastName ." Time Away has changed "; 
         $pars[2] = "To see the details of this Time Away click on the below link.";
         $pars[3] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?&vidxToSee='.$vidx.' target="_blank">See Details</a>';
+        if ($mode == 3){
+            $pars[2] = "";
+            $pars[2] = "";
+        }
         ob_start(); var_dump($pars);$data1 = ob_get_clean();fwrite($this->fp, "\r\n   8989 \r\n ". $data1);
         $bHM = new basicHTMLMail($addresses, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff Coverage", $this->handle);
         $bHM->send();

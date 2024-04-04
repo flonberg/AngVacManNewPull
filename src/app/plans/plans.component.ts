@@ -547,7 +547,9 @@ private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
     toEditVal = ev
   else 
     toEditVal = ev.value
-  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editSingleParam.php?name='+name+'&tableName='+tableName+'&vidx='+vidx+'&value='+toEditVal+'&goAwayerLastName='+goAwayerLastName;  // set endPoint for dev
+  var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/editSingleParam.php?name='+name+'&tableName='+tableName+'&vidx='+vidx+'&value='+toEditVal+'&userid='+this .userid;  // set endPoint for dev
+  if (goAwayerLastName.length > 0)
+    url += '&goAwayerLastName='+goAwayerLastName
   console.log('420 url is %o', url);
   this.responseSaved = true;
   this .http.get(url).subscribe(res =>{                     // do the http.post
@@ -557,11 +559,12 @@ private changeSingleParam(name,tableName, vidx, ev, goAwayerLastName){
 
 private deleteTa(ev){
   this .editParam('reasonIdx', '99')
+  this .saveEdits('deleted');
 /*  this .tAparams.reasonIdx = 99;
   this .tAparams. userid = this. vacEdit. userid;
   this .stDt = ""; 
 console.log("390 in deleteTa tAparams is %o", this .tAparams)  
-  this .saveEdits();
+
 //  location.reload();
 */
 
@@ -570,9 +573,11 @@ console.log("390 in deleteTa tAparams is %o", this .tAparams)
 /**
  * Sends Emails and reloads to clear input widgets
  */
-private saveEdits() {
+private saveEdits(param?: string) {
   let  response: any = null
   var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/emailChange.php?vidx='+this.vidxToEdit;  
+  if (param !== null)
+    url += '&value=delete'
   this .http.get(url).subscribe(res =>{                     // do the http.post
     response = res
     })
@@ -958,7 +963,8 @@ covererSelect(ev, num?:number){
   if (ev.value) 
     this .tAparams.coverageA = ev.value.UserKey
   if (typeof num !== 'undefined' ){  
-    this .tAparams['CompoundCoverers'][num] = ev.value.UserKey
+    if (this.tAparams['CompoundCoverers'])
+     this .tAparams['CompoundCoverers'][num] = ev.value.UserKey
     }
 console.log("848848 %o", this.tAparams)    
   if (this .showError == 4)

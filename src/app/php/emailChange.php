@@ -15,7 +15,10 @@ $std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 $mode = 0;                                                          // Dr. ___ is going away
 $vidxParams = getVidxParams($_GET['vidx']);
 ob_start(); var_dump($vidxParams);$data = ob_get_clean();fwrite($fp, "\r\n newCoverageA is  ". $data);
-new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 1); 
+if (isset($_GET['value']) && $_GET['value'] == 'delete')
+    new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 3); 
+else
+    new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 1); 
 $newCoverageA = isCoverageChange($vidxParams->vidx);
 ob_start(); var_dump($newCoverageA);$data = ob_get_clean();fwrite($fp, "\r\n newCoverageA is  ". $data);
 if ($newCoverageA !== FALSE){
