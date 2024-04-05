@@ -17,7 +17,7 @@ $IAP = new InsertAndUpdates();
 	$std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
     $updateStr = "UPDATE TOP(1) ".$_GET['tableName']." SET ".$_GET['name']." = '".$_GET['value']."' WHERE vidx = ".$_GET['vidx'];
     if ($_GET['tableName'] == "MD_TA_Coverage")
-        $updateStr = "UPDATE TOP(14) ".$_GET['tableName']." SET ".$_GET['name']." = '".$_GET['value']."' WHERE vidx = ".$_GET['vidx'] ." AND CovererUserKey = ".$_GET['goAwayerLastName'];
+        $updateStr = "UPDATE TOP(34) ".$_GET['tableName']." SET ".$_GET['name']." = '".$_GET['value']."' WHERE vidx = ".$_GET['vidx'] ." AND CovererUserKey = ".$_GET['goAwayerLastName'];
     fwrite($fp, "\r\n $updateStr \r\n");
     $res = sqlsrv_query( $handle, $updateStr);    
     if( $res === false ) {

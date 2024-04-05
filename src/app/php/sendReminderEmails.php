@@ -2,11 +2,22 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-ini_set("error_log", "./log/test2.txt");
+ini_set("error_log", "./Alog/sendReminderError.txt");
 require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
+require_once './mailLib2.php';
 $fp = makeLogFile();
 $handle = connectDB_FL();
-$numWeeks = 2;
+$vidx = 140;
+$goAwayerParams =getGoAwayerParamsFromVidx($vidx);
+$TaParams = getTimeAwayParams($vidx);
+$startDate = $TaParams['startDate']->format('m-d-Y');
+$endDate = $TaParams['endDate']->format('m-d-Y');
+$CovererParams = getCoverParams(($TaParams['coverageA']));
+echo "<pre>"; print_r($CovererParams); echo "</pre>";
+
+exit();
+
+/*$numWeeks = 2;
 $debug = FALSE; if (isset($_GET['debug'])) $debug = TRUE;
 if (isset($_GET['numWeeks']))
     $numWeeks = $_GET['numWeeks'];
@@ -20,6 +31,58 @@ if (is_array($oneWeekTAs))
         updateMDtimeAway($val, $remColName);
     }
 exit();  
+*/
+function reSendSimpleCoverageRequest($vidx, $goAwayerParams,$TaParams,$CovererParams, $startDate, $endDate){
+    global $handle;
+    $object = new stdClass;
+    $object->CovererLastName = $CovererParams['LastName'];
+    $object->goAwayerLastName = $TaParams['LastName'];
+    $object->startDate = $startDate;
+    $object->endDate = $endDate;
+    $object->CovererEmail = $CovererParams['Email'];
+    echo "<pre>"; print_r($object); echo "</pre>";
+    $CovererEmail = new CovererEmail($object, $vidx, $handle);
+}
+function sendCoverageNotAccepted($StartDate,$CovererLastName, $CovererEmail, $handle){
+    $pars[0] = "Hello;";
+    $pars[1] = "Dr. ".$CovererLastName ." has not accepted coverage for your Time Away starting on ". $StartDate .".";
+    $bHM = new basicHTMLMail($CovererEmail, "Time Away Coverage",$pars, "Coverage for Physician Time Away","CoverageNotAccepted", $handle);
+    $bHM->send();
+}
+function getGoAwayerParamsFromVidx($vidx){
+    global $handle, $fp;
+    $selStr = "SELECT ta.userkey,ta.vidx, p.UserKey, p.LastName, p.Email
+        FROM MDtimeAway ta 
+        LEFT JOIN physicians p on ta.userkey = p.UserKey
+        WHERE ta.vidx = $vidx";
+    $stmt = sqlsrv_query($handle, $selStr);
+    $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    return $row;
+   // fwrite($fp, $selStr);    
+}
+function getCoverParams($CovererUserKey){
+    global $handle;
+    $selStr = "SELECT p.UserKey,  p.Email,p.LastName, u.UserID FROM physicians p
+    LEFT JOIN users u
+    ON p.UserKey = u.UserKey
+    WHERE p.UserKey = $CovererUserKey";
+    echo "<br> 56 <br> $selStr";
+    $stmt = sqlsrv_query($handle, $selStr);
+    $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    var_dump($row);
+    return $row;
+}
+function getTimeAwayParams($vidx){
+    global $handle;
+    $selStr = "SELECT ta.coverageA, ta.startDate, ta.endDate, p.LastName, p.Email
+    FROM MDtimeAway ta
+    LEFT JOIN physicians p on ta.userkey= p.UserKey
+    WHERE ta.vidx = $vidx";
+    $stmt = sqlsrv_query($handle, $selStr);
+    $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    return $row;
+}
+
 /**
  * Update OneWeekReminder of TwoWeekReminder -> 1 for vidx
  */  
@@ -97,7 +160,7 @@ function makeLogFile(){
     $in = 0;
     $today = new DateTime(); $todayString = $today->format('Y-m-d');
     do {																			// put index in case of permission failure
-        $fp = @fopen("./log/sendCoverageTBDLog".$in.".txt", "a+");			
+        $fp = @fopen("./Alog/sendReminderLog".$in.".txt", "a+");			
         if ($in++ > 5)
             break;
         }

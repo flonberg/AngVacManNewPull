@@ -10,11 +10,13 @@ class basicHTMLMail
 	var $message;
     var $messageType;
     var $title;
+    var $docidx;
     var $handle;
     var $fp;
-	public function __construct($address, $subject, array $msg, $title=null, $messageType, $handle){
+	public function __construct($address, $subject, array $msg, $title=null, $messageType, $handle, $docidx = 0){
         $this->fp = $this->openLogFile('Mail2');
         fwrite($this->fp, "\r\n Prod Adresses are ". $address);
+        $this->docidx = $docidx;
         $this->title = $title;
 		$this->address = $address;                                          
         if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
@@ -63,7 +65,7 @@ class basicHTMLMail
     public function send(){
         fwrite($this->fp, "\r\n address is ".$this->address);
         mail($this->address,$this->subject,$this->message, $this->headers);
-        $insStr = "INSERT INTO MD_TimeAwayMail (address, date, messageType) values ('".$this->address."', GETDATE(), '".$this->messageType."')";
+        $insStr = "INSERT INTO MD_TimeAwayMail (address, date, messageType, docidx) values ('".$this->address."', GETDATE(), '".$this->messageType."',".$this->docidx.")";
         $stmt = sqlsrv_query( $this->handle, $insStr);
       //  echo "<br> $insStr <br>";
         if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($this->fp, $dtr); echo "<br> $dtr <br>";}
@@ -92,8 +94,10 @@ class CovererEmail
             $pars[3] = "If you can cover, please click this link to see details of the Time Away and accept the coverage";
             $pars[4] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$newTA->CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
             $prodAddress = $newTA->CovererEmail;
-            $devAddress = 'flonberg@mgh.harvard.edu';
-            $bHM = new basicHTMLMail($devAddress, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "CoverageRequested", $handle);
+            if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
+                $prodAddress = 'flonberg@mgh.harvard.edu';
+           // $devAddress = 'flonberg@mgh.harvard.edu';
+            $bHM = new basicHTMLMail($prodAddress, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "CoverageRequested", $handle, $vidx);
             $fp = $bHM->openLogFile('AskForCoverage');
             fwrite($fp, "\r\n prodAddress is ". $prodAddress);
             ob_start(); var_dump($newTA);$data = ob_get_clean();fwrite($fp, "\r\n 75757\r\n ". $data);
@@ -156,7 +160,7 @@ class StaffEmailClass
             $pars[2] = "";
         }
         ob_start(); var_dump($pars);$data1 = ob_get_clean();fwrite($this->fp, "\r\n   8989 \r\n ". $data1);
-        $bHM = new basicHTMLMail($addresses, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff Coverage", $this->handle);
+        $bHM = new basicHTMLMail($addresses, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "Staff Coverage", $this->handle, $vidx);
         $bHM->send();
 
     }
@@ -183,9 +187,9 @@ class StaffEmailClass
 }
 class CoverageNotAcceptedEmail
 {
-    public function __construct($StartDate, $EndDate, $CovererLastName, $CovererEmail, $handle){
+    public function __construct($StartDate,$CovererLastName, $CovererEmail, $handle){
         $pars[0] = "Hello;";
-        $pars[1] = "Dr. ".$CovererLastName ." has not accepted coverage for your Time Away from ". $StartDate ." to  ". $EndDate;
+        $pars[1] = "Dr. ".$CovererLastName ." has not accepted coverage for your Time Away starting on ". $StartDate .".";
         $bHM = new basicHTMLMail($CovererEmail, "Time Away Coverage",$pars, "Coverage for Physician Time Away","CoverageNotAccepted", $handle);
         $bHM->send();
     }
