@@ -80,6 +80,8 @@ $ret = array("result"=>"success");											// default response
 		fwrite($fp, "\r\n No userid \r\n");
 		exit();
 	}
+	$data->note = str_replace("'", "", $data->note);									// remove single quote
+	$data->note = htmlspecialchars($data->note, ENT_QUOTES);
 	$insStr = " INSERT INTO $tableName (overlapVidx, overlap, userid, service,  userkey, startDate, endDate, reasonIdx, coverageA,  note, WTM_Change_Needed, WTMdate, WTM_self,CovTBDemail,CompoundCoverage,WTM_CovererUserKey,dev, createWhen)
 				values(".$overlapVidx.", $overlap,  '$userid','$data->service', '".$data->goAwayerUserKey."','".$data->startDate."', '".$data->endDate."',  ".$data->reasonIdx.",
 				'".$data->coverageA."','". $data->note."', '". $data->WTMchange."','". $data->WTMdate."','". $data->WTM_self."' ,'0',$data->CompoundCoverage,$data->WTMcovererUserKey, $dev,getdate()); SELECT @@IDENTITY as id";
@@ -87,7 +89,10 @@ $ret = array("result"=>"success");											// default response
 	if ($debug) 
 		fwrite($fp, "\r\n $insStr");
 	$stmt=sqlsrv_query($handle, $insStr);
-	if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);}
+	if( $stmt === false )  {  
+		$dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);
+		sendInsertFailedMail( $insStr);
+		}
 	$next_result = sqlsrv_next_result($stmt); 
 	$row = sqlsrv_fetch_array($stmt);
 	$lastVidx = $row['id'];
@@ -190,7 +195,7 @@ function sendMultiAskForCoverage($vidx, $data){
 		$data->CovererEmail = $val['Email'];
 		$data->CovererLastName = $val['LastName'];
 		$data->CovererUserId = $key;
-		$CovererEmail = new CovererEmail($data,$vidx, $handle);		
+		$CovererEmail = new CovererEmail($data,$vidx, $handle);	
 	}
 }
 

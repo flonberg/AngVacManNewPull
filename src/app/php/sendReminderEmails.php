@@ -7,14 +7,22 @@ require_once 'H:\inetpub\lib\sqlsrvLibFL_dev_.php';
 require_once './mailLib2.php';
 $fp = makeLogFile();
 $handle = connectDB_FL();
-$vidx = 140;
+$vidx = 266;
+if ($_GET['vidx'])
+    $vidx = $_GET['vidx'];
 $goAwayerParams =getGoAwayerParamsFromVidx($vidx);
-$TaParams = getTimeAwayParams($vidx);
-$startDate = $TaParams['startDate']->format('m-d-Y');
-$endDate = $TaParams['endDate']->format('m-d-Y');
-$CovererParams = getCoverParams(($TaParams['coverageA']));
-echo "<pre>"; print_r($CovererParams); echo "</pre>";
-
+//$TaParams = getTimeAwayParams($vidx);
+$TaParams = getTimeAwayParamsObj($vidx);
+//$startDate = $TaParams['startDate']->format('m-d-Y');
+//$endDate = $TaParams['endDate']->format('m-d-Y');
+$startDate = $TaParams->startDate->format('m-d-Y');
+$endDate = $TaParams->endDate->format('m-d-Y');
+//$CovererParams = getCoverParams(($TaParams['coverageA']));
+$CovererParams = getCoverParams(($TaParams->coverageA));//
+echo "<pre>  22 CovererParams "; print_r($CovererParams); echo "</pre>";
+//reSendSimpleCoverageRequest($vidx,$goAwayerParams,$TaParams,$CovererParams,$startDate,$endDate);
+// sendToStaff($vidx);
+reSendCompoundCoverage($vidx);
 exit();
 
 /*$numWeeks = 2;
@@ -32,6 +40,11 @@ if (is_array($oneWeekTAs))
     }
 exit();  
 */
+function sendToStaff($vidx){
+    global $handle;
+    $TaParams = getTimeAwayParams($vidx);
+    new StaffEmailClass($TaParams, $vidx, $handle, 0);
+}
 function reSendSimpleCoverageRequest($vidx, $goAwayerParams,$TaParams,$CovererParams, $startDate, $endDate){
     global $handle;
     $object = new stdClass;
@@ -40,9 +53,35 @@ function reSendSimpleCoverageRequest($vidx, $goAwayerParams,$TaParams,$CovererPa
     $object->startDate = $startDate;
     $object->endDate = $endDate;
     $object->CovererEmail = $CovererParams['Email'];
-    echo "<pre>"; print_r($object); echo "</pre>";
+    echo "<pre> 56  CovererParams : "; print_r($object); echo "</pre>";
     $CovererEmail = new CovererEmail($object, $vidx, $handle);
 }
+function reSendCompoundCoverage($vidx){
+    global $handle, $fp;
+    $selStr = "SELECT CovererUserKey FROM MD_TA_Coverage where vidx = $vidx";
+    $i = 0;
+    $stmt = sqlsrv_query( $handle, $selStr);
+    if( $stmt === false ) 
+         {$errs = print_r( sqlsrv_errors(), true); fwrite($fp, $errs);}
+    else {
+        while ($assoc =  sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC)){
+            $row[$assoc['CovererUserKey']] = $assoc['CovererUserKey'];
+        }
+    }  
+    foreach ($row as $key=>$val){
+        $selStr = "SELECT p.UserKey,  p.Email,p.LastName, u.UserID FROM physicians p
+        LEFT JOIN users u
+        ON p.UserKey = u.UserKey
+        WHERE p.UserKey = $val";
+        $stmt = sqlsrv_query($handle, $selStr);
+        $row2[$val] = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    }
+    echo "<pre>  79 "; print_r($row2); echo "</pre>";
+}
+
+
+
+
 function sendCoverageNotAccepted($StartDate,$CovererLastName, $CovererEmail, $handle){
     $pars[0] = "Hello;";
     $pars[1] = "Dr. ".$CovererLastName ." has not accepted coverage for your Time Away starting on ". $StartDate .".";
@@ -69,17 +108,28 @@ function getCoverParams($CovererUserKey){
     echo "<br> 56 <br> $selStr";
     $stmt = sqlsrv_query($handle, $selStr);
     $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-    var_dump($row);
+
     return $row;
 }
 function getTimeAwayParams($vidx){
     global $handle;
-    $selStr = "SELECT ta.coverageA, ta.startDate, ta.endDate, p.LastName, p.Email
+    $selStr = "SELECT ta.userkey, ta.coverageA, ta.startDate, ta.endDate, p.LastName, p.Email
     FROM MDtimeAway ta
     LEFT JOIN physicians p on ta.userkey= p.UserKey
     WHERE ta.vidx = $vidx";
     $stmt = sqlsrv_query($handle, $selStr);
     $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    return $row;
+}
+function getTimeAwayParamsObj($vidx){
+    global $handle;
+    $selStr = "SELECT ta.userkey, ta.coverageA, ta.startDate, ta.endDate, p.LastName, p.Email
+    FROM MDtimeAway ta
+    LEFT JOIN physicians p on ta.userkey= p.UserKey
+    WHERE ta.vidx = $vidx";
+    $stmt = sqlsrv_query($handle, $selStr);
+    $row = sqlsrv_fetch_object($stmt);
+    $row->goAwayerUserKey = $row->userkey;
     return $row;
 }
 

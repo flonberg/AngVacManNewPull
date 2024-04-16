@@ -26,8 +26,12 @@ $vidxParams = getVidxParams($_GET['vidx']);
 //   new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 2);
 exit();
 function enterInMD_TimeAwayChanges(){
-    global $handle, $fp;
-    $insStr = "INSERT INTO MD_TimeAwayChanges (vidx,ColChanged,EmailSent,date) values (".$_GET['vidx'].",'".$_GET['name']."',0,GETDATE())";
+    global $handle, $fp, $level;
+    if ($level == 'prod')
+        $prod = 1; 
+    else
+        $prod = 0; 
+    $insStr = "INSERT INTO MD_TimeAwayChanges (vidx,ColChanged,EmailSent,prod, date) values (".$_GET['vidx'].",'".$_GET['name']."',0,$prod,GETDATE())";
     fwrite($fp, "\r\n $insStr \r\n");
     $res = sqlsrv_query($handle, $insStr);
 if( $res === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($fp, $dtr);}

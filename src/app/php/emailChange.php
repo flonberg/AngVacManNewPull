@@ -6,26 +6,44 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ini_set("error_log", "./Alog/emailChangeError.txt");
-if (strpos(getcwd(), 'dev') !== FALSE)
+if (strpos(getcwd(), 'dev') !== FALSE){
     $level = 'dev';
-else 
-    $level = 'prod';	
+    $prodVal = 0;
+}
+else {
+    $level = 'prod';
+    $prodVal = 1; 	
+}
 $fp = fopen("./Alog/emailChangeLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 $std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
+$needToSendEmails = getNeedToSend($_GET['vidx']);
 $mode = 0;                                                          // Dr. ___ is going away
 $vidxParams = getVidxParams($_GET['vidx']);
+var_dump($vidxParams);
 ob_start(); var_dump($vidxParams);$data = ob_get_clean();fwrite($fp, "\r\n newCoverageA is  ". $data);
+
+exit();    
 if (isset($_GET['value']) && $_GET['value'] == 'delete')
     new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 3); 
 else
     new StaffEmailClass($vidxParams, $vidxParams->vidx, $handle, 1); 
-$newCoverageA = isCoverageChange($vidxParams->vidx);
+$newCoverageA = isImportantChange($vidxParams->vidx);
 ob_start(); var_dump($newCoverageA);$data = ob_get_clean();fwrite($fp, "\r\n newCoverageA is  ". $data);
 if ($newCoverageA !== FALSE){
     $covererParams = getCoverageA_Params($vidxParams->coverageA);
     $vidxParams->CovererLastName = $covererParams->LastName;        //add needed params
     $vidxParams->CovererEmail = $covererParams->Email;
     new CovererEmail($vidxParams, $_GET['vidx'], $handle);
+}
+
+function getNeedToSend($vidx){
+    global $handle, $prodVal;
+    $selStr = "SELECT vidx, ColChanged FROM MD_TimeAwayChanges WHERE ColChanged IN ('CoverageA','startDate','endDate') AND EmailSent = 0 AND prod = $prodVal AND vidx = ".$_GET['vidx'];
+    echo "<br> $selStr <br>"; 
+    $stmt = sqlsrv_query($handle, $selStr);
+        while ($obj = sqlsrv_fetch_object( $stmt))
+            $row[$obj->vidx] = $obj;
+    var_dump($row);
 }
   
 function getVidxParams($vidx){
@@ -44,8 +62,9 @@ function getVidxParams($vidx){
     $obj->endDate = $obj->endDate->format("Y-m-d");
     return $obj;
 }
-function isCoverageChange($vidx){
+function isImportantChange($vidx){
     global $handle, $fp;
+    $importChanges = array('CoverageA','endDate','startDate');
     $selStr = "SELECT * FROM MD_TimeAwayChanges WHERE vidx = $vidx AND ColChanged = 'coverageA' AND EmailSent = 0";
     fwrite($fp, "\r\n $selStr \r\n");
     $res = sqlsrv_query($handle, $selStr);

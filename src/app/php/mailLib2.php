@@ -67,7 +67,6 @@ class basicHTMLMail
         mail($this->address,$this->subject,$this->message, $this->headers);
         $insStr = "INSERT INTO MD_TimeAwayMail (address, date, messageType, docidx) values ('".$this->address."', GETDATE(), '".$this->messageType."',".$this->docidx.")";
         $stmt = sqlsrv_query( $this->handle, $insStr);
-      //  echo "<br> $insStr <br>";
         if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($this->fp, $dtr); echo "<br> $dtr <br>";}
    }
    private function updateMD_TimeAwayChanges($vidx){
@@ -96,6 +95,8 @@ class CovererEmail
             $prodAddress = $newTA->CovererEmail;
             if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
                 $prodAddress = 'flonberg@mgh.harvard.edu';
+            if (strpos($newTA->goAwayerLastName, 'Suit') !== FALSE)          // if it is Test MD send to me
+                $prodAddress = 'flonberg@mgh.harvard.edu';    
            // $devAddress = 'flonberg@mgh.harvard.edu';
             $bHM = new basicHTMLMail($prodAddress, "Time Away Coverage",$pars, "Coverage for Physician Time Away", "CoverageRequested", $handle, $vidx);
             $fp = $bHM->openLogFile('AskForCoverage');
@@ -130,7 +131,10 @@ class StaffEmailClass
         $dstr = print_r($this->data, true); fwrite($this->fp, "\r\n input data is ". $dstr);
         fwrite($this->fp, "\r\n mode is $mode \r\n");
         $this->SQL = new SQL($handle);
-        $selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $data->goAwayerUserKey;	
+        if (isset($data->goAwayerUserKey))
+            $selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = ". $data->goAwayerUserKey;	
+        else 
+            $selStr = "SELECT * from MD_TimeAway_Staff WHERE MD_UserKey = 258";
         $this->SQL->doSQL($selStr);
         $staffByUserKey = $this->SQL->getAssoc();
         $selStr2 = $this->composeStaffAddresses($staffByUserKey[0]);
@@ -138,13 +142,17 @@ class StaffEmailClass
         $this->SQL->doSQL($selStr2);
         $staff = $this->SQL->getAssoc();
         $addresses = "";
-        foreach ($staff as $key=>$val){
+        foreach ($staff as $key=>$val){                             // build comma seperated list of addresses
             if ($key == 0)
                 $addresses = $val['Email'];
             else
                 $addresses .= ", ".$val['Email'];
         }
         fwrite($this->fp, "\r\n 109 ProdAddresses are  $addresses \r\n");
+        if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
+            $addresses = 'flonberg@mgh.harvard.edu';
+        if (strpos($data->goAwayerLastName, 'Suit') !== FALSE)          // if it is Test MD send to me
+            $addresses = 'flonberg@mgh.harvard.edu';  
         $pars[0] = "Greetings;";
         $pars[1] = "Dr. ".$data->goAwayerLastName ." is going away from ". $data->startDate ." to  ". $data->endDate;
         if ($mode == 3)
@@ -193,5 +201,15 @@ class CoverageNotAcceptedEmail
         $bHM = new basicHTMLMail($CovererEmail, "Time Away Coverage",$pars, "Coverage for Physician Time Away","CoverageNotAccepted", $handle);
         $bHM->send();
     }
+}
+function sendInsertFailedMail($insStr){ 
+    global $handle;  
+    $par = Array();
+    $par[0] = 'Insert Time Away failed for ';
+    $par[1] = $insStr;
+    $subject = "Insert Time Away Failed";
+    $messageType = "Insert tA failed";
+    $bHTMNM = new basicHTMLMail('flonberg@mgh.harvard.edu',$subject, $par, $messageType, $handle, 0);
+    $bHTMNM->send();
 }
 

@@ -366,7 +366,7 @@
   <!--   THIRD PARTY   view-->
   <div class='raised' *ngIf = 'showReadOnly ' >
     <table class='toFit' *ngIf = showReadOnly>
-      <caption *ngIf = "vacEdit.LastName"> Time-Away for Dr. {{ vacEdit.LastName}}    </caption>
+      <caption *ngIf = "vacEdit.LastName"> Time-Away for Dr. {{ vacEdit.LastName}}   {{vacEdit.vidx }} </caption>
       <caption *ngIf = "toSeeParams.goAwayerLastName"> Time-Away for Dr.   {{ toSeeParams.goAwayerLastName}}  </caption>
       <tr>
           <td> <b> Start Date:</b>  {{ toSeeParams.startDate }} </td> <td> <b> End Date: </b> {{ toSeeParams.endDate }} </td>

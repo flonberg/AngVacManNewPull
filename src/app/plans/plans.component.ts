@@ -195,7 +195,7 @@ export class PlansComponent implements OnInit {
       let test = loc.length
       if (loc.length < 5)
         return 'dev'
-      else
+      else 
         return 'prod'
     }
     unsorted() { }                                                      // user by alphabetization of the data by service 
@@ -204,7 +204,7 @@ export class PlansComponent implements OnInit {
     let url  = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getVidxToSee.php?vidxToSee='+ this.vidxToSee + '&userid=' + this .userid;
     this .http.get(url).subscribe(res =>{
         this .toSeeParams = res;
-        console.log("195195 toSeeParams is %o", this .toSeeParams)
+        console.log("209209 toSeeParams is %o", this .toSeeParams)
     for (var key in this .toSeeParams.Coverage) {
       if (this .toSeeParams['loggedInUserKey'] == this .toSeeParams.Coverage[key]['CovererUserKey'])
         this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
@@ -263,7 +263,7 @@ CompCovArray:any
       this .toSeeParams.WTMdate = 'TBD';
     }
     if (vacEdit.WTMDate)
-    this .WTMDateConvent =  this.toMMDDYYYY(vacEdit.WTMDate)
+      this .WTMDateConvent =  this.toMMDDYYYY(vacEdit.WTMDate)
 
     this .tAparams.vidx  = vacEdit.vidx;
     this .vidxToEdit = vacEdit.vidx;                   // for debugging

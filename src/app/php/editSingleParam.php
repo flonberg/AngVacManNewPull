@@ -24,7 +24,7 @@ $IAP = new InsertAndUpdates();
         $dstr =  print_r( sqlsrv_errors(), true);
         fwrite($fp, "\r\n $dstr \r\n ");
     }
-    if ($_GET['name'] == 'coverageA'){
+  /*  if ($_GET['name'] == 'coverageA'){
         $email = getSingle("SELECT Email FROM physicians WHERE UserKey = '".$_GET['value']."'", 'Email', $handle);
         $LastName = getSingle("SELECT LastName FROM physicians WHERE UserKey = '".$_GET['value']."'", 'LastName', $handle);
         fwrite($fp, "\r\n email is $email \r\n");
@@ -53,4 +53,6 @@ $IAP = new InsertAndUpdates();
 			$sendMail = new sendMailClassLib($mailAddress, $subj, $message);	
 	//		$sendMail->setHeaders($headers);	
 			$sendMail->send();
+			
     }
+	*/

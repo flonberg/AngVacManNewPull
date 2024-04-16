@@ -31,6 +31,7 @@ $dstr = print_r($assoc, true); fwrite($fp, $dstr);
 	$assoc['startDate_m-d-y'] = formatDate($assoc['startDate']);
 	$assoc['endDate'] = formatDate($assoc['endDate']);
 	//$assoc['startDateConvent'] = formatDate($assoc['startDate']);
+	$assoc['note'] = htmlspecialchars_decode($assoc['note']);
 	$assoc['WTMnote'] = $assoc['WTMnote'];
 	if (isset($assoc['WTMdate'])){
 		if (is_object($assoc['WTMdate'])){

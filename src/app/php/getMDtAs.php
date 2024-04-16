@@ -7,7 +7,7 @@ $handleBB = connectBB();
 	$tableName = 'MDtimeAway';
 	$fp = fopen("./Alog/getMDtAsLog.txt", "w+");
 	$todayString =  date('Y-m-d H:i:s');
-	fwrite($fp, "\r\n $todayString");
+	fwrite($fp, "\r\n   now is $todayString");
 	$s =  print_r($_GET, true); fwrite($fp, $s); 
 	//$MDtAs = getMDtAs();
 	$MDtAs['tAs'] = getMDtAs();
@@ -50,7 +50,7 @@ function getMDtAs(){
 	$endDateString = $endDate->format("Y-m-d");
 	$selStr = "SELECT * FROM $tableName WHERE endDate >= '".$firstDay."' AND startDate < '".$endDateString."' AND reasonIdx < 9 and dev = '0' ORDER BY startDate";
 	if (strpos(getcwd(), 'dev') !== FALSE)
-		$selStr = "SELECT * FROM $tableName WHERE endDate >= '".$firstDay."' AND startDate < '".$endDateString."' AND reasonIdx < 9 and dev = '1' ORDER BY startDate";
+		$selStr = "SELECT * FROM $tableName WHERE endDate >= '".$firstDay."' AND startDate < '".$endDateString."' AND reasonIdx < 9 ORDER BY startDate";
 	fwrite($fp, "\r\n selStr is \r\n $selStr ");
 	
 	$dB = new getDBData($selStr, $handle);
@@ -61,7 +61,6 @@ function getMDtAs(){
 	$index = 0;															// use to keep track of number of tA's in each service
 	while ($assoc = $dB->getAssoc()){
 		$vacGraph[$i][$assoc['userid']]['index'] = $i;
-		
 		$vacGraph[$i][$assoc['userid']]['LastName'] = $MDs[$UserKeys[$assoc['userid']]]['LastName'];
 		$vacGraph[$i][$assoc['userid']]['service'] = $MDs[$UserKeys[$assoc['userid']]]['service'];
 		if (!isset($serviceGroup[$MDs[$UserKeys[$assoc['userid']]]['service']][$assoc['userid']]))				// if there is NOT tA in this serviceGroup
@@ -72,7 +71,8 @@ function getMDtAs(){
 		$vacGraph[$i][$assoc['userid']]['UserKey'] = $UserKeys[$assoc['userid']];
 		$vacGraph[$i][$assoc['userid']]['userid'] = $assoc['userid'];
 		$vacGraph[$i][$assoc['userid']]['overlap'] = $assoc['overlap'];
-		$vacGraph[$i][$assoc['userid']]['note'] = $assoc['note'];
+		$vacGraph[$i][$assoc['userid']]['note'] = htmlspecialchars_decode($assoc['note'], ENT_QUOTES);
+	fwrite($fp, "\r\n 7575 raw note is ".$assoc['note']." proc note is".	$vacGraph[$i][$assoc['userid']]['note'] );	
 		$vacGraph[$i][$assoc['userid']]['reasonIdx'] = $assoc['reasonIdx'];
 		$vacGraph[$i][$assoc['userid']]['vidx'] = $assoc['vidx'];
 		$vacGraph[$i][$assoc['userid']]['CompoundCoverage'] = $assoc['CompoundCoverage'];
