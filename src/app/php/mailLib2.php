@@ -3,6 +3,7 @@ require_once "./SQL_class.php";
 class basicHTMLMail
 {
 	var $address;
+    var $prodAddress;
 	var $subject;
 	var $msg;
 	var $headers;
@@ -18,7 +19,8 @@ class basicHTMLMail
         fwrite($this->fp, "\r\n Prod Adresses are ". $address);
         $this->docidx = $docidx;
         $this->title = $title;
-		$this->address = $address;                                          
+		$this->address = $address;                                      // this->address will -> flonberg@mgh.edu when in 'dev'
+        $this->prodAddress = $address;                                     // store for recording real addresses when in 'dev'                            
         if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
             $this->address = 'flonberg@mgh.harvard.edu';
 		$this->subject = $subject; 
@@ -62,10 +64,11 @@ class basicHTMLMail
             </head>	
         </html>";    
     }
+
     public function send(){
         fwrite($this->fp, "\r\n address is ".$this->address);
-        mail($this->address,$this->subject,$this->message, $this->headers);
-        $insStr = "INSERT INTO MD_TimeAwayMail (address, date, messageType, docidx) values ('".$this->address."', GETDATE(), '".$this->messageType."',".$this->docidx.")";
+     //   mail($this->address,$this->subject,$this->message, $this->headers);
+        $insStr = "INSERT INTO MD_TimeAwayMail (address, prodAddress, date, messageType, docidx) values ('".$this->address."','".$this->prodAddress."', GETDATE(), '".$this->messageType."',".$this->docidx.")";
         $stmt = sqlsrv_query( $this->handle, $insStr);
         if( $stmt === false )  {  $dtr =  print_r( sqlsrv_errors(), true); fwrite($this->fp, $dtr); echo "<br> $dtr <br>";}
    }
@@ -93,6 +96,7 @@ class CovererEmail
             $pars[3] = "If you can cover, please click this link to see details of the Time Away and accept the coverage";
             $pars[4] = '<a href="https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/dist/MDModality/index.html?userid='.$newTA->CovererUserId.'&vidxToSee='.$vidx.'&acceptor=1" target="_blank">Accept Coverage</a>';
             $prodAddress = $newTA->CovererEmail;
+            $testProdAddress = $prodAddress;                                    // store for keeping track for testing, will 
             if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
                 $prodAddress = 'flonberg@mgh.harvard.edu';
             if (strpos($newTA->goAwayerLastName, 'Suit') !== FALSE)          // if it is Test MD send to me
@@ -149,10 +153,10 @@ class StaffEmailClass
                 $addresses .= ", ".$val['Email'];
         }
         fwrite($this->fp, "\r\n 109 ProdAddresses are  $addresses \r\n");
-        if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
-            $addresses = 'flonberg@mgh.harvard.edu';
-        if (strpos($data->goAwayerLastName, 'Suit') !== FALSE)          // if it is Test MD send to me
-            $addresses = 'flonberg@mgh.harvard.edu';  
+      //  if (strpos(getcwd(), 'dev') !== FALSE)                            // don't use real addresses if in DEV
+      //      $addresses = 'flonberg@mgh.harvard.edu';
+     //   if (strpos($data->goAwayerLastName, 'Suit') !== FALSE)          // if it is Test MD send to me
+      //      $addresses = 'flonberg@mgh.harvard.edu';  
         $pars[0] = "Greetings;";
         $pars[1] = "Dr. ".$data->goAwayerLastName ." is going away from ". $data->startDate ." to  ". $data->endDate;
         if ($mode == 3)

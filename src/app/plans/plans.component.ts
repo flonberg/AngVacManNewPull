@@ -576,8 +576,8 @@ console.log("390 in deleteTa tAparams is %o", this .tAparams)
 private saveEdits(param?: string) {
   let  response: any = null
   var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/emailChange.php?vidx='+this.vidxToEdit;  
-  if (param !== null)
-    url += '&value=delete'
+ // if (param !== null)
+   // url += '&value=delete'
   this .http.get(url).subscribe(res =>{                     // do the http.post
     response = res
     })

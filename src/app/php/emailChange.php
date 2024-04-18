@@ -9,17 +9,18 @@ ini_set("error_log", "./Alog/emailChangeError.txt");
 if (strpos(getcwd(), 'dev') !== FALSE){
     $level = 'dev';
     $prodVal = 0;
+    $writeParam = "w+";                                             // create new file every time for testing
 }
 else {
     $level = 'prod';
     $prodVal = 1; 	
+    $writeParam = "a+";                                             // in prod keep record of all edits
 }
-$fp = fopen("./Alog/emailChangeLog.txt", "w+"); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
+$fp = fopen("./Alog/emailChangeLog.txt", $writeParam); $todayString =  date('Y-m-d H:i:s'); fwrite($fp, "\r\n $todayString");
 $std = print_r($_GET, true); fwrite($fp, "\r\n GET has \r\n". $std);
 $needToSendEmails = getNeedToSend($_GET['vidx']);
 $mode = 0;                                                          // Dr. ___ is going away
 $vidxParams = getVidxParams($_GET['vidx']);
-var_dump($vidxParams);
 ob_start(); var_dump($vidxParams);$data = ob_get_clean();fwrite($fp, "\r\n newCoverageA is  ". $data);
 
 exit();    
@@ -37,13 +38,13 @@ if ($newCoverageA !== FALSE){
 }
 
 function getNeedToSend($vidx){
-    global $handle, $prodVal;
+    global $handle, $prodVal, $fp;
     $selStr = "SELECT vidx, ColChanged FROM MD_TimeAwayChanges WHERE ColChanged IN ('CoverageA','startDate','endDate') AND EmailSent = 0 AND prod = $prodVal AND vidx = ".$_GET['vidx'];
     echo "<br> $selStr <br>"; 
     $stmt = sqlsrv_query($handle, $selStr);
         while ($obj = sqlsrv_fetch_object( $stmt))
             $row[$obj->vidx] = $obj;
-    var_dump($row);
+    $dstr = print_r($row, true); fwrite($fp, "\r\n from getNeedToSend \r\n ". $dstr);
 }
   
 function getVidxParams($vidx){
