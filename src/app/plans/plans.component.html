@@ -381,7 +381,7 @@
             <td *ngIf = " vacEdit.WTM_self == 0  && !vacEdit.covererDetails"> TBD </td>
     
             <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.goAwayerLastName"> <b> WTM Coverer</b>   Dr. {{ vacEdit.goAwayerLastName }}</td>
-            <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"><b> WTM Coverer</b>  Dr. {{ vacEdit | json }}</td>
+            <td   *ngIf = "vacEdit.WTM_self == 1 && vacEdit.LastName"><b> WTM Coverer</b>  Dr. {{ vacEdit.WTM_Coverer_LastName}}</td>
             <td  *ngIf = 'vacEdit.WTM_Change_Needed == 1'  >  <b> WTM Date: </b>  {{ toSeeParams.WTMdate }}</td> 
             <td> {{ vacEdit.WTMnote}}  </td>
           </tr>

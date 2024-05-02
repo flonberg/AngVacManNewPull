@@ -347,17 +347,19 @@ CompCovArray:any
    console.log("201 byServArr is %o", byServArr)
     }
   private getServiceMDs(userid){
-    var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMDsByService.php?userid='+ userid
-    this .http.get(url).subscribe(res =>{
-      this. serviceMDs = res;
-      var TDB_MD = {'UserKey':0,'service':99,'LastName':'TBD','UserId':'TBD'}
-      for(let entry of this .serviceMDs){
-        if (this .userid == entry.UserID)
-          this .isUserAnMD = true;
-              }  
-      this .serviceMDs[41] = TDB_MD
-      console.log("277277 %o", this .serviceMDs)
-          })
+    if (userid){
+      var url = 'https://whiteboard.partners.org/esb/FLwbe/MD_VacManAngMat/'+this. wkDev+'/getMDsByService.php?userid='+ userid
+      this .http.get(url).subscribe(res =>{
+        this. serviceMDs = res;
+        var TDB_MD = {'UserKey':0,'service':99,'LastName':'TBD','UserId':'TBD'}
+        for(let entry of this .serviceMDs){
+          if (this .userid == entry.UserID)
+            this .isUserAnMD = true;
+                }  
+        this .serviceMDs[41] = TDB_MD
+        console.log("277277 %o", this .serviceMDs)
+            })
+      }
   }
   Message: Object = null
   /**
