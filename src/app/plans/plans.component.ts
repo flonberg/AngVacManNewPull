@@ -710,11 +710,12 @@ goAwayerLastName2: string = ''
     if (d['CompoundCoverage'] == 1){
       if (this.CompCov && typeof(this .CompCov[d['vidx']]) !== 'undefined'){
         for (let elem in this .CompCov[d['vidx']]){
+          let test = this .CompCov[d['vidx']][elem]['accepted']
           if ( this .CompCov[d['vidx']][elem]['accepted'] == 0){
             allAccepted = false
           }
         }
-        if (allAccepted)
+       // if (allAccepted)
           return 'green'
       }
     }
