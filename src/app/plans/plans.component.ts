@@ -210,8 +210,11 @@ export class PlansComponent implements OnInit {
         this .loggedInUserCoverage.push( this .toSeeParams.Coverage[key])
     }
 
-   // this .toSeeParams['WTM_Coverer_LastName']= this .toSeeParams.Coverage[key]['CovererUserKey']
-    console.log("213213 %o", this.toSeeParams['WTM_CovererUserKey'])
+   //  this .toSeeParams['WTM_Coverer_LastName']= this .toSeeParams.Coverage[key]['CovererUserKey']
+    if (this.toSeeParams['WTM_self'] == 1)
+      this.toSeeParams['WTM_Coverer_LastName'] = this.toSeeParams['goAwayerLastName']
+    //this .toSeeParams['WTM_Coverer_LastName']= this .toSeeParams.Coverage[key]['CovererUserKey']
+    console.log("213213 %o", this.toSeeParams)
     for (let key in this.serviceMDs){
       if (this.serviceMDs[key]['UserKey'] == this.toSeeParams['WTM_CovererUserKey']){
         console.log("215215  %o  --- %o  ", this.serviceMDs[key]['UserKey'], this.toSeeParams['WTM_CovererUserKey'] )
@@ -715,7 +718,7 @@ goAwayerLastName2: string = ''
             allAccepted = false
           }
         }
-       // if (allAccepted)
+       // if (allAccepted)                            // KLUDGE till fix. Make sure by hand
           return 'green'
       }
     }
