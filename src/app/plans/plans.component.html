@@ -398,7 +398,7 @@
           </ng-container>
         </td>
         <td>
-          <table *ngIf = "vacEdit.WTM_Change_Needed > 0 ">
+          <table *ngIf = "vacEdit.WTM_Change_Needed > 0 && toSeeParams">
             <caption> WTM Coverage </caption>
             <tr>
               <th> WTM Coverer</th>  <td> Dr.  {{ toSeeParams.WTM_Coverer_LastName }}</td>

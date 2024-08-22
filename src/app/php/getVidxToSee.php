@@ -49,6 +49,8 @@ $dstr = print_r($assoc, true); fwrite($fp, $dstr);
 	$assoc['goAwayerUserKey'] = getSingle($selStr, 'UserKey', $handle);
 	$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['goAwayerUserKey']."'";
 	$assoc['goAwayerLastName'] = getSingle($selStr, 'LastName', $handle);
+	$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['WTM_CovererUserKey']."'";	// 8-22-24
+	$assoc['WTM_Coverer_LastName'] = getSingle($selStr, 'LastName', $handle);
 	if ($assoc['coverageA'] > 0){
 		$selStr = "SELECT LastName from physicians WHERE UserKey = '".$assoc['coverageA']."'";
 		$assoc['CovererLastName'] = getSingle($selStr, 'LastName', $handle);
